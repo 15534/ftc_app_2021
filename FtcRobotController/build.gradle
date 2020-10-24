@@ -52,6 +52,10 @@ dependencies {
     stockApi 'org.firstinspires.ftc:FtcCommon:6.0.1'
     stockApi 'androidx.appcompat:appcompat:1.2.0'
 
+    implementation ('com.acmerobotics.dashboard:dashboard:0.3.10') {
+        exclude group: 'org.firstinspires.ftc'
+    }
+
     /*
      * Things needed regardless of turbo/extremeTurbo/stock
      * that are normally pulled in by modules but must be
