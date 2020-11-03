@@ -27,6 +27,9 @@ public class MainTeleOp extends LinearOpMode {
                     drive.setDriveSignal(new DriveSignal(
                             new Pose2d(-100*gamepad1.left_stick_y,-100*gamepad1.left_stick_x, -3*gamepad1.right_stick_x)));
                 }
+            } else {
+                drive.setDriveSignal(new DriveSignal(
+                        new Pose2d(0, 0,0)));
             }
         }
     }
