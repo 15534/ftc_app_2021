@@ -17,7 +17,8 @@ public class ShooterPIDTuner extends LinearOpMode {
     private DcMotorEx leftShoot, rightShoot;
 
     // TODO tune this better - reduce oscillations
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(6700, 0, 0, 0);
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(500, 0, 0, 0);
+    public static double targetPower = 1000;
 
     private double lastKp = MOTOR_VELO_PID.p;
     private double lastKi = MOTOR_VELO_PID.i;
@@ -48,7 +49,6 @@ public class ShooterPIDTuner extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (!isStopRequested()) {
-            double targetPower = 1140;
             leftShoot.setVelocity(targetPower);
             rightShoot.setVelocity(targetPower);
 
