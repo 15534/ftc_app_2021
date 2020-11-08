@@ -30,8 +30,8 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double TICKS_PER_REV = 1440;
     public static double WHEEL_RADIUS = 1.14173; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
-    public static double X_MULTIPLIER = 1; // Multiplier in the X direction
-    public static double Y_MULTIPLIER = 1; // Multiplier in the Y direction
+    public static double X_MULTIPLIER = 100/97.6807; // Multiplier in the X direction
+    public static double Y_MULTIPLIER = 100/95.310; // Multiplier in the Y direction
     private Encoder leftEncoder, rightEncoder, frontEncoder;
 
     public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
@@ -63,7 +63,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public List<Double> getWheelPositions() {
         return Arrays.asList(
                 encoderTicksToInches(leftEncoder.getCurrentPosition())*X_MULTIPLIER,
-                encoderTicksToInches(rightEncoder.getCurrentPosition())*Y_MULTIPLIER,
+                encoderTicksToInches(rightEncoder.getCurrentPosition())*X_MULTIPLIER,
                 encoderTicksToInchesRear(frontEncoder.getCurrentPosition())*Y_MULTIPLIER
         );
     }
