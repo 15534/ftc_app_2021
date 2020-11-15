@@ -14,16 +14,28 @@ public class RedAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startingPosition = new Pose2d(-60, -48, Math.toRadians(0));
-        Trajectory trajectoryForward = drive.trajectoryBuilder(startingPosition)
-                .lineTo(new Vector2d(-36,-48))
-                .splineToConstantHeading(new Vector2d(12, -12), Math.toRadians(0))
+        //starting position for robot - halfway across first tile
+        Pose2d startingPosition = new Pose2d(-60, -60, Math.toRadians(0)); //maximum starting position
+
+        //trajectory to go to tile a to drop off wobble goal
+        Trajectory trajectoryForwardA = drive.trajectoryBuilder(startingPosition)
+                .lineTo(new Vector2d(0,-60))
+                .build();
+
+        //trajectory to go to tile b to drop off wobble goal
+        Trajectory trajectoryForwardB = drive.trajectoryBuilder(startingPosition)
+                .lineTo(new Vector2d(24, -36)) //maybe need to change lineTo for this
+                .build();
+
+        //trajectory to go to tile b to drop off wobble goal
+        Trajectory trajectoryForwardC = drive.trajectoryBuilder(startingPosition)
+                .lineTo(new Vector2d(48, -60))
                 .build();
 
         drive.setPoseEstimate(startingPosition);
         waitForStart();
 
-        drive.followTrajectoryAsync(trajectoryForward);
+        drive.followTrajectoryAsync(trajectoryForwardB); //spot to test to different trajectories
 
         while (opModeIsActive()) {
             drive.update();
