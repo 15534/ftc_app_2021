@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2DFormat;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Autonomous(name="RedAuto")
@@ -40,10 +39,13 @@ public class RedAuto extends LinearOpMode {
                 .build();
 
         double turnAngle = Math.toRadians(-90);
+
+        /* code that will get run after dropping off wobble goal in A
         Pose2d positionAfterFirstMovement = trajectoryForwardA.end().plus(new Pose2d (0,0, turnAngle));
         Trajectory trajectoryForwardATwo = drive.trajectoryBuilder(positionAfterFirstMovement)
                 .lineToConstantHeading(new Vector2d(0, 0))
                 .build();
+         */
 
         /*
         //trajectory to go to tile b to drop off wobble goal
@@ -60,9 +62,41 @@ public class RedAuto extends LinearOpMode {
         drive.setPoseEstimate(startingPosition);
         waitForStart();
 
+        currentState = State.TRAJECTORY_A_1; //need to convert this to if based off of computer vision
 
         while (opModeIsActive()) {
+            // this will also need to be modified after computer vision
+            switch (currentState) {
+                // Check if the drive class isn't busy
+                // `isBusy() == true` while it's following the trajectory
+                // Once `isBusy() == false`, the trajectory follower signals that it is finished
+                // We move on to the next state
+                // Make sure we use the async follow function
+                case TRAJECTORY_A_1:
+                    if (!drive.isBusy()) {
+                        currentState = State.TRAJECTORY_A_2;
+                        drive.turnAsync(turnAngle);
+                    }
+                    break;
+
+                //code for movement after dropping off wobble goal in A
+                /*case TRAJECTORY_A_2:
+                    if (!drive.isBusy()) {
+                        currentState = State.TRAJECTORY_A_2;
+                    }
+                    break;
+                 */
+            }
             drive.update();
+
+            // Read pose
+            Pose2d poseEstimate = drive.getPoseEstimate();
+
+            // Print pose to telemetry
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.update();
         }
     }
 }
