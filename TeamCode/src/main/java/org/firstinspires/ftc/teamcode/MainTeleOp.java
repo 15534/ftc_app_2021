@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -33,7 +34,12 @@ public class MainTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         DcMotorEx indexer = hardwareMap.get(DcMotorEx.class, "indexer");
+        DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intake");
+        CRServo transfer = hardwareMap.get(CRServo.class, "transfer");
+
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         indexer.setDirection(DcMotorSimple.Direction.REVERSE);
+        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Servo pusher = hardwareMap.get(Servo.class, "push");
         // 0.96 - resting position
@@ -42,9 +48,12 @@ public class MainTeleOp extends LinearOpMode {
         GamepadEx gp1 = new GamepadEx(gamepad1);
         ButtonReader wobbleButtonReader = new ButtonReader(gp1, GamepadKeys.Button.A);
         ButtonReader pushButtonReader = new ButtonReader(gp1, GamepadKeys.Button.X);
-        ButtonReader toggleIndexer = new ButtonReader(gp1, GamepadKeys.Button.Y);
+        ButtonReader toggleIntake = new ButtonReader(gp1, GamepadKeys.Button.Y);
+        ButtonReader toggleShooter = new ButtonReader(gp1, GamepadKeys.Button.B);
+
         double lastPushTime = -1;
-        boolean indexerActive = false;
+        boolean intakeActive = false;
+        boolean shooterActive = false;
 
 //        ModernRoboticsI2cRangeSensor rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_1");
         Wobble wobble = new Wobble(hardwareMap);
@@ -53,8 +62,10 @@ public class MainTeleOp extends LinearOpMode {
         waitForStart();
         while (!isStopRequested()) {
             pushButtonReader.readValue();
-            toggleIndexer.readValue();
+            toggleIntake.readValue();
             wobbleButtonReader.readValue();
+            toggleShooter.readValue();
+
             if (Math.abs(gamepad1.left_stick_x) > 0.05 || (Math.abs(gamepad1.left_stick_y) > 0.05)
                     || (Math.abs(gamepad1.right_stick_x) > 0.05)) {
                 if (Math.abs(gamepad1.right_stick_x) < 0.05) {
@@ -84,11 +95,27 @@ public class MainTeleOp extends LinearOpMode {
                 lastPushTime = 0;
             }
 
-            if (toggleIndexer.wasJustPressed()) {
-                indexerActive = !indexerActive;
+            if (toggleIntake.wasJustPressed()) {
+                intakeActive = !intakeActive;
             }
 
-            if (indexerActive) {
+            if (toggleShooter.wasJustPressed()) {
+                shooterActive = !shooterActive;
+            }
+
+            if (intakeActive) {
+                intake.setPower(1);
+            } else {
+                intake.setPower(0);
+            }
+
+            if (shooterActive) {
+                transfer.setPower(1);
+            } else {
+                transfer.setPower(0);
+            }
+
+            if (intakeActive || shooterActive) {
                 indexer.setPower(INDEXER_POWER);
             } else {
                 indexer.setPower(0);
