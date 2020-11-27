@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -27,6 +28,9 @@ public class MainTeleOp extends LinearOpMode {
     public static double INDEXER_POWER = 1;
     public static double PUSHED_POSITION = 0.75;
     public static double RELEASED_POSITION = 0.96;
+    public static double DPAD_SPEED = 0.35;
+    public static double BUMPER_ROTATION_SPEED = 0.4;
+    public static double ROTATION_MULTIPLIER = 3;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -81,7 +85,29 @@ public class MainTeleOp extends LinearOpMode {
             } else {
                 drive.setDriveSignal(new DriveSignal(
                         new Pose2d(0, 0,0)));
+
+            Vector2d translation = new Vector2d(gamepad1.left_stick_y, -gamepad1.left_stick_x);
+            double rotation = -ROTATION_MULTIPLIER*gamepad1.right_stick_x;
+
+            // slow translation with dpad
+            if (gamepad1.dpad_up) {
+               translation = new Vector2d(DPAD_SPEED, 0);
+            } else if (gamepad1.dpad_down) {
+                translation = new Vector2d(-DPAD_SPEED, 0);
+            } else if (gamepad1.dpad_left) {
+                translation = new Vector2d(0, DPAD_SPEED);
+            } else if (gamepad1.dpad_right) {
+                translation = new Vector2d(0, -DPAD_SPEED);
             }
+
+            // slow rotation with bumpers
+            if (gamepad1.left_bumper) {
+                rotation = BUMPER_ROTATION_SPEED;
+            } else if (gamepad1.right_bumper) {
+                rotation = -BUMPER_ROTATION_SPEED;
+            }
+
+            drive.setWeightedDrivePower(new Pose2d(translation, rotation));
 
             if (pushButtonReader.wasJustPressed()) {
                 telemetry.addData("pusher", "pushed position");
