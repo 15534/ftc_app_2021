@@ -30,7 +30,7 @@ public class MainTeleOp extends LinearOpMode {
     public static double RELEASED_POSITION = 0.96;
     public static double DPAD_SPEED = 0.35;
     public static double BUMPER_ROTATION_SPEED = 0.4;
-    public static double ROTATION_MULTIPLIER = 3;
+    public static double ROTATION_MULTIPLIER = 2.05;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -50,9 +50,9 @@ public class MainTeleOp extends LinearOpMode {
         // 0.75 - pushed position
 
         GamepadEx gp1 = new GamepadEx(gamepad1);
-        ButtonReader wobbleButtonReader = new ButtonReader(gp1, GamepadKeys.Button.A);
+        ButtonReader wobbleButtonReader = new ButtonReader(gp1, GamepadKeys.Button.Y);
         ButtonReader pushButtonReader = new ButtonReader(gp1, GamepadKeys.Button.X);
-        ButtonReader toggleIntake = new ButtonReader(gp1, GamepadKeys.Button.Y);
+        ButtonReader toggleIntake = new ButtonReader(gp1, GamepadKeys.Button.A);
         ButtonReader toggleShooter = new ButtonReader(gp1, GamepadKeys.Button.B);
 
         double lastPushTime = -1;
