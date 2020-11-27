@@ -70,22 +70,6 @@ public class MainTeleOp extends LinearOpMode {
             wobbleButtonReader.readValue();
             toggleShooter.readValue();
 
-            if (Math.abs(gamepad1.left_stick_x) > 0.05 || (Math.abs(gamepad1.left_stick_y) > 0.05)
-                    || (Math.abs(gamepad1.right_stick_x) > 0.05)) {
-                if (Math.abs(gamepad1.right_stick_x) < 0.05) {
-                    // tank driving - left joystick controls left wheels,
-                    // right joystick controls right wheels
-                    drive.setDriveSignal(new DriveSignal(
-                            new Pose2d(-300*gamepad1.left_stick_y,-300*gamepad1.left_stick_x, 0)));
-                } else {
-                    // rotate by moving the right stick horizontally
-                    drive.setDriveSignal(new DriveSignal(
-                            new Pose2d(-100*gamepad1.left_stick_y,-100*gamepad1.left_stick_x, -3*gamepad1.right_stick_x)));
-                }
-            } else {
-                drive.setDriveSignal(new DriveSignal(
-                        new Pose2d(0, 0,0)));
-
             Vector2d translation = new Vector2d(gamepad1.left_stick_y, -gamepad1.left_stick_x);
             double rotation = -ROTATION_MULTIPLIER*gamepad1.right_stick_x;
 
