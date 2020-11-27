@@ -12,7 +12,7 @@ public class Wobble {
 
     public static double GRIPPER_RELEASE = 0.5;
     public static double ARM_UP = 0.15;
-    public static double ARM_DOWN = 0.92;
+    public static double ARM_DOWN = 0.94;
 
     public boolean armUp = true;
 
