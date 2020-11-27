@@ -70,7 +70,7 @@ public class MainTeleOp extends LinearOpMode {
             wobbleButtonReader.readValue();
             toggleShooter.readValue();
 
-            Vector2d translation = new Vector2d(gamepad1.left_stick_y, -gamepad1.left_stick_x);
+            Vector2d translation = new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
             double rotation = -ROTATION_MULTIPLIER*gamepad1.right_stick_x;
 
             // slow translation with dpad
