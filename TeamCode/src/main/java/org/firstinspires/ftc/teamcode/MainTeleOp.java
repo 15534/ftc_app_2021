@@ -32,6 +32,7 @@ public class MainTeleOp extends LinearOpMode {
     public static double DPAD_SPEED = 0.35;
     public static double BUMPER_ROTATION_SPEED = 0.4;
     public static double ROTATION_MULTIPLIER = 2.05;
+    public static double FLAP_POSITION = 0.5;  // TODO tune this
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -47,6 +48,7 @@ public class MainTeleOp extends LinearOpMode {
         transfer.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Servo pusher = hardwareMap.get(Servo.class, "push");
+        Servo flap = hardwareMap.get(Servo.class, "flap");
         // 0.96 - resting position
         // 0.75 - pushed position
 
@@ -66,6 +68,8 @@ public class MainTeleOp extends LinearOpMode {
 
         Shooter shooter = new Shooter(hardwareMap);
         shooter.deactivate();
+
+        flap.setPosition(FLAP_POSITION);
 
         waitForStart();
         while (!isStopRequested()) {
