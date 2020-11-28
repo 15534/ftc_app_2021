@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -50,7 +51,7 @@ public class MainTeleOp extends LinearOpMode {
         // 0.75 - pushed position
 
         GamepadEx gp1 = new GamepadEx(gamepad1);
-        ButtonReader wobbleButtonReader = new ButtonReader(gp1, GamepadKeys.Button.Y);
+        TriggerReader wobbleReader = new TriggerReader(gp1, GamepadKeys.Trigger.RIGHT_TRIGGER);
         ButtonReader pushButtonReader = new ButtonReader(gp1, GamepadKeys.Button.X);
         ButtonReader toggleIntake = new ButtonReader(gp1, GamepadKeys.Button.A);
         ButtonReader toggleShooter = new ButtonReader(gp1, GamepadKeys.Button.B);
@@ -63,11 +64,14 @@ public class MainTeleOp extends LinearOpMode {
         Wobble wobble = new Wobble(hardwareMap);
         wobble.armUp();
 
+        Shooter shooter = new Shooter(hardwareMap);
+        shooter.deactivate();
+
         waitForStart();
         while (!isStopRequested()) {
             pushButtonReader.readValue();
             toggleIntake.readValue();
-            wobbleButtonReader.readValue();
+            wobbleReader.readValue();
             toggleShooter.readValue();
 
             Vector2d translation = new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
@@ -111,6 +115,13 @@ public class MainTeleOp extends LinearOpMode {
 
             if (toggleShooter.wasJustPressed()) {
                 shooterActive = !shooterActive;
+                if (shooterActive) {
+                    transfer.setPower(1);
+                    shooter.activate();
+                } else {
+                    transfer.setPower(0);
+                    shooter.deactivate();
+                }
             }
 
             if (intakeActive) {
@@ -119,11 +130,6 @@ public class MainTeleOp extends LinearOpMode {
                 intake.setPower(0);
             }
 
-            if (shooterActive) {
-                transfer.setPower(1);
-            } else {
-                transfer.setPower(0);
-            }
 
             if (intakeActive || shooterActive) {
                 indexer.setPower(INDEXER_POWER);
@@ -131,7 +137,7 @@ public class MainTeleOp extends LinearOpMode {
                 indexer.setPower(0);
             }
 
-            if (wobbleButtonReader.wasJustPressed()) {
+            if (wobbleReader.wasJustPressed()) {
                 if (wobble.armUp) {
                     wobble.armDown();
                 } else {
