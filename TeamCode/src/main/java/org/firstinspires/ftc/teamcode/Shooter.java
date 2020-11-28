@@ -35,4 +35,8 @@ public class Shooter {
         leftShoot.setVelocity(0);
         rightShoot.setVelocity(0);
     }
+
+    public double velocity() {
+        return leftShoot.getVelocity();
+    }
 }

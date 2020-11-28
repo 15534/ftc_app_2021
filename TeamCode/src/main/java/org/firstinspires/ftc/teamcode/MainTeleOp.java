@@ -109,18 +109,15 @@ public class MainTeleOp extends LinearOpMode {
 
             if (pushButtonReader.wasJustPressed()) {
                 flap.setPosition(0.18); // shooting to top goal
-                telemetry.addData("pusher", "pushed position");
                 pusher.setPosition(PUSHED_POSITION);
                 lastPushTime = runtime.seconds();
             } else if (powershotButtonReader.wasJustPressed()) {
                 flap.setPosition(0.2); // shooting powershot (lowered flap due to height decrease)
-                telemetry.addData("pusher", "pushed position");
                 pusher.setPosition(PUSHED_POSITION);
                 lastPushTime = runtime.seconds();
             }
 
             if (runtime.seconds() - lastPushTime > 0.2) {
-                telemetry.addData("pusher", "released position");
                 pusher.setPosition(RELEASED_POSITION);
                 lastPushTime = 0;
             }
@@ -162,7 +159,8 @@ public class MainTeleOp extends LinearOpMode {
             }
             wobble.setGripper(GRIPPER_RELEASE);
 
-            telemetry.addData("wobble gripper", "%.2f", wobble.getGripper());
+//            telemetry.addData("wobble gripper", "%.2f", wobble.getGripper());
+            telemetry.addData("shooter velocity", "%.2f", shooter.velocity());
 //            telemetry.addData("cm optical", "%.2f cm", rangeSensor.cmOptical());
 //            telemetry.addData("cm", "%.2f cm", rangeSensor.getDistance(DistanceUnit.CM));
             telemetry.update();
