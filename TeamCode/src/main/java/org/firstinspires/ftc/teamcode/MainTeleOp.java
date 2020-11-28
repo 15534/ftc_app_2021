@@ -32,7 +32,11 @@ public class MainTeleOp extends LinearOpMode {
     public static double DPAD_SPEED = 0.35;
     public static double BUMPER_ROTATION_SPEED = 0.4;
     public static double ROTATION_MULTIPLIER = 2.05;
-    public static double FLAP_POSITION = 0.5;  // TODO tune this
+    public static double FLAP_POSITION = 0.2;
+    // parallel to shooter = 0.2
+    // max viable shooting angle = 0.14
+    // shooting angle = 0.175
+    // powershot angle = 0.2
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -54,6 +58,7 @@ public class MainTeleOp extends LinearOpMode {
 
         GamepadEx gp1 = new GamepadEx(gamepad1);
         TriggerReader wobbleReader = new TriggerReader(gp1, GamepadKeys.Trigger.RIGHT_TRIGGER);
+        ButtonReader powershotButtonReader = new ButtonReader(gp1, GamepadKeys.Button.Y);
         ButtonReader pushButtonReader = new ButtonReader(gp1, GamepadKeys.Button.X);
         ButtonReader toggleIntake = new ButtonReader(gp1, GamepadKeys.Button.A);
         ButtonReader toggleShooter = new ButtonReader(gp1, GamepadKeys.Button.B);
@@ -74,6 +79,7 @@ public class MainTeleOp extends LinearOpMode {
         waitForStart();
         while (!isStopRequested()) {
             pushButtonReader.readValue();
+            powershotButtonReader.readValue();
             toggleIntake.readValue();
             wobbleReader.readValue();
             toggleShooter.readValue();
@@ -102,6 +108,12 @@ public class MainTeleOp extends LinearOpMode {
             drive.setWeightedDrivePower(new Pose2d(translation, rotation));
 
             if (pushButtonReader.wasJustPressed()) {
+                flap.setPosition(0.175); // shooting to top goal
+                telemetry.addData("pusher", "pushed position");
+                pusher.setPosition(PUSHED_POSITION);
+                lastPushTime = runtime.seconds();
+            } else if (powershotButtonReader.wasJustPressed()) {
+                flap.setPosition(0.2); // shooting powershot (lowered flap due to height decrease)
                 telemetry.addData("pusher", "pushed position");
                 pusher.setPosition(PUSHED_POSITION);
                 lastPushTime = runtime.seconds();
