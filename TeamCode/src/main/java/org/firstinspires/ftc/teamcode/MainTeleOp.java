@@ -32,10 +32,10 @@ public class MainTeleOp extends LinearOpMode {
     public static double DPAD_SPEED = 0.35;
     public static double BUMPER_ROTATION_SPEED = 0.4;
     public static double ROTATION_MULTIPLIER = 2.05;
-    public static double FLAP_POSITION = 0.2;
-    // parallel to shooter = 0.2
+    public static double FLAP_POSITION = 0.1975;
+    // parallel to shooter = 0.1975
     // max viable shooting angle = 0.14
-    // shooting angle = 0.175
+    // shooting angle = 0.18
     // powershot angle = 0.2
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -108,7 +108,7 @@ public class MainTeleOp extends LinearOpMode {
             drive.setWeightedDrivePower(new Pose2d(translation, rotation));
 
             if (pushButtonReader.wasJustPressed()) {
-                flap.setPosition(0.175); // shooting to top goal
+                flap.setPosition(0.18); // shooting to top goal
                 telemetry.addData("pusher", "pushed position");
                 pusher.setPosition(PUSHED_POSITION);
                 lastPushTime = runtime.seconds();
