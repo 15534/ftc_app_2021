@@ -32,6 +32,7 @@ public class MainTeleOp extends LinearOpMode {
     public static double DPAD_SPEED = 0.35;
     public static double BUMPER_ROTATION_SPEED = 0.4;
     public static double ROTATION_MULTIPLIER = 2.05;
+    public static double STOPPER_POSITION = 0.395;
     public static double FLAP_POSITION = 0.1975;
     // parallel to shooter = 0.1975
     // max viable shooting angle = 0.14
@@ -50,9 +51,9 @@ public class MainTeleOp extends LinearOpMode {
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         indexer.setDirection(DcMotorSimple.Direction.REVERSE);
         transfer.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        Servo pusher = hardwareMap.get(Servo.class, "push");
+        Servo stopper = hardwareMap.get(Servo.class, "stopper");
         Servo flap = hardwareMap.get(Servo.class, "flap");
+        Servo pusher = hardwareMap.get(Servo.class, "push");
         // 0.96 - resting position
         // 0.75 - pushed position
 
@@ -79,6 +80,7 @@ public class MainTeleOp extends LinearOpMode {
         shooter.deactivate();
 
         flap.setPosition(FLAP_POSITION);
+        stopper.setPosition(STOPPER_POSITION);
 
         waitForStart();
         while (!isStopRequested()) {
@@ -93,7 +95,7 @@ public class MainTeleOp extends LinearOpMode {
 
             // slow translation with dpad
             if (gamepad1.dpad_up) {
-               translation = new Vector2d(DPAD_SPEED, 0);
+                translation = new Vector2d(DPAD_SPEED, 0);
             } else if (gamepad1.dpad_down) {
                 translation = new Vector2d(-DPAD_SPEED, 0);
             } else if (gamepad1.dpad_left) {
@@ -112,11 +114,11 @@ public class MainTeleOp extends LinearOpMode {
             drive.setWeightedDrivePower(new Pose2d(translation, rotation));
 
             if (pushButtonReader.wasJustPressed()) {
-                flap.setPosition(0.18); // shooting to top goal
+                flap.setPosition(0.185); // shooting to top goal
                 pusher.setPosition(PUSHED_POSITION);
                 lastPushTime = runtime.seconds();
             } else if (powershotButtonReader.wasJustPressed()) {
-                flap.setPosition(0.2); // shooting powershot (lowered flap due to height decrease)
+                flap.setPosition(0.205); // shooting powershot (lowered flap due to height decrease)
                 pusher.setPosition(PUSHED_POSITION);
                 lastPushTime = runtime.seconds();
             }
@@ -135,9 +137,11 @@ public class MainTeleOp extends LinearOpMode {
                 if (shooterActive) {
                     transferPower = 1;
                     shooter.activate();
+                    stopper.setPosition(0.01);
                 } else {
                     transferPower = 0;
                     shooter.deactivate();
+                    stopper.setPosition(STOPPER_POSITION);
                 }
             }
 
@@ -154,13 +158,14 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             if (toggleIntake.isDown() && toggleShooter.isDown()) {
-                intake.setPower(-1);
-                indexer.setPower(-INDEXER_POWER);
-                transfer.setPower(-1);
+                intake.setPower(-0.25);
+                indexer.setPower(-0.65);
+                transfer.setPower(-0.5);
+                shooter.deactivate();
             } else {
-                indexer.setPower(indexerPower);
-                intake.setPower(intakePower);
-                transfer.setPower(transferPower);
+                    indexer.setPower(indexerPower);
+                    intake.setPower(intakePower);
+                    transfer.setPower(transferPower);
             }
 
             telemetry.addData("Right trigger down", wobbleReader.isDown());
