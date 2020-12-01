@@ -122,12 +122,21 @@ public class MainTeleOp extends LinearOpMode {
                 lastPushTime = 0;
             }
 
-            if (toggleIntake.wasJustPressed()) {
-                intakeActive = !intakeActive;
-            }
+            if (gamepad1.a && gamepad1.b) {
+                // move everything in reverse
+                intake.setPower(-1);
+                indexer.setPower(-INDEXER_POWER);
+                transfer.setPower(-1);
+                shooter.deactivate();
+            } else {
+                if (toggleIntake.wasJustPressed()) {
+                    intakeActive = !intakeActive;
+                }
 
-            if (toggleShooter.wasJustPressed()) {
-                shooterActive = !shooterActive;
+                if (toggleShooter.wasJustPressed()) {
+                    shooterActive = !shooterActive;
+                }
+
                 if (shooterActive) {
                     transfer.setPower(1);
                     shooter.activate();
@@ -135,20 +144,21 @@ public class MainTeleOp extends LinearOpMode {
                     transfer.setPower(0);
                     shooter.deactivate();
                 }
+
+                if (intakeActive) {
+                    intake.setPower(1);
+                } else {
+                    intake.setPower(0);
+                }
+
+                if (intakeActive || shooterActive) {
+                    indexer.setPower(INDEXER_POWER);
+                } else {
+                    indexer.setPower(0);
+                }
             }
 
-            if (intakeActive) {
-                intake.setPower(1);
-            } else {
-                intake.setPower(0);
-            }
-
-
-            if (intakeActive || shooterActive) {
-                indexer.setPower(INDEXER_POWER);
-            } else {
-                indexer.setPower(0);
-            }
+            telemetry.addData("Right trigger down", wobbleReader.isDown());
 
             if (wobbleReader.wasJustPressed()) {
                 if (wobble.armUp) {
