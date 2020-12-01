@@ -66,6 +66,10 @@ public class MainTeleOp extends LinearOpMode {
         double lastPushTime = -1;
         boolean intakeActive = false;
         boolean shooterActive = false;
+        boolean reverseIntake = false;
+        double indexerPower = 0;
+        double intakePower = 0;
+        double transferPower = 0;
 
 //        ModernRoboticsI2cRangeSensor rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_1");
         Wobble wobble = new Wobble(hardwareMap);
@@ -122,50 +126,55 @@ public class MainTeleOp extends LinearOpMode {
                 lastPushTime = 0;
             }
 
-            if (gamepad1.a && gamepad1.b) {
-                // move everything in reverse
+            if (toggleIntake.wasJustPressed()) {
+                intakeActive = !intakeActive;
+            }
+
+            if (toggleShooter.wasJustPressed()) {
+                shooterActive = !shooterActive;
+                if (shooterActive) {
+                    transferPower = 1;
+                    shooter.activate();
+                } else {
+                    transferPower = 0;
+                    shooter.deactivate();
+                }
+            }
+
+            if (intakeActive) {
+                intakePower = 1;
+            } else {
+                intakePower = 0;
+            }
+
+            if (intakeActive || shooterActive) {
+                indexerPower = INDEXER_POWER;
+            } else {
+                indexerPower = 0;
+            }
+
+            if (toggleIntake.isDown() && toggleShooter.isDown()) {
                 intake.setPower(-1);
                 indexer.setPower(-INDEXER_POWER);
                 transfer.setPower(-1);
-                shooter.deactivate();
             } else {
-                if (toggleIntake.wasJustPressed()) {
-                    intakeActive = !intakeActive;
-                }
-
-                if (toggleShooter.wasJustPressed()) {
-                    shooterActive = !shooterActive;
-                }
-
-                if (shooterActive) {
-                    transfer.setPower(1);
-                    shooter.activate();
-                } else {
-                    transfer.setPower(0);
-                    shooter.deactivate();
-                }
-
-                if (intakeActive) {
-                    intake.setPower(1);
-                } else {
-                    intake.setPower(0);
-                }
-
-                if (intakeActive || shooterActive) {
-                    indexer.setPower(INDEXER_POWER);
-                } else {
-                    indexer.setPower(0);
-                }
+                indexer.setPower(indexerPower);
+                intake.setPower(intakePower);
+                transfer.setPower(transferPower);
             }
 
             telemetry.addData("Right trigger down", wobbleReader.isDown());
 
             if (wobbleReader.wasJustPressed()) {
+                telemetry.addData("WOBBLE PRESSED", 1);
                 if (wobble.armUp) {
                     wobble.armDown();
                 } else {
                     wobble.armUp();
                 }
+            }
+            if (wobbleReader.wasJustReleased()) {
+                telemetry.addData("WOBBLE RELEASED", 1);
             }
             wobble.setGripper(GRIPPER_RELEASE);
 
