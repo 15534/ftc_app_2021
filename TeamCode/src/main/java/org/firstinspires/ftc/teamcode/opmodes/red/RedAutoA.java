@@ -13,7 +13,9 @@ public class RedAutoA extends LinearOpMode {
 
     enum State {
         DROP_OFF_WOBBLE_GOAL,
-        SHOOT_POWERSHOTS,
+        //SHOOT_POWERSHOTS,
+        SHOOT_HIGH_GOAL,
+        DROP_OFF_BLUE_WOBBLE_GOAL,
         IDLE
     }
 
@@ -39,10 +41,14 @@ public class RedAutoA extends LinearOpMode {
         double turnAngle = Math.toRadians(-90);
 
         //getting to position to shoot powershots
-        Trajectory shootPowershots = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+        /*Trajectory shootPowershots = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 //rerotating as robot moves to spot to shoot powershots,
                 //x = -12 to be safe so that bot doesn't go over launch line
-                .lineToLinearHeading(new Pose2d(-12,-12, Math.toRadians(90))) //we could also turn and then strafe (strafeLeft or strafeRight)
+                .lineTo(new Vector2d(11,42)) //we could also turn and then strafe (strafeLeft or strafeRight)
+                .build();*/
+
+        Trajectory shootHighGoal = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+                .lineTo(new Vector2d(11,30))
                 .build();
 
         drive.setPoseEstimate(startingPosition);
@@ -61,8 +67,13 @@ public class RedAutoA extends LinearOpMode {
                     // We move on to the next state
                     // Make sure we use the async follow function
                     if (!drive.isBusy()) {
-                        currentState = State.SHOOT_POWERSHOTS;
-                        drive.followTrajectoryAsync(shootPowershots);
+                        //currentState = State.SHOOT_POWERSHOTS;
+                        //drive.followTrajectoryAsync(shootPowershots);
+                        currentState = State.SHOOT_HIGH_GOAL;
+                        turnAngle = 90;
+                        drive.turnAsync(turnAngle);
+                        drive.followTrajectoryAsync(shootHighGoal);
+
                     }
                     break;
             }

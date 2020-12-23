@@ -13,7 +13,8 @@ public class RedAutoC extends LinearOpMode {
 
     enum State {
         DROP_OFF_WOBBLE_GOAL,
-        SHOOT_POWERSHOTS,
+        //SHOOT_POWERSHOTS,
+        SHOOT_HIGH_GOAL,
         IDLE
     }
 
@@ -33,8 +34,12 @@ public class RedAutoC extends LinearOpMode {
                 .build();
 
         //shoot powershots trajectory
-        Trajectory shootPowershots = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+        /*Trajectory shootPowershots = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .lineTo(new Vector2d(39,42))
+                .build();*/
+
+        Trajectory shootHighGoal = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+                .lineTo(new Vector2d(-39,30))
                 .build();
 
         double turnAngle = Math.toRadians(-90); //turn angle for dropping off wobble goal
@@ -48,8 +53,9 @@ public class RedAutoC extends LinearOpMode {
             switch (currentState) {
                 case DROP_OFF_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
-                        currentState = RedAutoC.State.SHOOT_POWERSHOTS;
-                        drive.followTrajectoryAsync(shootPowershots); //going to launch line to shoot powershots
+                        currentState = RedAutoC.State.SHOOT_HIGH_GOAL;
+                        //drive.followTrajectoryAsync(shootPowershots); //going to launch line to shoot powershots
+                        drive.followTrajectoryAsync(shootHighGoal);
                     }
                     break;
             }

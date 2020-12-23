@@ -13,7 +13,8 @@ public class RedAutoB extends LinearOpMode {
 
     enum State {
         DROP_OFF_WOBBLE_GOAL,
-        SHOOT_POWERSHOTS,
+        //SHOOT_POWERSHOTS,
+        SHOOT_HIGH_GOAL,
         IDLE
     }
 
@@ -34,17 +35,23 @@ public class RedAutoB extends LinearOpMode {
                 .lineTo(new Vector2d(90,0))
                 .build();
 
-        double turnAngle = 135;
+        /*Trajectory shootPowershots = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+                .lineTo(new Vector2d(-33,42))
+                .build();*/
 
-        Trajectory shootPowershots = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .lineTo(new Vector2d(-48,42))
+        //trajectory for shooting into the high goal
+        Trajectory shootHighGoal = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+                .lineTo(new Vector2d(-33,30))
                 .build();
+
+        double turnAngle = Math.toRadians(-90); //turn angle for shooting highshoots
 
         drive.setPoseEstimate(startingPosition);
         waitForStart();
 
-        currentState = RedAutoB.State.DROP_OFF_WOBBLE_GOAL;
+        //currentState = RedAutoB.State.DROP_OFF_WOBBLE_GOAL;
         drive.followTrajectoryAsync(dropOffWobbleGoal);
+        currentState = RedAutoB.State.DROP_OFF_WOBBLE_GOAL;
 
         while (opModeIsActive()) {
             switch (currentState) {
@@ -55,12 +62,8 @@ public class RedAutoB extends LinearOpMode {
                     // We move on to the next state
                     // Make sure we use the async follow function
                     if (!drive.isBusy()) {
-                        currentState = RedAutoB.State.SHOOT_POWERSHOTS;
-                        drive.turnAsync(turnAngle);
-
-                        drive.followTrajectoryAsync(shootPowershots);
-
-                        turnAngle = -135;
+                        currentState = RedAutoB.State.SHOOT_HIGH_GOAL;
+                        drive.followTrajectoryAsync(shootHighGoal);
                         drive.turnAsync(turnAngle);
                     }
                     break;
