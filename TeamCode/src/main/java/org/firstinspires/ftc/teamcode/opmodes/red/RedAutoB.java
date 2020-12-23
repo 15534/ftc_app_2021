@@ -22,7 +22,7 @@ public class RedAutoB extends LinearOpMode {
 
         // We define the current state we're on
         // Default to IDLE
-        RedAutoA.State currentState = RedAutoA.State.IDLE;
+        RedAutoB.State currentState = RedAutoB.State.IDLE;
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -43,7 +43,7 @@ public class RedAutoB extends LinearOpMode {
         drive.setPoseEstimate(startingPosition);
         waitForStart();
 
-        currentState = RedAutoA.State.DROP_OFF_WOBBLE_GOAL;
+        currentState = RedAutoB.State.DROP_OFF_WOBBLE_GOAL;
         drive.followTrajectoryAsync(dropOffWobbleGoal);
 
         while (opModeIsActive()) {
@@ -55,7 +55,7 @@ public class RedAutoB extends LinearOpMode {
                     // We move on to the next state
                     // Make sure we use the async follow function
                     if (!drive.isBusy()) {
-                        currentState = RedAutoA.State.SHOOT_POWERSHOTS;
+                        currentState = RedAutoB.State.SHOOT_POWERSHOTS;
                         drive.turnAsync(turnAngle);
 
                         drive.followTrajectoryAsync(shootPowershots);
