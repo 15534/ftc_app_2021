@@ -13,7 +13,10 @@ public class RedAutoA extends LinearOpMode {
 
     enum State {
         DROP_OFF_WOBBLE_GOAL,
-        SHOOT_POWERSHOTS,
+        //SHOOT_POWERSHOTS,
+        SHOOT_HIGH_GOAL,
+        SECOND_WOBBLE_GOAL_1,
+        SECOND_WOBBLE_GOAL_2,
         IDLE
     }
 
@@ -39,10 +42,28 @@ public class RedAutoA extends LinearOpMode {
         double turnAngle = Math.toRadians(-90);
 
         //getting to position to shoot powershots
-        Trajectory shootPowershots = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+        /*Trajectory shootPowershots = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 //rerotating as robot moves to spot to shoot powershots,
                 //x = -12 to be safe so that bot doesn't go over launch line
-                .lineToLinearHeading(new Pose2d(-12,-12, Math.toRadians(90))) //we could also turn and then strafe (strafeLeft or strafeRight)
+                .lineTo(new Vector2d(11,42)) //we could also turn and then strafe (strafeLeft or strafeRight)
+                .build();*/
+
+        Trajectory shootHighGoal = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+                .lineTo(new Vector2d(11,18))
+                .build();
+
+        //trajectory to get rings from stack
+        /*Trajectory pickUpRings = drive.trajectoryBuilder(shootHighGoal.end())
+                .lineTo(new Vector2d(-18,0))
+                .build();*/
+
+        //trajectories to pick up 2nd wobble goal
+        Trajectory secondWobbleGoalOne = drive.trajectoryBuilder(shootHighGoal.end())
+                .back(51)
+                .build();
+
+        Trajectory secondWobbleGoalSecond = drive.trajectoryBuilder(secondWobbleGoalOne.end())
+                .strafeLeft(3) //.strafeTo(new Vector2d(0,3))
                 .build();
 
         drive.setPoseEstimate(startingPosition);
@@ -61,10 +82,29 @@ public class RedAutoA extends LinearOpMode {
                     // We move on to the next state
                     // Make sure we use the async follow function
                     if (!drive.isBusy()) {
-                        currentState = State.SHOOT_POWERSHOTS;
-                        drive.followTrajectoryAsync(shootPowershots);
+                        //currentState = State.SHOOT_POWERSHOTS;
+                        //drive.followTrajectoryAsync(shootPowershots);
+                        currentState = State.SHOOT_HIGH_GOAL;
+                        turnAngle = Math.toRadians(90);
+                        drive.turnAsync(turnAngle);
+                        drive.followTrajectoryAsync(shootHighGoal);
                     }
                     break;
+                case SHOOT_HIGH_GOAL:
+                    if (!drive.isBusy()) {
+                        turnAngle = Math.toRadians(180);
+                        drive.turnAsync(turnAngle);
+                        currentState = State.SECOND_WOBBLE_GOAL_1;
+                        drive.followTrajectoryAsync(secondWobbleGoalOne);
+                    }
+                    break;
+                case SECOND_WOBBLE_GOAL_1:
+                    if (!drive.isBusy()) {
+                        currentState = State.SECOND_WOBBLE_GOAL_2;
+                        drive.followTrajectoryAsync(secondWobbleGoalSecond);
+                    }
+                    break;
+
             }
 
             // Read pose
@@ -78,7 +118,5 @@ public class RedAutoA extends LinearOpMode {
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
         }
-
     }
 }
-

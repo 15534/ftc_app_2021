@@ -26,21 +26,3 @@ public class RedAuto extends LinearOpMode {
         }
     }
 }
-/* code that will get run after dropping off wobble goal in A
-        Pose2d positionAfterFirstMovement = trajectoryForwardA.end().plus(new Pose2d (0,0, turnAngle));
-        Trajectory trajectoryForwardATwo = drive.trajectoryBuilder(positionAfterFirstMovement)
-                .lineToConstantHeading(new Vector2d(0, 0))
-                .build();
-         */
-
-        /*
-        //trajectory to go to tile b to drop off wobble goal
-        Trajectory trajectoryForwardB = drive.trajectoryBuilder(startingPosition)
-                .lineTo(new Vector2d(24, -36)) //maybe need to change lineTo for this
-                .build();
-
-        //trajectory to go to tile b to drop off wobble goal
-        Trajectory trajectoryForwardC = drive.trajectoryBuilder(startingPosition)
-                .lineTo(new Vector2d(48, -60))
-                .build();
-        */
