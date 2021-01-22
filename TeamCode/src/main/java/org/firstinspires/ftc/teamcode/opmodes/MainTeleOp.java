@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Shooter;
 import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -182,7 +183,7 @@ public class MainTeleOp extends LinearOpMode {
             if (wobbleReader.wasJustReleased()) {
                 telemetry.addData("WOBBLE RELEASED", 1);
             }
-            wobble.setGripper(GRIPPER_RELEASE);
+//            wobble.setGripper(GRIPPER_RELEASE);
 
 //            telemetry.addData("wobble gripper", "%.2f", wobble.getGripper());
             telemetry.addData("shooter velocity", "%.2f", shooter.velocity());

@@ -19,10 +19,9 @@ public class Wobble {
     public Wobble (HardwareMap hardwareMap) {
         wobbleArm = hardwareMap.get(Servo.class, "wobble_arm");
         wobbleGripper = hardwareMap.get(Servo.class, "wobble_gripper");
+        wobbleGripper.scaleRange(0, 1);
         wobbleGripperPwm = (PwmControl) wobbleGripper;
-
-        PwmControl.PwmRange range = new PwmControl.PwmRange(800, 2200);
-        wobbleGripperPwm.setPwmRange(range);
+        wobbleGripperPwm.setPwmRange(new PwmControl.PwmRange(800, 2200));
     }
 
     public void setArm(double position) {
