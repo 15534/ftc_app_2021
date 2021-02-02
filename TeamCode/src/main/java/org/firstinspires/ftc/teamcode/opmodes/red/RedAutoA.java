@@ -17,6 +17,7 @@ public class RedAutoA extends LinearOpMode {
         SHOOT_HIGH_GOAL,
         SECOND_WOBBLE_GOAL_1,
         SECOND_WOBBLE_GOAL_2,
+        DROP_OFF_SECOND_WOBBLE_GOAL,
         IDLE
     }
 
@@ -66,6 +67,11 @@ public class RedAutoA extends LinearOpMode {
                 .strafeLeft(3) //.strafeTo(new Vector2d(0,3))
                 .build();
 
+        //trajectory to drop off second wobble goal
+        Trajectory dropOffSecondWobbleGoal = drive.trajectoryBuilder(secondWobbleGoalSecond.end())
+                .strafeTo(new Vector2d(40,-24))
+                .build();
+
         drive.setPoseEstimate(startingPosition);
         waitForStart();
 
@@ -104,7 +110,13 @@ public class RedAutoA extends LinearOpMode {
                         drive.followTrajectoryAsync(secondWobbleGoalSecond);
                     }
                     break;
-
+                case SECOND_WOBBLE_GOAL_2:
+                    if (!drive.isBusy()) {
+                        currentState = State.DROP_OFF_SECOND_WOBBLE_GOAL;
+                        turnAngle = Math.toRadians(-90);
+                        drive.turn(turnAngle);      
+                        drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
+                    }
             }
 
             // Read pose
