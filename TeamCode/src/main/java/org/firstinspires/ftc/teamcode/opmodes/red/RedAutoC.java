@@ -15,6 +15,9 @@ public class RedAutoC extends LinearOpMode {
         DROP_OFF_WOBBLE_GOAL,
         //SHOOT_POWERSHOTS,
         SHOOT_HIGH_GOAL,
+        PICK_UP_RINGS,
+        PICK_UP_SECOND_WOBBLE_ONE,
+        PICK_UP_SECOND_WOBBLE_TWO,
         IDLE
     }
 
@@ -42,6 +45,21 @@ public class RedAutoC extends LinearOpMode {
                 .lineTo(new Vector2d(-39,18))
                 .build();
 
+        //trajectory for turning around and picking up 3/4 rings
+        Trajectory pickUpRings = drive.trajectoryBuilder(shootHighGoal.end())
+                .lineTo(new Vector2d(-18,0))
+                .build();
+
+        //trajectory for moving to [-48,0] for first part of getting second wobble goal
+        Trajectory pickUpSecondWobbleOne = drive.trajectoryBuilder(pickUpRings.end())
+                .lineTo(new Vector2d(-33,36))
+                .build();
+
+        //trajectory for getting to second wobble goal for pickup - NOTE: may not need to strafe so much b/c we might hit and knock the wobble goal over
+        Trajectory pickUpSecondWobbleTwo = drive.trajectoryBuilder(pickUpSecondWobbleOne.end())
+                .strafeRight(15)
+                .build();
+
         double turnAngle = Math.toRadians(-90); //turn angle for dropping off wobble goal
 
         currentState = RedAutoC.State.DROP_OFF_WOBBLE_GOAL;
@@ -56,6 +74,26 @@ public class RedAutoC extends LinearOpMode {
                         currentState = RedAutoC.State.SHOOT_HIGH_GOAL;
                         //drive.followTrajectoryAsync(shootPowershots); //going to launch line to shoot powershots
                         drive.followTrajectoryAsync(shootHighGoal);
+                    }
+                    break;
+                case SHOOT_HIGH_GOAL:
+                    if (!drive.isBusy()) {
+                        turnAngle = Math.toRadians(180);
+                        drive.turnAsync(turnAngle);
+                        currentState = RedAutoC.State.PICK_UP_RINGS;
+                        drive.followTrajectoryAsync(pickUpRings);
+                    }
+                    break;
+                case PICK_UP_RINGS:
+                    if (!drive.isBusy()) {
+                        currentState = RedAutoC.State.PICK_UP_SECOND_WOBBLE_ONE;
+                        drive.followTrajectoryAsync(pickUpSecondWobbleOne);
+                    }
+                    break;
+                case PICK_UP_SECOND_WOBBLE_ONE:
+                    if (!drive.isBusy()){
+                        currentState = RedAutoC.State.PICK_UP_SECOND_WOBBLE_TWO;
+                        drive.followTrajectoryAsync(pickUpSecondWobbleTwo);
                     }
                     break;
             }
