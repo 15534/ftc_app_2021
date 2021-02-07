@@ -15,9 +15,10 @@ public class RedAutoC extends LinearOpMode {
         DROP_OFF_WOBBLE_GOAL,
         //SHOOT_POWERSHOTS,
         SHOOT_HIGH_GOAL,
+        SHOOT_HIGH_GOAL_2,
         PICK_UP_RINGS,
-        PICK_UP_SECOND_WOBBLE_ONE,
-        PICK_UP_SECOND_WOBBLE_TWO,
+        PICK_UP_SECOND_WOBBLE_1,
+        PICK_UP_SECOND_WOBBLE_2,
         IDLE
     }
 
@@ -33,7 +34,7 @@ public class RedAutoC extends LinearOpMode {
 
         //wobble goal trajectory
         Trajectory dropOffWobbleGoal = drive.trajectoryBuilder(startingPosition)
-                .lineTo(new Vector2d(96,0))
+                .lineTo(new Vector2d(42,-54))
                 .build();
 
         //shoot powershots trajectory
@@ -42,17 +43,17 @@ public class RedAutoC extends LinearOpMode {
                 .build();*/
 
         Trajectory shootHighGoal = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .lineTo(new Vector2d(-39,18))
+                .lineTo(new Vector2d(3,-36))
                 .build();
 
         //trajectory for turning around and picking up 3/4 rings
         Trajectory pickUpRings = drive.trajectoryBuilder(shootHighGoal.end())
-                .lineTo(new Vector2d(-18,0))
+                .lineTo(new Vector2d(-15,-36))
                 .build();
 
         //trajectory for moving to [-48,0] for first part of getting second wobble goal
         Trajectory pickUpSecondWobbleOne = drive.trajectoryBuilder(pickUpRings.end())
-                .lineTo(new Vector2d(-33,36))
+                .lineTo(new Vector2d(-48,0))
                 .build();
 
         //trajectory for getting to second wobble goal for pickup - NOTE: may not need to strafe so much b/c we might hit and knock the wobble goal over
@@ -62,37 +63,43 @@ public class RedAutoC extends LinearOpMode {
 
         double turnAngle = Math.toRadians(-90); //turn angle for dropping off wobble goal
 
-        currentState = RedAutoC.State.DROP_OFF_WOBBLE_GOAL;
+        currentState = State.DROP_OFF_WOBBLE_GOAL;
         drive.followTrajectoryAsync(dropOffWobbleGoal); //getting to (42,-54) to drop off wobble goal
-        drive.turnAsync(turnAngle); //turning robot to align dropper with tile c
 
         //loop
         while (opModeIsActive()) {
             switch (currentState) {
                 case DROP_OFF_WOBBLE_GOAL:
-                    if (!drive.isBusy()) {
-                        currentState = RedAutoC.State.SHOOT_HIGH_GOAL;
-                        //drive.followTrajectoryAsync(shootPowershots); //going to launch line to shoot powershots
-                        drive.followTrajectoryAsync(shootHighGoal);
+                    if(drive.isBusy()){
+                        currentState = State.SHOOT_HIGH_GOAL;
+                        turnAngle = Math.toRadians(-90);
+                        drive.turnAsync(turnAngle);
+                        //and then put wobble goal down...
                     }
                     break;
                 case SHOOT_HIGH_GOAL:
                     if (!drive.isBusy()) {
-                        turnAngle = Math.toRadians(180);
-                        drive.turnAsync(turnAngle);
-                        currentState = RedAutoC.State.PICK_UP_RINGS;
+                        currentState = State.SHOOT_HIGH_GOAL_2;
                         drive.followTrajectoryAsync(pickUpRings);
+                    }
+                    break;
+                case SHOOT_HIGH_GOAL_2:
+                    if(drive.isBusy()){
+                        currentState = State.PICK_UP_RINGS;
+                        turnAngle = Math.toRadians(90);
+                        drive.turnAsync(turnAngle);
+                        //and then shoot into high goal...
                     }
                     break;
                 case PICK_UP_RINGS:
                     if (!drive.isBusy()) {
-                        currentState = RedAutoC.State.PICK_UP_SECOND_WOBBLE_ONE;
+                        currentState = RedAutoC.State.PICK_UP_SECOND_WOBBLE_1;
                         drive.followTrajectoryAsync(pickUpSecondWobbleOne);
                     }
                     break;
-                case PICK_UP_SECOND_WOBBLE_ONE:
+                case PICK_UP_SECOND_WOBBLE_1:
                     if (!drive.isBusy()){
-                        currentState = RedAutoC.State.PICK_UP_SECOND_WOBBLE_TWO;
+                        currentState = RedAutoC.State.PICK_UP_SECOND_WOBBLE_2;
                         drive.followTrajectoryAsync(pickUpSecondWobbleTwo);
                     }
                     break;
