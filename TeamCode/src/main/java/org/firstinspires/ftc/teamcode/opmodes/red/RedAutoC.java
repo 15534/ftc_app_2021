@@ -29,7 +29,7 @@ public class RedAutoC extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         //starting position for robot - halfway across first tile
-        Pose2d startingPosition = new Pose2d(-54, -54, Math.toRadians(0)); //maximum starting position
+        Pose2d startingPosition = new Pose2d(-63, -54, Math.toRadians(0)); //maximum starting position
         drive.setPoseEstimate(startingPosition);
 
         //wobble goal trajectory

@@ -20,12 +20,8 @@ public class RedAutoA extends LinearOpMode {
         SHOOT_HIGH_GOAL,
         SECOND_WOBBLE_GOAL_1,
         SECOND_WOBBLE_GOAL_2,
-
-
         DROP_OFF_SECOND_WOBBLE_GOAL,
         IDLE,
-
-
     }
 
     @Override
