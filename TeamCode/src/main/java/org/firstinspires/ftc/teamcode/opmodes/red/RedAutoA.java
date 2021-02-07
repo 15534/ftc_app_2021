@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.red;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.path.heading.ConstantInterpolator;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -13,12 +14,18 @@ public class RedAutoA extends LinearOpMode {
 
     enum State {
         DROP_OFF_WOBBLE_GOAL,
+        DROP_OFF_WOBBLE_GOAL_2,
+        DROP_OFF_WOBBLE_GOAL_3,
         //SHOOT_POWERSHOTS,
         SHOOT_HIGH_GOAL,
         SECOND_WOBBLE_GOAL_1,
         SECOND_WOBBLE_GOAL_2,
+
+
         DROP_OFF_SECOND_WOBBLE_GOAL,
-        IDLE
+        IDLE,
+
+
     }
 
     @Override
@@ -37,7 +44,7 @@ public class RedAutoA extends LinearOpMode {
         //trajectory to go to tile a to drop off wobble goal
         //Pose2d positionForA = new Pose2d(-54, -54, Math.toRadians(-90)); //new position if we have to run trajectory a, robot rotates -90 so we can strafe
         Trajectory dropOffWobbleGoal = drive.trajectoryBuilder(startingPosition)
-                .lineTo(new Vector2d(48, 0))
+                .splineTo(new Vector2d(-8,-54),Math.toRadians(0))
                 .build();
 
         double turnAngle = Math.toRadians(-90);
@@ -50,7 +57,7 @@ public class RedAutoA extends LinearOpMode {
                 .build();*/
 
         Trajectory shootHighGoal = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .lineTo(new Vector2d(11,18))
+                .lineTo(new Vector2d(3,-36))
                 .build();
 
         //trajectory to get rings from stack
@@ -60,7 +67,7 @@ public class RedAutoA extends LinearOpMode {
 
         //trajectories to pick up 2nd wobble goal
         Trajectory secondWobbleGoalOne = drive.trajectoryBuilder(shootHighGoal.end())
-                .back(51)
+                .lineTo(new Vector2d(-48,-36))
                 .build();
 
         Trajectory secondWobbleGoalSecond = drive.trajectoryBuilder(secondWobbleGoalOne.end())
@@ -72,15 +79,17 @@ public class RedAutoA extends LinearOpMode {
                 .strafeTo(new Vector2d(40,-24))
                 .build();
 
-        drive.setPoseEstimate(startingPosition);
+
         waitForStart();
 
         currentState = State.DROP_OFF_WOBBLE_GOAL;
         drive.followTrajectoryAsync(dropOffWobbleGoal);
-        drive.turnAsync(turnAngle);
+
+
 
         while (opModeIsActive()) {
             switch (currentState) {
+
                 case DROP_OFF_WOBBLE_GOAL:
                     // Check if the drive class isn't busy
                     // `isBusy() == true` while it's following the trajectory
@@ -90,32 +99,47 @@ public class RedAutoA extends LinearOpMode {
                     if (!drive.isBusy()) {
                         //currentState = State.SHOOT_POWERSHOTS;
                         //drive.followTrajectoryAsync(shootPowershots);
-                        currentState = State.SHOOT_HIGH_GOAL;
-                        turnAngle = Math.toRadians(90);
+                        currentState = State.DROP_OFF_WOBBLE_GOAL_2;
                         drive.turnAsync(turnAngle);
-                        drive.followTrajectoryAsync(shootHighGoal);
+
+//                        currentState = State.SHOOT_HIGH_GOAL;
+//                        turnAngle = Math.toRadians(90);
+//                        drive.turnAsync(turnAngle);
+//                        drive.followTrajectoryAsync(shootHighGoal);
                     }
                     break;
+                case DROP_OFF_WOBBLE_GOAL_2:
+                    if (!drive.isBusy()){
+                        currentState = State.DROP_OFF_WOBBLE_GOAL_3;
+                        turnAngle = Math.toRadians(90);
+                        drive.turnAsync(turnAngle);
+                    }
+                    break;
+                case DROP_OFF_WOBBLE_GOAL_3:
+                    if (!drive.isBusy()){
+                        currentState = State.SHOOT_HIGH_GOAL;
+                        drive.followTrajectoryAsync(shootHighGoal);
+                    }
                 case SHOOT_HIGH_GOAL:
                     if (!drive.isBusy()) {
-                        turnAngle = Math.toRadians(180);
-                        drive.turnAsync(turnAngle);
                         currentState = State.SECOND_WOBBLE_GOAL_1;
                         drive.followTrajectoryAsync(secondWobbleGoalOne);
+//                        turnAngle = Math.toRadians(180);
+//                        drive.turnAsync(turnAngle);
                     }
                     break;
                 case SECOND_WOBBLE_GOAL_1:
                     if (!drive.isBusy()) {
-                        currentState = State.SECOND_WOBBLE_GOAL_2;
-                        drive.followTrajectoryAsync(secondWobbleGoalSecond);
+//                        currentState = State.SECOND_WOBBLE_GOAL_2;
+//                        drive.followTrajectoryAsync(secondWobbleGoalOne);
                     }
                     break;
                 case SECOND_WOBBLE_GOAL_2:
                     if (!drive.isBusy()) {
-                        currentState = State.DROP_OFF_SECOND_WOBBLE_GOAL;
-                        turnAngle = Math.toRadians(-90);
-                        drive.turn(turnAngle);      
-                        drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
+//                        currentState = State.DROP_OFF_SECOND_WOBBLE_GOAL;
+//                        turnAngle = Math.toRadians(-90);
+//                        drive.turn(turnAngle);
+//                        drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
                     }
             }
 
