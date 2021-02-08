@@ -126,6 +126,8 @@ public class RedAutoA extends LinearOpMode {
                     break;
                 case SECOND_WOBBLE_GOAL_1:
                     if (!drive.isBusy()) {
+                        currentState = State.SECOND_WOBBLE_GOAL_2;
+                        drive.followTrajectoryAsync(secondWobbleGoalSecond);
 //                        currentState = State.SECOND_WOBBLE_GOAL_2;
 //                        drive.followTrajectoryAsync(secondWobbleGoalOne);
                     }
@@ -137,6 +139,7 @@ public class RedAutoA extends LinearOpMode {
 //                        drive.turn(turnAngle);
 //                        drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
                     }
+                    break;
             }
 
             // Read pose
