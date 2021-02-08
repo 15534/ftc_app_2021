@@ -32,7 +32,7 @@ public class MainTeleOp extends LinearOpMode {
     public static double PUSHED_POSITION = 0.75;
     public static double RELEASED_POSITION = 0.96;
     public static double DPAD_SPEED = 0.35;
-    public static double BUMPER_ROTATION_SPEED = 0.4;
+    public static double BUMPER_ROTATION_SPEED = 0.35;
     public static double ROTATION_MULTIPLIER = 2.05;
     public static double STOPPER_POSITION = 0.395;
     public static double FLAP_POSITION = 0.1975;
@@ -116,7 +116,7 @@ public class MainTeleOp extends LinearOpMode {
             drive.setWeightedDrivePower(new Pose2d(translation, rotation));
 
             if (pushButtonReader.wasJustPressed()) {
-                flap.setPosition(0.185); // shooting to top goal
+                flap.setPosition(0.1845); // shooting to top goal
                 pusher.setPosition(PUSHED_POSITION);
                 lastPushTime = runtime.seconds();
             } else if (powershotButtonReader.wasJustPressed()) {
