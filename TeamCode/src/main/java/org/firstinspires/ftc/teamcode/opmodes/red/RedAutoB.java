@@ -13,12 +13,19 @@ public class RedAutoB extends LinearOpMode {
 
     enum State {
         DROP_OFF_WOBBLE_GOAL,
-        DROP_OFF_WOBBLE_GOAL_2,
         //SHOOT_POWERSHOTS,
         SHOOT_HIGH_GOAL,
         PICK_UP_RINGS,
         PICK_UP_SECOND_WOBBLE_ONE,
         PICK_UP_SECOND_WOBBLE_TWO,
+        PICK_UP_SECOND_WOBBLE_THREE,
+        PICK_UP_SECOND_WOBBLE_FOUR,
+        DROP_OFF_SEC_WOBBLE_GOAL,
+        SHOOT_RINGS_ONE,
+        SHOOT_RINGS_TWO,
+        RETURNING_ONE,
+        RETURNING_TWO,
+        RETURNING_THREE,
         IDLE
     }
 
@@ -63,6 +70,22 @@ public class RedAutoB extends LinearOpMode {
                 .strafeRight(15)
                 .build();
 
+        Trajectory pickUpSecondWobbleThree = drive.trajectoryBuilder(pickUpSecondWobbleTwo.end())
+                .lineTo(new Vector2d(84,-39))
+                .build();
+        //no trajectory for pick up wobble goal 4
+        //no trajectory for drop wobble goal... yet
+        Trajectory shootRingsTwo = drive.trajectoryBuilder(pickUpSecondWobbleTwo.end())
+                .lineTo(new Vector2d(-33,18))
+                .build();
+        //no trajectory for returning one
+        Trajectory returningTwo = drive.trajectoryBuilder(pickUpSecondWobbleTwo.end())
+                .lineTo(new Vector2d(9,0))
+                .build();
+        Trajectory returningThree = drive.trajectoryBuilder(pickUpSecondWobbleTwo.end())
+                .lineTo(new Vector2d(12,-36))
+                .build();
+
         double turnAngle = Math.toRadians(-90); //turn angle for shooting highshoots
         waitForStart();
 
@@ -103,6 +126,56 @@ public class RedAutoB extends LinearOpMode {
                     if (!drive.isBusy()){
                         currentState = RedAutoB.State.PICK_UP_SECOND_WOBBLE_TWO;
                         drive.followTrajectoryAsync(pickUpSecondWobbleTwo);
+                    }
+                    break;
+                case PICK_UP_SECOND_WOBBLE_TWO:
+                    if (!drive.isBusy()){
+                        currentState = RedAutoB.State.PICK_UP_SECOND_WOBBLE_THREE;
+                        drive.followTrajectoryAsync(pickUpSecondWobbleThree);
+                    }
+                    break;
+                case PICK_UP_SECOND_WOBBLE_THREE:
+                    if (!drive.isBusy()) {
+                        turnAngle = Math.toRadians(180);
+                        drive.turnAsync(turnAngle);
+                        currentState = State.DROP_OFF_SEC_WOBBLE_GOAL;
+                    }
+                    break;
+                case DROP_OFF_SEC_WOBBLE_GOAL:
+                    if (!drive.isBusy()) {
+                        //drop off the second wobble goal...
+                        currentState = RedAutoB.State.SHOOT_RINGS_ONE;
+                    }
+                    break;
+                case SHOOT_RINGS_ONE:
+                    if (!drive.isBusy()){
+                        currentState = RedAutoB.State.SHOOT_RINGS_TWO;
+                        drive.followTrajectoryAsync(shootRingsTwo);
+                    }
+                    break;
+                case SHOOT_RINGS_TWO:
+                    if (!drive.isBusy()){
+                        //shoot rings...
+                        currentState = RedAutoB.State.RETURNING_ONE;
+                    }
+                    break;
+                case RETURNING_ONE:
+                    if (!drive.isBusy()){
+                        //shoot rings...
+                        currentState = RedAutoB.State.RETURNING_TWO;
+                        drive.followTrajectoryAsync(returningTwo);
+                    }
+                    break;
+                case RETURNING_TWO:
+                    if (!drive.isBusy()){
+                        //shoot rings...
+                        currentState = RedAutoB.State.RETURNING_THREE;
+                        drive.followTrajectoryAsync(returningThree);
+                    }
+                    break;
+                case RETURNING_THREE:
+                    if (!drive.isBusy()){
+                        //done
                     }
                     break;
             }
