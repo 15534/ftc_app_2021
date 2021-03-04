@@ -48,7 +48,6 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -58,6 +57,8 @@ import android.os.ResultReceiver;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import android.os.SystemClock;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.widget.EditText;
@@ -129,7 +130,7 @@ public class AppUtil
     /** Where to place logs */
     public static final File LOG_FOLDER = ROOT_FOLDER;
     public static final File MATCH_LOG_FOLDER = new File(FIRST_FOLDER + "/matchlogs/");
-    public static final int MAX_MATCH_LOGS_TO_KEEP = 5;
+    public static final int MAX_MATCH_LOGS_TO_KEEP = 9;
 
     /** Dirctory in which .xml robot configurations should live */
     public static final File CONFIG_FILES_DIR = FIRST_FOLDER;
@@ -206,6 +207,8 @@ public class AppUtil
     private @Nullable String    usbFileSystemRoot; // never transitions from non-null to null
     private final WeakReferenceSet<UsbFileSystemRootListener> usbfsListeners = new WeakReferenceSet<>();
     private @Nullable WebSocketManager webSocketManager;
+    @SuppressWarnings("ConstantConditions")
+    private UsbManager usbManager;
 
     //----------------------------------------------------------------------------------------------
     // Construction
@@ -223,6 +226,7 @@ public class AppUtil
 
     protected void initialize(@NonNull Application application)
         {
+        usbManager = (UsbManager) application.getSystemService(Context.USB_SERVICE);
         lifeCycleMonitor = new LifeCycleMonitor();
         rootActivity     = null;
         currentActivity  = null;
@@ -238,6 +242,7 @@ public class AppUtil
 
         usbFileSystemRoot = null;
         getUsbFileSystemRoot();
+        AppAliveNotifier.getInstance().onAppStartup();
         }
 
     //----------------------------------------------------------------------------------------------
@@ -505,7 +510,6 @@ public class AppUtil
             {
             synchronized (usbfsRootLock)
                 {
-                UsbManager usbManager = (UsbManager) AppUtil.getDefContext().getSystemService(Context.USB_SERVICE);
                 for (String usbDeviceName : usbManager.getDeviceList().keySet())
                     {
                     String path = usbFileSystemRootFromDeviceName(usbDeviceName);
@@ -633,13 +637,13 @@ public class AppUtil
         // that's long enough for us to get out of the way in the first place.
         int msRestartDelay = 1500;
         AlarmManager alarmManager = (AlarmManager) rootActivity.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + msRestartDelay, pendingIntent);
+        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + msRestartDelay, pendingIntent);
         System.exit(exitCode);
         }
 
     public void exitApplication(int resultCode)
         {
-        RobotLog.vv(TAG, "exitApplication(%d)", resultCode);
+        RobotLog.vv(TAG, new RuntimeException(), "exitApplication(%d) was called. Printing stacktrace.", resultCode);
         System.exit(resultCode);
         }
 
@@ -965,7 +969,6 @@ public class AppUtil
             Assert.assertFalse(CallbackLooper.isLooperThread());
 
             // First check to see if we've already got permission
-            final UsbManager usbManager = (UsbManager) modalContext.getSystemService(Context.USB_SERVICE);
             if (usbManager.hasPermission(usbDevice))
                 {
                 RobotLog.dd(tag, "permission already available for %s", usbDevice.getDeviceName());

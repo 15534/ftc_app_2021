@@ -49,6 +49,13 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Event loops need to implement this interface. Contains methods for managing the life cycle of your robot.
  */
+// TODO(Noah): Consider making it so that hardware can only be accessed through an Op Mode. That way,
+//             it's no longer possible to have references to hardware that persist through a robot
+//             restart. This would require making it so that certain operations fail with a
+//             "robot starting up" or "robot stopped" error, which would in itself require robocol
+//             changes. We could have a system Op Mode that accepts a queue of specialized
+//             runnables, which provide helper code for accessing hardware that's not in the
+//             hardwareMap already.
 public interface EventLoop {
 
   /**
@@ -71,15 +78,14 @@ public interface EventLoop {
    *
    * Threading: called on the EventLoopRunnable.run() thread.
    *
-   * @throws RobotCoreException if a RobotCoreException is thrown, it will be handled
-   *         by the event loop manager. The manager may decide to either stop processing
-   *         this iteration of the loop, or it may decide to shut down the robot.
+   * If an Exception is thrown, it will be handled by the event loop manager. The manager may decide
+   * to either stop processing this iteration of the loop, or it may decide to shut down the robot.
    */
-  void loop() throws RobotCoreException, InterruptedException;
+  void loop();
 
   /**
    * Update's the user portion of the driver station screen with the contents of the telemetry object
-   * here provided if a sufficiently long duration has passed since the last update. 
+   * here provided if a sufficiently long duration has passed since the last update.
    * @param telemetry the telemetry object to send
    * @param sInterval the required minimum interval. NaN indicates that a system default interval should be used.
    */
@@ -164,6 +170,7 @@ public interface EventLoop {
    *
    * @param command command to process
    */
+  // TODO(Noah): Consider divorcing command processing from the event loop
   CallbackResult processCommand(Command command) throws InterruptedException, RobotCoreException;
 
   /**

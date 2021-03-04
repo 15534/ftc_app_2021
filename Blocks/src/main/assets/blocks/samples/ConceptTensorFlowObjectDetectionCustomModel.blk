@@ -64,7 +64,7 @@
 </value>
 <value name="PHONE_LOCATION_ON_ROBOT_Y_ANGLE">
 <shadow type="math_number" id="Y5NPS+^lsZ}s4DA+;)a0">
-<field name="NUM">0</field>
+<field name="NUM">-90</field>
 </shadow>
 </value>
 <value name="PHONE_LOCATION_ON_ROBOT_Z_ANGLE">
@@ -124,7 +124,7 @@
 </value>
 <value name="CAMERA_LOCATION_ON_ROBOT_X_ANGLE">
 <shadow type="math_number" id="+aNa@=cO/?6eIW,%o$+r">
-<field name="NUM">0</field>
+<field name="NUM">90</field>
 </shadow>
 </value>
 <value name="CAMERA_LOCATION_ON_ROBOT_Y_ANGLE">
@@ -134,7 +134,7 @@
 </value>
 <value name="CAMERA_LOCATION_ON_ROBOT_Z_ANGLE">
 <shadow type="math_number" id="EDq!cUQhy?[CRU4x~wX;">
-<field name="NUM">0</field>
+<field name="NUM">90</field>
 </shadow>
 </value>
 <value name="USE_COMPETITION_FIELD_TARGET_LOCATIONS">
@@ -216,7 +216,7 @@
 <block type="comment" id="4STF*QQxm)}IL3p2W3er">
 <field name="COMMENT">Enable following block to zoom in on target.</field>
 <next>
-<block type="tfodCurrentGame_setZoom" id=";ZJ]=-U*#}KtN^c{*n}K" disabled="true">
+<block type="tfodCustomModel_setZoom" id=";ZJ]=-U*#}KtN^c{*n}K">
 <value name="MAGNIFICATION">
 <shadow type="math_number" id="U|o7?|l{@X,7N?tnx+E.">
 <field name="NUM">2.5</field>
