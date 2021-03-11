@@ -58,32 +58,35 @@ public class RedAutoB extends LinearOpMode {
 
         //trajectory for turning around and picking up 1 ring
         Trajectory pickUpRings = drive.trajectoryBuilder(shootHighGoal.end())
-                .lineTo(new Vector2d(-48,-33))
+                .lineTo(new Vector2d(-15,-36))
                 .build();
 
         //trajectory for moving to [-48,0] for first part of getting second wobble goal
         Trajectory pickUpSecondWobbleOne = drive.trajectoryBuilder(pickUpRings.end())
-                .lineTo(new Vector2d(-48,0))
+                .lineTo(new Vector2d(-48,-15))
                 .build();
 
         //trajectory for getting to second wobble goal for pickup - NOTE: may not need to strafe so much b/c we might hit and knock the wobble goal over
-        Trajectory pickUpSecondWobbleTwo = drive.trajectoryBuilder(pickUpSecondWobbleOne.end())
-                .strafeRight(15)
-                .build();
+//        Trajectory pickUpSecondWobbleTwo = drive.trajectoryBuilder(pickUpSecondWobbleOne.end())
+//                .strafeRight(15)
+//                .build();
 
-        Trajectory pickUpSecondWobbleThree = drive.trajectoryBuilder(pickUpSecondWobbleTwo.end())
+        Trajectory pickUpSecondWobbleThree = drive.trajectoryBuilder(pickUpSecondWobbleOne.end())
                 .lineTo(new Vector2d(84,-39))
                 .build();
+
         //no trajectory for pick up wobble goal 4
         //no trajectory for drop wobble goal... yet
-        Trajectory shootRingsTwo = drive.trajectoryBuilder(pickUpSecondWobbleTwo.end())
+        Trajectory shootRingsTwo = drive.trajectoryBuilder(pickUpSecondWobbleThree.end())
                 .lineTo(new Vector2d(-33,18))
                 .build();
+
         //no trajectory for returning one
-        Trajectory returningTwo = drive.trajectoryBuilder(pickUpSecondWobbleTwo.end())
+        Trajectory returningTwo = drive.trajectoryBuilder(shootRingsTwo.end())
                 .lineTo(new Vector2d(9,0))
                 .build();
-        Trajectory returningThree = drive.trajectoryBuilder(pickUpSecondWobbleTwo.end())
+
+        Trajectory returningThree = drive.trajectoryBuilder(returningTwo.end())
                 .lineTo(new Vector2d(12,-36))
                 .build();
 
@@ -119,18 +122,17 @@ public class RedAutoB extends LinearOpMode {
 
                 case PICK_UP_RINGS:
                     if (!drive.isBusy()) {
-                        currentState = State.PICK_UP_SECOND_WOBBLE_ONE;
+                        currentState = State.PICK_UP_SECOND_WOBBLE_TWO;
                         drive.followTrajectoryAsync(pickUpRings);
                         //drive.followTrajectoryAsync(pickUpSecondWobbleOne);
                     }
                     break;
-
-                case PICK_UP_SECOND_WOBBLE_ONE:
-                    if (!drive.isBusy()){
-                        //currentState = RedAutoB.State.PICK_UP_SECOND_WOBBLE_TWO;
-                        //drive.followTrajectoryAsync(pickUpSecondWobbleTwo);
-                    }
-                    break;
+//                case PICK_UP_SECOND_WOBBLE_ONE:
+//                    if (!drive.isBusy()){
+//                        currentState = RedAutoB.State.PICK_UP_SECOND_WOBBLE_TWO;
+//                        drive.followTrajectoryAsync(pickUpSecondWobbleTwo);
+//                    }
+//                    break;
                 case PICK_UP_SECOND_WOBBLE_TWO:
                     if (!drive.isBusy()){
                         currentState = RedAutoB.State.PICK_UP_SECOND_WOBBLE_THREE;
@@ -147,7 +149,7 @@ public class RedAutoB extends LinearOpMode {
                 case DROP_OFF_SEC_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
                         //drop off the second wobble goal...
-                        currentState = RedAutoB.State.SHOOT_RINGS_ONE;
+                        currentState = State.SHOOT_RINGS_ONE;
                     }
                     break;
                 case SHOOT_RINGS_ONE:
