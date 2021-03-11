@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.path.heading.ConstantInterpolator;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -68,21 +69,25 @@ public class RedAutoA extends LinearOpMode {
                 .lineTo(new Vector2d(-48,-33)) //(-48, -36)??
                 .build();
 
-        Trajectory secondWobbleGoalSecond = drive.trajectoryBuilder(secondWobbleGoalOne.end())
-                .strafeLeft(3) //.strafeTo(new Vector2d(0,3))
-                .build();
+//        Trajectory secondWobbleGoalSecond = drive.trajectoryBuilder(secondWobbleGoalOne.end())
+//                .strafeLeft(3) //.strafeTo(new Vector2d(0,3))
+//                .build();
 
         //trajectory to drop off second wobble goal
-        Trajectory dropOffSecondWobbleGoal = drive.trajectoryBuilder(secondWobbleGoalSecond.end())
-                .strafeTo(new Vector2d(40,-24))
+        Trajectory dropOffSecondWobbleGoal = drive.trajectoryBuilder(secondWobbleGoalOne.end())
+                .strafeTo(new Vector2d(-8,-54))
                 .build();
 
         //moving back to launch line to end routine
         Trajectory moveBackToLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
-                .lineTo(new Vector2d(20,18))
+                .lineTo(new Vector2d(12,-36))
                 .build();
 
+        ElapsedTime runtime = new ElapsedTime();
         waitForStart();
+        runtime.reset();
+
+        double totalTime = 0.0;
 
         currentState = State.DROP_OFF_WOBBLE_GOAL;
         drive.followTrajectoryAsync(dropOffWobbleGoal);
@@ -101,11 +106,20 @@ public class RedAutoA extends LinearOpMode {
                         //drive.followTrajectoryAsync(shootPowershots);
                         currentState = State.DROP_OFF_WOBBLE_GOAL_2;
                         drive.turnAsync(turnAngle);
-
 //                        currentState = State.SHOOT_HIGH_GOAL;
 //                        turnAngle = Math.toRadians(90);
 //                        drive.turnAsync(turnAngle);
 //                        drive.followTrajectoryAsync(shootHighGoal);
+
+                        // purpose: drop off wobble goal using servo
+//                        currentState = State.DROP_OFF_WOBBLE_GOAL_3;
+//
+//                        //pause to stop motor strain
+//                        double currTime = 0.0;
+//                        totalTime = runtime.seconds();
+//                        while (currTime < totalTime) {
+//                            currTime = runtime.seconds();
+//                        }
                     }
                     break;
                 case DROP_OFF_WOBBLE_GOAL_2:
@@ -122,20 +136,20 @@ public class RedAutoA extends LinearOpMode {
                     }
                 case SHOOT_HIGH_GOAL:
                     if (!drive.isBusy()) {
-                        currentState = State.SECOND_WOBBLE_GOAL_1;
+                        currentState = State.SECOND_WOBBLE_GOAL_2;
                         drive.followTrajectoryAsync(secondWobbleGoalOne);
 //                        turnAngle = Math.toRadians(180);
 //                        drive.turnAsync(turnAngle);
                     }
                     break;
-                case SECOND_WOBBLE_GOAL_1:
-                    if (!drive.isBusy()) {
-                        currentState = State.SECOND_WOBBLE_GOAL_2;
-                        drive.followTrajectoryAsync(secondWobbleGoalSecond);
+//                case SECOND_WOBBLE_GOAL_1:
+//                    if (!drive.isBusy()) {
 //                        currentState = State.SECOND_WOBBLE_GOAL_2;
-//                        drive.followTrajectoryAsync(secondWobbleGoalOne);
-                    }
-                    break;
+//                        drive.followTrajectoryAsync(secondWobbleGoalSecond);
+////                        currentState = State.SECOND_WOBBLE_GOAL_2;
+////                        drive.followTrajectoryAsync(secondWobbleGoalOne);
+//                    }
+//                    break;
                 case SECOND_WOBBLE_GOAL_2:
                     if (!drive.isBusy()) {
                         currentState = State.SECOND_WOBBLE_GOAL_3;
