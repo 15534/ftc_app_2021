@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -53,7 +54,7 @@ public class RedAutoB extends LinearOpMode {
 
         //trajectory for shooting into the high goal
         Trajectory shootHighGoal = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .lineTo(new Vector2d(3,-36))
+                .lineToConstantHeading(new Vector2d(3, -36))
                 .build();
 
         //trajectory for turning around and picking up 1 ring
@@ -78,7 +79,7 @@ public class RedAutoB extends LinearOpMode {
         //no trajectory for pick up wobble goal 4
         //no trajectory for drop wobble goal... yet
         Trajectory shootRingsTwo = drive.trajectoryBuilder(pickUpSecondWobbleThree.end())
-                .lineTo(new Vector2d(-33,18))
+                .lineTo(new Vector2d(3,-36))
                 .build();
 
         //no trajectory for returning one
@@ -92,6 +93,9 @@ public class RedAutoB extends LinearOpMode {
 
         double turnAngle = Math.toRadians(-90); //turn angle for shooting highshoots
         waitForStart();
+
+        ElapsedTime runtime = new ElapsedTime();
+        double time = 0.0;
 
         //currentState = RedAutoB.State.DROP_OFF_WOBBLE_GOAL;
         drive.followTrajectoryAsync(dropOffWobbleGoal);
@@ -108,23 +112,29 @@ public class RedAutoB extends LinearOpMode {
                     if (!drive.isBusy()) {
                         currentState = State.SHOOT_HIGH_GOAL;
                         drive.followTrajectoryAsync(shootHighGoal);
+                        time = runtime.seconds(); //getting updated time
                     }
                     break;
                 case SHOOT_HIGH_GOAL:
                     if (!drive.isBusy()) {
-                        currentState = State.PICK_UP_RINGS;
-                        turnAngle = Math.toRadians(180);
-                        drive.turnAsync(turnAngle);
-                        //currentState = RedAutoB.State.PICK_UP_RINGS;
-                        //drive.followTrajectoryAsync(pickUpRings);
+                        if (runtime.seconds() - time > 3)  {
+                            currentState = State.PICK_UP_RINGS;
+                            turnAngle = Math.toRadians(180);
+                            drive.turnAsync(turnAngle); //after shooting into high goal
+                            time = runtime.seconds(); // getting updated time
+                            //currentState = RedAutoB.State.PICK_UP_RINGS;
+                            //drive.followTrajectoryAsync(pickUpRings);
+                        }
                     }
                     break;
-
                 case PICK_UP_RINGS:
                     if (!drive.isBusy()) {
-                        currentState = State.PICK_UP_SECOND_WOBBLE_TWO;
-                        drive.followTrajectoryAsync(pickUpRings);
-                        //drive.followTrajectoryAsync(pickUpSecondWobbleOne);
+                        if (runtime.seconds() - time > 3) {
+                            currentState = State.PICK_UP_SECOND_WOBBLE_TWO;
+                            drive.followTrajectoryAsync(pickUpRings);
+                            //drive.followTrajectoryAsync(pickUpSecondWobbleOne);
+                            time = runtime.seconds();
+                        }
                     }
                     break;
 //                case PICK_UP_SECOND_WOBBLE_ONE:
@@ -159,7 +169,7 @@ public class RedAutoB extends LinearOpMode {
                     }
                     break;
                 case SHOOT_RINGS_TWO:
-                    if (!drive.isBusy()){
+                    if (!drive.isBusy()) {
                         //shoot rings...
                         currentState = RedAutoB.State.RETURNING_ONE;
                     }
