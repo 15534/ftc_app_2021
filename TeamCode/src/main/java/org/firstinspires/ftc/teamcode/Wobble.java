@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 public class Wobble {
     public Servo wobbleArm, wobbleGripper;
-    public static double GRIPPER_RELEASE = 0.9;
+    public static double GRIPPER_RELEASE = 0.825;
     public static double GRIPPER_GRIPPED = 1;
     public static double ARM_UP = 0.15;
     public static double ARM_DOWN = 0.94;

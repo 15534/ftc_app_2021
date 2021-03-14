@@ -12,6 +12,7 @@ public class Shooter {
 
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(500, 0, 0, 0);
     public static double SHOOTER_SPEED = 1075;
+    public static double ACTIVATION_SPEED = 800;
 
     public Shooter (HardwareMap hardwareMap) {
         leftShoot = hardwareMap.get(DcMotorEx.class, "left");
@@ -38,5 +39,8 @@ public class Shooter {
 
     public double velocity() {
         return leftShoot.getVelocity();
+    }
+    public boolean ready() {
+        return leftShoot.getVelocity() > ACTIVATION_SPEED;
     }
 }
