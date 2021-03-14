@@ -72,7 +72,7 @@ public class RedAutoB extends LinearOpMode {
 //                .build();
 
         Trajectory pickUpSecondWobbleThree = drive.trajectoryBuilder(pickUpSecondWobbleOne.end())
-                .lineTo(new Vector2d(84,-39))
+                .lineTo(new Vector2d(36,-54))
                 .build();
 
         //no trajectory for pick up wobble goal 4
@@ -83,7 +83,7 @@ public class RedAutoB extends LinearOpMode {
 
         //no trajectory for returning one
         Trajectory returningTwo = drive.trajectoryBuilder(shootRingsTwo.end())
-                .lineTo(new Vector2d(9,0))
+                .lineTo(new Vector2d(3,-36))
                 .build();
 
         Trajectory returningThree = drive.trajectoryBuilder(returningTwo.end())

@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Autonomous(name="RedAutoC")
@@ -34,7 +33,7 @@ public class RedAutoC extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         //starting position for robot - halfway across first tile
-        Pose2d startingPosition = new Pose2d(-63, -54, Math.toRadians(0)); //maximum starting position
+        Pose2d startingPosition = new Pose2d(-54, -54, Math.toRadians(0)); //maximum starting position
         drive.setPoseEstimate(startingPosition);
 
         //wobble goal trajectory
@@ -174,7 +173,6 @@ public class RedAutoC extends LinearOpMode {
 
             // Read pose
             Pose2d poseEstimate = drive.getPoseEstimate();
-
             drive.update();
 
             // Print pose to telemetry
