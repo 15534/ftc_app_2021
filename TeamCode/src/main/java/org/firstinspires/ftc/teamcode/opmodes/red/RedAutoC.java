@@ -33,7 +33,7 @@ public class RedAutoC extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         //starting position for robot - halfway across first tile
-        Pose2d startingPosition = new Pose2d(-54, -54, Math.toRadians(0)); //maximum starting position
+        Pose2d startingPosition = new Pose2d(-63, -54, Math.toRadians(0)); //maximum starting position
         drive.setPoseEstimate(startingPosition);
 
         //wobble goal trajectory
@@ -73,7 +73,7 @@ public class RedAutoC extends LinearOpMode {
 
         //getting into a position to drop off second wobble goal
         Trajectory dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondWobbleTwo.end())
-                .strafeTo(new Vector2d(-57,-15))
+                .strafeTo(new Vector2d(57,-15))
                 .build();
 
         //strafting right to be in perfect position for dropoff
@@ -88,7 +88,7 @@ public class RedAutoC extends LinearOpMode {
 
         //getting to over launch line
         Trajectory movingToLaunchLine = drive.trajectoryBuilder(shootHighRingsTwo.end())
-                .lineTo(new Vector2d(9,0))
+                .lineTo(new Vector2d(12,-36))
                 .build();
 
         waitForStart();
