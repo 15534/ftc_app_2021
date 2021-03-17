@@ -121,18 +121,19 @@ public class RedAutoA extends LinearOpMode {
                     // We move on to the next state
                     // Make sure we use the async follow function
                     if (runtime.seconds() - endTime > 0.2) {
-                        wobble.armDown();
+                        //wobble.armDown();
                     }
                     if (!drive.isBusy()) {
                         endTime = runtime.seconds();
                         currentState = State.ACTION_WOBBLE_GOAL_1;
                     }
                     break;
-
+z
                 case ACTION_WOBBLE_GOAL_1:
                     if (runtime.seconds() - endTime < 0.3) {
                         // release the wobble gripper in first 0.3s
-                        wobble.release();
+                        //endTime = time of the end of last traj.
+                        //wobble.release();
                     } else {
                         // then move on to the next trajectory
                         endTime = runtime.seconds();
