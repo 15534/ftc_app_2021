@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -13,6 +14,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -42,9 +44,17 @@ public class MainTeleOp extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
+    enum Mode {
+        DRIVER_CONTROL,
+        AUTOMATIC_CONTROL
+    }
+
+    Mode currentMode = Mode.DRIVER_CONTROL;
+
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         DcMotorEx indexer = hardwareMap.get(DcMotorEx.class, "indexer");
         DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intake");
         CRServo transfer = hardwareMap.get(CRServo.class, "transfer");
@@ -58,22 +68,20 @@ public class MainTeleOp extends LinearOpMode {
         // 0.75 - pushed position
 
         GamepadEx gp1 = new GamepadEx(gamepad1);
-        TriggerReader wobbleReader = new TriggerReader(gp1, GamepadKeys.Trigger.RIGHT_TRIGGER);
-        TriggerReader wobbleGripReader = new TriggerReader(gp1, GamepadKeys.Trigger.LEFT_TRIGGER);
-        ButtonReader powershotButtonReader = new ButtonReader(gp1, GamepadKeys.Button.Y);
-        ButtonReader pushButtonReader = new ButtonReader(gp1, GamepadKeys.Button.X);
-        ButtonReader toggleIntake = new ButtonReader(gp1, GamepadKeys.Button.A);
-        ButtonReader toggleShooter = new ButtonReader(gp1, GamepadKeys.Button.B);
+        GamepadEx gp2 = new GamepadEx(gamepad2);
+
+        ButtonReader toggleShooter = new ButtonReader(gp2, GamepadKeys.Button.A);
+        ButtonReader powershotButtonReader = new ButtonReader(gp2, GamepadKeys.Button.Y);
+        ButtonReader pushButtonReader = new ButtonReader(gp2, GamepadKeys.Button.X);
+        ButtonReader reverseAll = new ButtonReader(gp2, GamepadKeys.Button.B);
+        ButtonReader goToShootPosition = new ButtonReader(gp1, GamepadKeys.Button.A);
 
         double lastPushTime = -1;
         boolean intakeActive = false;
         boolean shooterActive = false;
-        boolean reverseIntake = false;
         double indexerPower = 0;
         double intakePower = 0;
         double transferPower = 0;
-        boolean wobbleWasDown = false;
-        boolean wobbleGripWasDown = false;
 
 //        ModernRoboticsI2cRangeSensor rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_1");
         Wobble wobble = new Wobble(hardwareMap);
@@ -86,11 +94,19 @@ public class MainTeleOp extends LinearOpMode {
 
         waitForStart();
         while (!isStopRequested()) {
+            drive.update();
+            Pose2d poseEstimate = drive.getPoseEstimate();
+
+            telemetry.addData("mode", currentMode);
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+
             pushButtonReader.readValue();
             powershotButtonReader.readValue();
-            toggleIntake.readValue();
-            wobbleReader.readValue();
+            reverseAll.readValue();
             toggleShooter.readValue();
+            goToShootPosition.readValue();
 
             Vector2d translation = new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
             double rotation = -ROTATION_MULTIPLIER*gamepad1.right_stick_x;
@@ -113,7 +129,33 @@ public class MainTeleOp extends LinearOpMode {
                 rotation = -BUMPER_ROTATION_SPEED;
             }
 
-            drive.setWeightedDrivePower(new Pose2d(translation, rotation));
+            switch(currentMode) {
+                case DRIVER_CONTROL:
+                    drive.setWeightedDrivePower(new Pose2d(translation, rotation));
+
+                    if (gamepad1.a) {
+                        Trajectory goToShoot = drive.trajectoryBuilder(drive.getPoseEstimate())
+                                .splineToLinearHeading(new Pose2d(0,0,0), 0)
+                                .build();
+                        drive.followTrajectoryAsync(goToShoot);
+                        currentMode = Mode.AUTOMATIC_CONTROL;
+                    }
+                    break;
+                case AUTOMATIC_CONTROL:
+                    if (gamepad1.y) {
+                        drive.cancelFollowing();
+                        currentMode = Mode.DRIVER_CONTROL;
+                    }
+
+                    if (!drive.isBusy()) {
+                        currentMode = Mode.DRIVER_CONTROL;
+                    }
+                    break;
+            }
+
+            if (gamepad1.x) {
+                drive.setPoseEstimate(new Pose2d(0, 0, 0));
+            }
 
             if (pushButtonReader.wasJustPressed()) {
                 flap.setPosition(0.1845); // shooting to top goal
@@ -130,20 +172,16 @@ public class MainTeleOp extends LinearOpMode {
                 lastPushTime = 0;
             }
 
-            if (toggleIntake.wasJustPressed()) {
-                intakeActive = !intakeActive;
-            }
-
             if (toggleShooter.wasJustPressed()) {
                 shooterActive = !shooterActive;
                 if (shooterActive) {
-                    transferPower = 1;
                     shooter.activate();
                 } else {
-                    transferPower = 0;
                     shooter.deactivate();
                 }
             }
+
+            intakeActive = gamepad2.right_trigger > 0.05;
 
             if (intakeActive) {
                 intakePower = 1;
@@ -151,45 +189,49 @@ public class MainTeleOp extends LinearOpMode {
                 intakePower = 0;
             }
 
-            if (intakeActive || shooterActive) {
+            if (intakeActive || (shooterActive && shooter.ready())) {
                 indexerPower = INDEXER_POWER;
             } else {
                 indexerPower = 0;
             }
 
-            if (toggleIntake.isDown() && toggleShooter.isDown()) {
+            if (shooterActive && shooter.ready()) {
+                transferPower = 1;
+            } else {
+                transferPower = 0;
+            }
+
+            if (reverseAll.isDown()) {
+                shooter.deactivate();
                 intake.setPower(-0.25);
                 indexer.setPower(-0.65);
                 transfer.setPower(-0.5);
-                shooter.deactivate();
             } else {
-                    indexer.setPower(indexerPower);
-                    intake.setPower(intakePower);
-                    transfer.setPower(transferPower);
+                indexer.setPower(indexerPower);
+                intake.setPower(intakePower);
+                transfer.setPower(transferPower);
             }
 
-            telemetry.addData("Right trigger down", wobbleReader.isDown());
-
-            if (wobbleReader.isDown() && !wobbleWasDown) {
-                telemetry.addData("Right trigger pressed", 1);
-                if (wobble.armUp) {
-                    wobble.armDown();
-                } else {
-                    wobble.armUp();
-                }
+            if (gamepad2.dpad_down) {
+                wobble.armDown();
+            }
+            if (gamepad2.dpad_up) {
+                wobble.armUp();
+            }
+            if (gamepad2.dpad_left) {
+                wobble.release();
+            }
+            if (gamepad2.dpad_right) {
+                wobble.grip();
             }
 
-            if ((gamepad1.left_trigger > 0.5) && !wobbleGripWasDown) {
-                telemetry.addData("Left trigger pressed", 1);
-                if (wobble.gripped) {
-                    wobble.release();
-                } else {
-                    wobble.grip();
-                }
+            if (gamepad2.left_bumper) {
+                drive.turn(Math.toRadians(5));
+            } else if (gamepad2.right_bumper) {
+                drive.turn(Math.toRadians(-5));
             }
 
-            wobbleWasDown = wobbleReader.isDown();
-            wobbleGripWasDown = gamepad1.left_trigger > 0.5;
+//            shooterWasActive = gamepad1.left_trigger > 0.05;
 
             telemetry.addData("shooter velocity", "%.2f", shooter.velocity());
 //            telemetry.addData("cm optical", "%.2f cm", rangeSensor.cmOptical());

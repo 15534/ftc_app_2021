@@ -8,8 +8,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 public class Wobble {
     public Servo wobbleArm, wobbleGripper;
-    public static double GRIPPER_RELEASE = 0.9;
-    public static double GRIPPER_GRIPPED = 1;
+    public PwmControl wobbleGripperPwm;
+    public static double GRIPPER_RELEASE = 0.4;
+    public static double GRIPPER_GRIPPED = 0;
     public static double ARM_UP = 0.15;
     public static double ARM_DOWN = 0.94;
 
@@ -19,6 +20,9 @@ public class Wobble {
     public Wobble (HardwareMap hardwareMap) {
         wobbleArm = hardwareMap.get(Servo.class, "wobble_arm");
         wobbleGripper = hardwareMap.get(Servo.class, "wobble_gripper");
+        wobbleGripper.scaleRange(0, 1);
+        wobbleGripperPwm = (PwmControl) wobbleGripper;
+        wobbleGripperPwm.setPwmRange(new PwmControl.PwmRange(800, 2200));
     }
 
     public void setArm(double position) {

@@ -8,12 +8,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Shooter;
+import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Autonomous(name="RedAutoA")
 public class RedAutoA extends LinearOpMode {
 
     enum State {
+        // trajectories
         DROP_OFF_WOBBLE_GOAL,
         DROP_OFF_WOBBLE_GOAL_2,
         DROP_OFF_WOBBLE_GOAL_3,
@@ -24,6 +27,9 @@ public class RedAutoA extends LinearOpMode {
         SECOND_WOBBLE_GOAL_3,
         SECOND_WOBBLE_GOAL_4,
         DROP_OFF_SECOND_WOBBLE_GOAL,
+
+        // motor movements, stationary
+        ACTION_WOBBLE_GOAL_1,
         IDLE,
     }
 
@@ -35,6 +41,10 @@ public class RedAutoA extends LinearOpMode {
         State currentState = State.IDLE;
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Wobble wobble = new Wobble(hardwareMap);
+        Shooter shooter = new Shooter(hardwareMap);
+
+        // TODO use https://www.learnroadrunner.com/tools.html#road-runner-gui to design paths
 
         //starting position for robot - halfway across first tile
         Pose2d startingPosition = new Pose2d(-63, -54, Math.toRadians(0)); //maximum starting position
@@ -43,7 +53,12 @@ public class RedAutoA extends LinearOpMode {
         //trajectory to go to tile a to drop off wobble goal
         //Pose2d positionForA = new Pose2d(-54, -54, Math.toRadians(-90)); //new position if we have to run trajectory a, robot rotates -90 so we can strafe
         Trajectory dropOffWobbleGoal = drive.trajectoryBuilder(startingPosition)
-                .splineTo(new Vector2d(-8,-54),Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-50, -50, Math.toRadians(-30)), 0)
+                .splineToSplineHeading(new Pose2d(-8, -50, Math.toRadians(-90)), 0)
+                .build();
+
+        Trajectory dropOffWobbleGoal2 = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+                .splineToConstantHeading(new Vector2d(-4, -40), 0)
                 .build();
 
         double turnAngle = Math.toRadians(-90);
@@ -84,10 +99,14 @@ public class RedAutoA extends LinearOpMode {
                 .build();
 
         ElapsedTime runtime = new ElapsedTime();
+
+        wobble.grip();
+        wobble.armUp();
+
         waitForStart();
         runtime.reset();
 
-        double totalTime = 0.0;
+        double endTime = runtime.seconds();
 
         currentState = State.DROP_OFF_WOBBLE_GOAL;
         drive.followTrajectoryAsync(dropOffWobbleGoal);
@@ -101,32 +120,36 @@ public class RedAutoA extends LinearOpMode {
                     // Once `isBusy() == false`, the trajectory follower signals that it is finished
                     // We move on to the next state
                     // Make sure we use the async follow function
+                    if (runtime.seconds() - endTime > 0.2) {
+                        //wobble.armDown();
+                    }
                     if (!drive.isBusy()) {
-                        //currentState = State.SHOOT_POWERSHOTS;
-                        //drive.followTrajectoryAsync(shootPowershots);
-                        currentState = State.DROP_OFF_WOBBLE_GOAL_2;
-                        drive.turnAsync(turnAngle);
-//                        currentState = State.SHOOT_HIGH_GOAL;
-//                        turnAngle = Math.toRadians(90);
-//                        drive.turnAsync(turnAngle);
-//                        drive.followTrajectoryAsync(shootHighGoal);
-
-                        // purpose: drop off wobble goal using servo
-//                        currentState = State.DROP_OFF_WOBBLE_GOAL_3;
-//
-//                        //pause to stop motor strain
-//                        double currTime = 0.0;
-//                        totalTime = runtime.seconds();
-//                        while (currTime < totalTime) {
-//                            currTime = runtime.seconds();
-//                        }
+                        endTime = runtime.seconds();
+                        currentState = State.ACTION_WOBBLE_GOAL_1;
                     }
                     break;
+z
+                case ACTION_WOBBLE_GOAL_1:
+                    if (runtime.seconds() - endTime < 0.3) {
+                        // release the wobble gripper in first 0.3s
+                        //endTime = time of the end of last traj.
+                        //wobble.release();
+                    } else {
+                        // then move on to the next trajectory
+                        endTime = runtime.seconds();
+                        currentState = State.DROP_OFF_WOBBLE_GOAL_2;
+                        drive.followTrajectoryAsync(dropOffWobbleGoal2);
+                    }
+
+                    break;
+
                 case DROP_OFF_WOBBLE_GOAL_2:
+                    // back up after dropping off wobble goal
                     if (!drive.isBusy()) {
-                        currentState = State.DROP_OFF_WOBBLE_GOAL_3;
-                        turnAngle = Math.toRadians(90);
-                        drive.turnAsync(turnAngle);
+//                        currentState = State.DROP_OFF_WOBBLE_GOAL_3;
+                        currentState = State.IDLE; // stop here
+//                        turnAngle = Math.toRadians(90);
+//                        drive.turnAsync(turnAngle);
                     }
                     break;
                 case DROP_OFF_WOBBLE_GOAL_3:
