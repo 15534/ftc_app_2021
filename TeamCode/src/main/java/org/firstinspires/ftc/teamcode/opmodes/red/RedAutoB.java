@@ -45,7 +45,7 @@ public class RedAutoB extends LinearOpMode {
         drive.setPoseEstimate(startingPosition);
 
         Trajectory dropOffWobbleGoal = drive.trajectoryBuilder(startingPosition)
-                .lineTo(new Vector2d(36,-54))
+                .splineToConstantHeading(new Vector2d(36,-54), Math.toRadians(0))
                 .build();
 
         /*Trajectory shootPowershots = drive.trajectoryBuilder(dropOffWobbleGoal.end())
@@ -54,7 +54,7 @@ public class RedAutoB extends LinearOpMode {
 
         //trajectory for shooting into the high goal
         Trajectory shootHighGoal = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .lineToConstantHeading(new Vector2d(3, -36))
+                .splineTo(new Vector2d(3, -36), Math.toRadians(0))
                 .build();
 
         //trajectory for turning around and picking up 1 ring

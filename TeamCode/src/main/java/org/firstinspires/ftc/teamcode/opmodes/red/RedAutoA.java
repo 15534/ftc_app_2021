@@ -44,8 +44,6 @@ public class RedAutoA extends LinearOpMode {
         Wobble wobble = new Wobble(hardwareMap);
         Shooter shooter = new Shooter(hardwareMap);
 
-        // TODO use https://www.learnroadrunner.com/tools.html#road-runner-gui to design paths
-
         //starting position for robot - halfway across first tile
         Pose2d startingPosition = new Pose2d(-63, -54, Math.toRadians(0)); //maximum starting position
         drive.setPoseEstimate(startingPosition);
@@ -128,7 +126,7 @@ public class RedAutoA extends LinearOpMode {
                         currentState = State.ACTION_WOBBLE_GOAL_1;
                     }
                     break;
-z
+
                 case ACTION_WOBBLE_GOAL_1:
                     if (runtime.seconds() - endTime < 0.3) {
                         // release the wobble gripper in first 0.3s
