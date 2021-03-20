@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Autonomous(name = "RedAutoCNew")
@@ -21,6 +22,9 @@ public class RedAutoCNew extends LinearOpMode {
         GO_TO_LAUNCH_POSITION,
         ACTION_SHOOT_THREE_MORE_RINGS,
         PICK_UP_RING_AND_WOBBLE_GOAL,
+        ACTION_PICK_UP_WOBBLE_GOAL,
+        GO_BACK_LAUNCH_LINE,
+        ACTION_SHOOT_1_RING,
         IDLE
     }
 
@@ -29,6 +33,7 @@ public class RedAutoCNew extends LinearOpMode {
         //constants
         State currentState = State.IDLE;
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Wobble wobble = new Wobble(hardwareMap);
 
         //starting position for robot - halfway across first tile
         Pose2d startingPosition = new Pose2d(-63, -57, Math.toRadians(0)); //maximum starting position
@@ -62,6 +67,13 @@ public class RedAutoCNew extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(-31, -28, Math.toRadians(90)), Math.toRadians(0))
                 .build();
 
+        Trajectory goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpRingAndWobbleGoal.end())
+                .splineToSplineHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
+                .build();
+
+
+        wobble.armUp();
+
         waitForStart();
 
         ElapsedTime runtime = new ElapsedTime();
@@ -69,6 +81,7 @@ public class RedAutoCNew extends LinearOpMode {
 
         drive.followTrajectoryAsync(launchPosition);
         currentState = State.ACTION_SHOOT_THREE_RINGS;
+
 
         //loop
         while (opModeIsActive()) {
@@ -99,18 +112,17 @@ public class RedAutoCNew extends LinearOpMode {
                         time = runtime.seconds();
                     }
                     break;
-//                case ACTION_PICK_UP_3_RINGS:
-//                    if (!drive.isBusy()) {
-//                        currentState = State.ACTION_PICK_UP_3_RINGS;
-//                        drive.followTrajectoryAsync(goBackToLaunchPosition);
-//                        time = runtime.seconds();
-//                    }
-//                    break;
-                case GO_TO_LAUNCH_POSITION:
+                case ACTION_PICK_UP_3_RINGS:
                     if (runtime.seconds() - time > 3) {
+                        currentState = State.GO_TO_LAUNCH_POSITION;
+                    }
+                    break;
+                case GO_TO_LAUNCH_POSITION:
+                    if (!drive.isBusy()) {
                         drive.followTrajectoryAsync(goBackToLaunchPosition);
                         currentState = State.ACTION_SHOOT_THREE_MORE_RINGS;
                         time = runtime.seconds();
+                        wobble.armDown();
                     }
                     break;
                 case ACTION_SHOOT_THREE_MORE_RINGS:
@@ -122,9 +134,28 @@ public class RedAutoCNew extends LinearOpMode {
                 case PICK_UP_RING_AND_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
                         drive.followTrajectoryAsync(pickUpRingAndWobbleGoal);
+                        time = runtime.seconds();
+                        currentState = State.ACTION_PICK_UP_WOBBLE_GOAL;
+                    }
+                    break;
+                case ACTION_PICK_UP_WOBBLE_GOAL:
+
+                    if (runtime.seconds() - time < 0.5){
+                        wobble.grip();
                         currentState = State.IDLE;
                     }
                     break;
+                case GO_BACK_LAUNCH_LINE:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(goBackToLaunchPosition2);
+                        time = runtime.seconds();
+                        currentState = State.IDLE;
+                    }
+                    break;
+                case ACTION_SHOOT_1_RING:
+                    if (runtime.seconds() - time > 3) {
+                        currentState = State.IDLE;
+                    }
             }
 
             // Read pose
