@@ -25,6 +25,9 @@ public class RedAutoCNew extends LinearOpMode {
         ACTION_PICK_UP_WOBBLE_GOAL,
         GO_BACK_LAUNCH_LINE,
         ACTION_SHOOT_1_RING,
+        DROP_OFF_SECOND_WOBBLE_GOAL,
+        ACTION_DROP_OFF_SECOND_WOBBLE_GOAL,
+        PARK_OVER_LAUNCH_LINE,
         IDLE
     }
 
@@ -69,6 +72,14 @@ public class RedAutoCNew extends LinearOpMode {
 
         Trajectory goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpRingAndWobbleGoal.end())
                 .splineToSplineHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
+                .build();
+
+        Trajectory dropOffSecondWobbleGoal = drive.trajectoryBuilder(goBackToLaunchPosition2.end())
+                .splineToSplineHeading(new Pose2d(48, -48, Math.toRadians(-90)), Math.toRadians(0))
+                .build();
+
+        Trajectory goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
+                .splineToConstantHeading(new Vector2d(12,-36), Math.toRadians(0))
                 .build();
 
 
@@ -139,23 +150,41 @@ public class RedAutoCNew extends LinearOpMode {
                     }
                     break;
                 case ACTION_PICK_UP_WOBBLE_GOAL:
-
                     if (runtime.seconds() - time < 0.5){
                         wobble.grip();
-                        currentState = State.IDLE;
+                        currentState = State.IDLE; //change back later
                     }
                     break;
                 case GO_BACK_LAUNCH_LINE:
                     if (!drive.isBusy()) {
                         drive.followTrajectoryAsync(goBackToLaunchPosition2);
                         time = runtime.seconds();
-                        currentState = State.IDLE;
+                        currentState = State.IDLE; //change back later
                     }
                     break;
                 case ACTION_SHOOT_1_RING:
                     if (runtime.seconds() - time > 3) {
-                        currentState = State.IDLE;
+                        currentState = State.DROP_OFF_SECOND_WOBBLE_GOAL;
                     }
+                case DROP_OFF_SECOND_WOBBLE_GOAL:
+                    if (!drive.isBusy()){
+                        currentState = State.ACTION_DROP_OFF_SECOND_WOBBLE_GOAL;
+                        drive.followTrajectoryAsync(goOverLaunchLine);
+                        time = runtime.seconds();
+                    }
+                    break;
+                case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
+                    if (runtime.seconds() - time > 3) {
+                        currentState = State.PARK_OVER_LAUNCH_LINE;
+                    }
+                    break;
+                case PARK_OVER_LAUNCH_LINE:
+                    if (!drive.isBusy()){
+                        currentState = State.IDLE;
+                        drive.followTrajectoryAsync(goOverLaunchLine);
+                        time = runtime.seconds();
+                    }
+                    break;
             }
 
             // Read pose
