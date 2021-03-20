@@ -13,15 +13,14 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 public class RedAutoCNew extends LinearOpMode {
 
     enum State {
-        SHOOT_THREE_RINGS,
         ACTION_SHOOT_THREE_RINGS,
-        DROP_OFF_WOBBLE_GOAL,
+        GO_TO_WOBBLE_GOAL,
         ACTION_DROP_OFF_WOBBLE_GOAL,
-        PICK_UP_3_RINGS,
+        GO_TO_3_RINGS,
         ACTION_PICK_UP_3_RINGS,
-        SHOOT_THREE_MORE_RINGS,
+        GO_TO_LAUNCH_POSITION,
         ACTION_SHOOT_THREE_MORE_RINGS,
-        PICK_UP_ONE_RING_AND_WOBBLE_GOAL,
+        PICK_UP_RING_AND_WOBBLE_GOAL,
         IDLE
     }
 
@@ -68,62 +67,61 @@ public class RedAutoCNew extends LinearOpMode {
         ElapsedTime runtime = new ElapsedTime();
         double time = 0.0;
 
-        currentState = State.SHOOT_THREE_RINGS;
         drive.followTrajectoryAsync(launchPosition);
+        currentState = State.ACTION_SHOOT_THREE_RINGS;
 
         //loop
         while (opModeIsActive()) {
             switch (currentState) {
-                case SHOOT_THREE_RINGS:
-                    if (!drive.isBusy()) {
-                        currentState = State.ACTION_SHOOT_THREE_RINGS;
-                        drive.followTrajectoryAsync(dropOffWobbleGoal);
-                        time = runtime.seconds();
-                    }
-                    break;
                 case ACTION_SHOOT_THREE_RINGS:
                     if (runtime.seconds() - time > 3) {
-                        currentState = State.DROP_OFF_WOBBLE_GOAL;
+                        //shoot the rings
+                        currentState = State.GO_TO_WOBBLE_GOAL;
                     }
                     break;
-                case DROP_OFF_WOBBLE_GOAL:
+                case GO_TO_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(dropOffWobbleGoal);
                         currentState = State.ACTION_DROP_OFF_WOBBLE_GOAL;
-                        drive.followTrajectoryAsync(pickUp3Rings);
                         time = runtime.seconds();
                     }
                     break;
                 case ACTION_DROP_OFF_WOBBLE_GOAL:
                     if (runtime.seconds() - time > 3) {
-                        currentState = State.PICK_UP_3_RINGS;
+                        //drop off the wobble goal
+                        currentState = State.GO_TO_3_RINGS;
                     }
                     break;
-                case PICK_UP_3_RINGS:
+                case GO_TO_3_RINGS:
                     if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(pickUp3Rings);
                         currentState = State.ACTION_PICK_UP_3_RINGS;
-                        drive.followTrajectoryAsync(goBackToLaunchPosition);
                         time = runtime.seconds();
                     }
                     break;
-                case ACTION_PICK_UP_3_RINGS:
+//                case ACTION_PICK_UP_3_RINGS:
+//                    if (!drive.isBusy()) {
+//                        currentState = State.ACTION_PICK_UP_3_RINGS;
+//                        drive.followTrajectoryAsync(goBackToLaunchPosition);
+//                        time = runtime.seconds();
+//                    }
+//                    break;
+                case GO_TO_LAUNCH_POSITION:
                     if (runtime.seconds() - time > 3) {
-                        currentState = State.SHOOT_THREE_MORE_RINGS;
-                    }
-                    break;
-                case SHOOT_THREE_MORE_RINGS:
-                    if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(goBackToLaunchPosition);
                         currentState = State.ACTION_SHOOT_THREE_MORE_RINGS;
-                        drive.followTrajectoryAsync(pickUpRingAndWobbleGoal);
                         time = runtime.seconds();
                     }
                     break;
                 case ACTION_SHOOT_THREE_MORE_RINGS:
                     if (runtime.seconds() - time > 3) {
-                        currentState = State.PICK_UP_ONE_RING_AND_WOBBLE_GOAL;
+                        //shoot the rings
+                        currentState = State.PICK_UP_RING_AND_WOBBLE_GOAL;
                     }
                     break;
-                case PICK_UP_ONE_RING_AND_WOBBLE_GOAL:
+                case PICK_UP_RING_AND_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(pickUpRingAndWobbleGoal);
                         currentState = State.IDLE;
                     }
                     break;
