@@ -42,18 +42,18 @@ public class RedAutoCNew extends LinearOpMode {
         Pose2d startingPosition = new Pose2d(-63, -57, Math.toRadians(0)); //maximum starting position
         drive.setPoseEstimate(startingPosition);
 
-        //Go forward to intermediate point.
+        //Go forward to intermediate point
         Trajectory launchPosition = drive.trajectoryBuilder(startingPosition)
                 .splineToConstantHeading(new Vector2d(-18, -57), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(0, -36), Math.toRadians(0))
                 .build();
 
-        //Drop off the wobble goal.
+        //Drop off the wobble goal
         Trajectory dropOffWobbleGoal = drive.trajectoryBuilder(launchPosition.end())
                 .splineToSplineHeading(new Pose2d(48, -48, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
-        //Go back to pick up three more rings from stack.
+        //Go back to pick up three more rings from stack
         Trajectory pickUp3Rings = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-15, -36), Math.toRadians(0))
@@ -67,7 +67,8 @@ public class RedAutoCNew extends LinearOpMode {
         //getting into a position to drop off second wobble goal
         Trajectory pickUpRingAndWobbleGoal = drive.trajectoryBuilder(goBackToLaunchPosition.end())
                 .splineToSplineHeading(new Pose2d(-20, -36, Math.toRadians(180)), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(-31, -28, Math.toRadians(90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-33, -36, Math.toRadians(90)), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(-33, -24), Math.toRadians(0))
                 .build();
 
         Trajectory goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpRingAndWobbleGoal.end())
@@ -79,9 +80,8 @@ public class RedAutoCNew extends LinearOpMode {
                 .build();
 
         Trajectory goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(12,-36), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(12,-48), Math.toRadians(0))
                 .build();
-
 
         wobble.armUp();
 
@@ -92,7 +92,6 @@ public class RedAutoCNew extends LinearOpMode {
 
         drive.followTrajectoryAsync(launchPosition);
         currentState = State.ACTION_SHOOT_THREE_RINGS;
-
 
         //loop
         while (opModeIsActive()) {
@@ -114,6 +113,9 @@ public class RedAutoCNew extends LinearOpMode {
                     if (runtime.seconds() - time > 3) {
                         //drop off the wobble goal
                         currentState = State.GO_TO_3_RINGS;
+                        wobble.armDown();
+                        wobble.release();
+                        wobble.armUp();
                     }
                     break;
                 case GO_TO_3_RINGS:
@@ -152,6 +154,7 @@ public class RedAutoCNew extends LinearOpMode {
                 case ACTION_PICK_UP_WOBBLE_GOAL:
                     if (runtime.seconds() - time < 0.5){
                         wobble.grip();
+                        wobble.armUp();
                         currentState = State.IDLE; //change back later
                     }
                     break;
@@ -176,6 +179,9 @@ public class RedAutoCNew extends LinearOpMode {
                 case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (runtime.seconds() - time > 3) {
                         currentState = State.PARK_OVER_LAUNCH_LINE;
+                        wobble.armDown();
+                        wobble.release();
+                        wobble.armUp();
                     }
                     break;
                 case PARK_OVER_LAUNCH_LINE:
