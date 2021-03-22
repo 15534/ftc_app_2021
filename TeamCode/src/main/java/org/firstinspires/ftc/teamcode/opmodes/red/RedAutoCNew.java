@@ -55,6 +55,7 @@ public class RedAutoCNew extends LinearOpMode {
 
         //Go back to pick up three more rings from stack
         Trajectory pickUp3Rings = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+                //.splineToConstantHeading(new Vector2d(48,-43), Math.toRadians(0))
                 .splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-15, -36), Math.toRadians(0))
                 .build();
@@ -68,7 +69,7 @@ public class RedAutoCNew extends LinearOpMode {
         Trajectory pickUpRingAndWobbleGoal = drive.trajectoryBuilder(goBackToLaunchPosition.end())
                 .splineToSplineHeading(new Pose2d(-20, -36, Math.toRadians(180)), Math.toRadians(0))
                 .splineToSplineHeading(new Pose2d(-33, -36, Math.toRadians(90)), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-33, -24), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(-29.5, -27), Math.toRadians(0)) //test this again
                 .build();
 
         Trajectory goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpRingAndWobbleGoal.end())
@@ -83,6 +84,10 @@ public class RedAutoCNew extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(12,-48), Math.toRadians(0))
                 .build();
 
+        //wobble.armUp();
+//        wobble.grip();
+//        wobble.armDown();
+
         wobble.armUp();
 
         waitForStart();
@@ -93,8 +98,12 @@ public class RedAutoCNew extends LinearOpMode {
         drive.followTrajectoryAsync(launchPosition);
         currentState = State.ACTION_SHOOT_THREE_RINGS;
 
+        wobble.grip();
+        wobble.armDown();
+
         //loop
         while (opModeIsActive()) {
+
             switch (currentState) {
                 case ACTION_SHOOT_THREE_RINGS:
                     if (runtime.seconds() - time > 3) {
@@ -113,9 +122,9 @@ public class RedAutoCNew extends LinearOpMode {
                     if (runtime.seconds() - time > 3) {
                         //drop off the wobble goal
                         currentState = State.GO_TO_3_RINGS;
-                        wobble.armDown();
+                        //wobble.armDown();
                         wobble.release();
-                        wobble.armUp();
+                        //wobble.armUp();
                     }
                     break;
                 case GO_TO_3_RINGS:
@@ -128,6 +137,7 @@ public class RedAutoCNew extends LinearOpMode {
                 case ACTION_PICK_UP_3_RINGS:
                     if (runtime.seconds() - time > 3) {
                         currentState = State.GO_TO_LAUNCH_POSITION;
+                        // need to add code to pick up the rings
                     }
                     break;
                 case GO_TO_LAUNCH_POSITION:
@@ -140,19 +150,21 @@ public class RedAutoCNew extends LinearOpMode {
                     break;
                 case ACTION_SHOOT_THREE_MORE_RINGS:
                     if (runtime.seconds() - time > 3) {
-                        //shoot the rings
+                        //nned to add code to shoot the rings
                         currentState = State.PICK_UP_RING_AND_WOBBLE_GOAL;
                     }
                     break;
                 case PICK_UP_RING_AND_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
+                        wobble.release();
                         drive.followTrajectoryAsync(pickUpRingAndWobbleGoal);
                         time = runtime.seconds();
                         currentState = State.ACTION_PICK_UP_WOBBLE_GOAL;
                     }
                     break;
                 case ACTION_PICK_UP_WOBBLE_GOAL:
-                    if (runtime.seconds() - time < 0.5){
+                    if (runtime.seconds() - time < 0.5) {
+                        wobble.release();
                         wobble.grip();
                         wobble.armUp();
                         currentState = State.IDLE; //change back later
@@ -172,14 +184,14 @@ public class RedAutoCNew extends LinearOpMode {
                 case DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (!drive.isBusy()){
                         currentState = State.ACTION_DROP_OFF_SECOND_WOBBLE_GOAL;
-                        drive.followTrajectoryAsync(goOverLaunchLine);
+                        drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
                         time = runtime.seconds();
                     }
                     break;
                 case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (runtime.seconds() - time > 3) {
                         currentState = State.PARK_OVER_LAUNCH_LINE;
-                        wobble.armDown();
+                        //wobble.armDown();
                         wobble.release();
                         wobble.armUp();
                     }
