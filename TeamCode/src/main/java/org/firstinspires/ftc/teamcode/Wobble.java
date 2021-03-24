@@ -11,8 +11,8 @@ public class Wobble {
     public PwmControl wobbleGripperPwm;
     public static double GRIPPER_RELEASE = 0.4;
     public static double GRIPPER_GRIPPED = 0;
-    public static double ARM_UP = 0.15;
-    public static double ARM_DOWN = 0.94;
+    public static double ARM_UP = 0.14;
+    public static double ARM_DOWN = 0.96;
 
     public boolean armUp = true;
     public boolean gripped = false;
