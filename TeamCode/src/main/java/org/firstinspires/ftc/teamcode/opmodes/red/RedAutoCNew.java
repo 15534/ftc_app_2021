@@ -164,7 +164,6 @@ public class RedAutoCNew extends LinearOpMode {
                     break;
                 case ACTION_PICK_UP_WOBBLE_GOAL:
                     if (runtime.seconds() - time < 0.5) {
-                        wobble.release();
                         wobble.grip();
                         wobble.armUp();
                         currentState = State.IDLE; //change back later
