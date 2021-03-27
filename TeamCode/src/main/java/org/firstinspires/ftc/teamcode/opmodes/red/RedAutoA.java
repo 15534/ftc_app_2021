@@ -122,7 +122,6 @@ public class RedAutoA extends LinearOpMode {
                         //wobble.armDown();
                     }
                     if (!drive.isBusy()) {
-                        endTime = runtime.seconds();
                         currentState = State.ACTION_WOBBLE_GOAL_1;
                     }
                     break;
@@ -134,7 +133,6 @@ public class RedAutoA extends LinearOpMode {
                         //wobble.release();
                     } else {
                         // then move on to the next trajectory
-                        endTime = runtime.seconds();
                         currentState = State.DROP_OFF_WOBBLE_GOAL_2;
                         drive.followTrajectoryAsync(dropOffWobbleGoal2);
                     }
