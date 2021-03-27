@@ -39,8 +39,8 @@ public class ShooterTest extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             // Send calculated power to wheels
-            leftDrive.setPower(0.64489);
-            rightDrive.setPower(0.64489);
+            leftDrive.setPower(.64489);
+            rightDrive.setPower(.64489);
 
             telemetry.addData("leftVelocity", leftDrive.getVelocity());
             telemetry.addData("rightVelocity", rightDrive.getVelocity());

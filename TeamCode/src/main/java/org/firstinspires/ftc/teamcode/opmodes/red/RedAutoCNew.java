@@ -15,8 +15,10 @@ public class RedAutoCNew extends LinearOpMode {
 
     enum State {
         ACTION_SHOOT_THREE_RINGS,
+        GO_TO_WOBBLE_GOAL_TRANSITION,
         GO_TO_WOBBLE_GOAL,
         ACTION_DROP_OFF_WOBBLE_GOAL,
+        GO_TO_3_RINGS_TRANSITION,
         GO_TO_3_RINGS,
         ACTION_PICK_UP_3_RINGS,
         GO_TO_LAUNCH_POSITION,
@@ -55,7 +57,7 @@ public class RedAutoCNew extends LinearOpMode {
 
         //Go back to pick up three more rings from stack
         Trajectory pickUp3Rings = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                //.splineToConstantHeading(new Vector2d(48,-43), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(48,-43), Math.toRadians(0))
                 .splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-15, -36), Math.toRadians(0))
                 .build();
@@ -95,15 +97,14 @@ public class RedAutoCNew extends LinearOpMode {
         ElapsedTime runtime = new ElapsedTime();
         double time = 0.0;
 
-        drive.followTrajectoryAsync(launchPosition);
         currentState = State.ACTION_SHOOT_THREE_RINGS;
+        drive.followTrajectoryAsync(launchPosition);
 
         wobble.grip();
         wobble.armDown();
 
         //loop
         while (opModeIsActive()) {
-
             switch (currentState) {
                 case ACTION_SHOOT_THREE_RINGS:
                     if (runtime.seconds() - time > 3) {
@@ -113,30 +114,26 @@ public class RedAutoCNew extends LinearOpMode {
                     break;
                 case GO_TO_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
-                        drive.followTrajectoryAsync(dropOffWobbleGoal);
                         currentState = State.ACTION_DROP_OFF_WOBBLE_GOAL;
-                        time = runtime.seconds();
+                        drive.followTrajectoryAsync(dropOffWobbleGoal);
                     }
                     break;
                 case ACTION_DROP_OFF_WOBBLE_GOAL:
-                    if (runtime.seconds() - time > 3) {
+                    if (!drive.isBusy()) {
                         //drop off the wobble goal
-                        currentState = State.GO_TO_3_RINGS;
-                        //wobble.armDown();
                         wobble.release();
-                        //wobble.armUp();
+                        currentState = State.GO_TO_3_RINGS;
                     }
                     break;
                 case GO_TO_3_RINGS:
                     if (!drive.isBusy()) {
-                        drive.followTrajectoryAsync(pickUp3Rings);
                         currentState = State.ACTION_PICK_UP_3_RINGS;
-                        time = runtime.seconds();
+                        drive.followTrajectoryAsync(pickUp3Rings);
                     }
                     break;
                 case ACTION_PICK_UP_3_RINGS:
-                    if (runtime.seconds() - time > 3) {
-                        currentState = State.GO_TO_LAUNCH_POSITION;
+                    if (!drive.isBusy()) {
+                        currentState = State.IDLE;
                         // need to add code to pick up the rings
                     }
                     break;
