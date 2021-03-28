@@ -56,7 +56,7 @@ public class DriveConstants {
      * empirically tuned.
      */
     //public static double kV = (1.0 / rpmToVelocity(MAX_RPM))+0.002;
-    public static double kV = 0.02;
+    public static double kV = 0.018;
     public static double kA = 0.003;
     public static double kStatic = 0;
 
@@ -92,6 +92,12 @@ public class DriveConstants {
             59.57470216843153, 59.57470216843153, 0.0,
             Math.toRadians(360), Math.toRadians(360), 0.0
     );
+
+    public static DriveConstraints SLOW_CONSTRAINTS = new DriveConstraints(
+            20, 20, 0.0,
+            Math.toRadians(90), Math.toRadians(90), 0.0
+    );
+
 
 
     public static double encoderTicksToInches(double ticks) {

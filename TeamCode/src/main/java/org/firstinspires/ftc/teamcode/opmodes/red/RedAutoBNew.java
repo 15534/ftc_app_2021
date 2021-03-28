@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(name = "RedAutoCNew")
+@Autonomous(name = "RedAutoBNew")
 public class RedAutoBNew extends LinearOpMode {
 
     enum State {

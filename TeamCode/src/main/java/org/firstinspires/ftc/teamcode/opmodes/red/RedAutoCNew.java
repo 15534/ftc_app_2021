@@ -13,6 +13,10 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Autonomous(name = "RedAutoCNew")
 public class RedAutoCNew extends LinearOpMode {
 
+    double time = 0.0;
+    ElapsedTime runtime = new ElapsedTime();
+    State currentState = State.IDLE;
+
     enum State {
         ACTION_SHOOT_THREE_RINGS,
         GO_TO_WOBBLE_GOAL,
@@ -22,7 +26,9 @@ public class RedAutoCNew extends LinearOpMode {
         GO_TO_LAUNCH_POSITION,
         ACTION_SHOOT_THREE_MORE_RINGS,
         PICK_UP_RING_AND_WOBBLE_GOAL,
-        ACTION_PICK_UP_WOBBLE_GOAL,,
+        PICK_UP_WOBBLE_2,
+        ACTION_PICK_UP_WOBBLE_GOAL,
+        GO_TO_SHOOTING_POSITION,
         GO_BACK_LAUNCH_LINE,
         ACTION_SHOOT_1_RING,
         DROP_OFF_SECOND_WOBBLE_GOAL,
@@ -31,12 +37,20 @@ public class RedAutoCNew extends LinearOpMode {
         IDLE
     }
 
+
+    void next(State s) {
+        time = runtime.seconds();
+        currentState = s;
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
         //constants
-        State currentState = State.IDLE;
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Wobble wobble = new Wobble(hardwareMap);
+
+        telemetry.addData("BUILDING TRAJECTORIES", "");
+        telemetry.update();
 
         //starting position for robot - halfway across first tile
         Pose2d startingPosition = new Pose2d(-63, -57, Math.toRadians(0)); //maximum starting position
@@ -50,12 +64,12 @@ public class RedAutoCNew extends LinearOpMode {
 
         //Drop off the wobble goal
         Trajectory dropOffWobbleGoal = drive.trajectoryBuilder(launchPosition.end())
-                .splineToSplineHeading(new Pose2d(48, -48, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(48, -54, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         //Go back to pick up three more rings from stack
         Trajectory pickUp3Rings = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(48,-43), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(48,-43), Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-15, -36), Math.toRadians(0))
                 .build();
@@ -69,10 +83,14 @@ public class RedAutoCNew extends LinearOpMode {
         Trajectory pickUpRingAndWobbleGoal = drive.trajectoryBuilder(goBackToLaunchPosition.end())
                 .splineToSplineHeading(new Pose2d(-20, -36, Math.toRadians(180)), Math.toRadians(0))
                 .splineToSplineHeading(new Pose2d(-33, -36, Math.toRadians(90)), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-29.5, -27), Math.toRadians(0)) //test this again
+                .splineToConstantHeading(new Vector2d(-31.5, -35), Math.toRadians(0)) //test this again
                 .build();
 
-        Trajectory goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpRingAndWobbleGoal.end())
+        Trajectory pickUpSecondGoal = drive.trajectoryBuilderSlow(pickUpRingAndWobbleGoal.end())
+                .splineToConstantHeading(new Vector2d(-31.5, -28), Math.toRadians(-90))
+                .build();
+
+        Trajectory goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpSecondGoal.end())
                 .splineToSplineHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
                 .build();
 
@@ -89,49 +107,60 @@ public class RedAutoCNew extends LinearOpMode {
 //        wobble.armDown();
 
         wobble.armUp();
+        wobble.grip();
+
+        telemetry.addData("READY", "");
+        telemetry.update();
 
         waitForStart();
+        runtime.reset();
 
-        //ElapsedTime runtime = new ElapsedTime();
-        //double time = 0.0;
-
-        currentState = State.ACTION_SHOOT_THREE_RINGS;
+        next(State.GO_TO_SHOOTING_POSITION);
         drive.followTrajectoryAsync(launchPosition);
 
-        wobble.grip();
         wobble.armDown();
 
         //loop
         while (opModeIsActive()) {
+            double elapsed = runtime.seconds() - time;
             switch (currentState) {
-                case ACTION_SHOOT_THREE_RINGS:
+                case GO_TO_SHOOTING_POSITION:
                     if (!drive.isBusy()) {
-                        //shoot the rings
-                        currentState = State.GO_TO_WOBBLE_GOAL;
+                        next(State.ACTION_SHOOT_THREE_RINGS);
+                    }
+                    break;
+                case ACTION_SHOOT_THREE_RINGS:
+                    if (elapsed < 2) {
+                        // shoot the rings
+                    } else {
+                        next(State.GO_TO_WOBBLE_GOAL);
+                        drive.followTrajectoryAsync(dropOffWobbleGoal);
                     }
                     break;
                 case GO_TO_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
-                        currentState = State.ACTION_DROP_OFF_WOBBLE_GOAL;
-                        drive.followTrajectoryAsync(dropOffWobbleGoal);
+                        next(State.ACTION_DROP_OFF_WOBBLE_GOAL);
                     }
                     break;
                 case ACTION_DROP_OFF_WOBBLE_GOAL:
-                    if (!drive.isBusy()) {
+                    if (elapsed < 0.5) {
                         wobble.release();
-                        currentState = State.GO_TO_3_RINGS;
+                    } else {
+                        drive.followTrajectoryAsync(pickUp3Rings);
+                        next(State.GO_TO_3_RINGS);
                     }
                     break;
                 case GO_TO_3_RINGS:
                     if (!drive.isBusy()) {
-                        currentState = State.ACTION_PICK_UP_3_RINGS;
-                        drive.followTrajectoryAsync(pickUp3Rings);
+                        next(State.ACTION_PICK_UP_3_RINGS);
                     }
                     break;
                 case ACTION_PICK_UP_3_RINGS:
-                    if (!drive.isBusy()) {
-                        currentState = State.GO_TO_LAUNCH_POSITION;
-                        // need to add code to pick up the rings
+                    if (elapsed < 2) {
+                        // pick up the rings (not programmed yet)
+                    } else {
+                        drive.followTrajectoryAsync(goBackToLaunchPosition);
+                        next(State.GO_TO_LAUNCH_POSITION);
                     }
                     break;
                 case GO_TO_LAUNCH_POSITION:
@@ -142,23 +171,31 @@ public class RedAutoCNew extends LinearOpMode {
                     }
                     break;
                 case ACTION_SHOOT_THREE_MORE_RINGS:
-                    if (!drive.isBusy()) {
-                        currentState = State.PICK_UP_RING_AND_WOBBLE_GOAL;
-                        //shoot the rings
+                    if (elapsed < 2) {
+                        // shoot the rings (not programmed yet)
+                    } else {
+                        drive.followTrajectoryAsync(pickUpRingAndWobbleGoal);
+                        next(State.PICK_UP_RING_AND_WOBBLE_GOAL);
                     }
                     break;
                 case PICK_UP_RING_AND_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
-                        wobble.release();
-                        currentState = State.ACTION_PICK_UP_WOBBLE_GOAL;
-                        drive.followTrajectoryAsync(pickUpRingAndWobbleGoal);
+                        drive.followTrajectoryAsync(pickUpSecondGoal);
+                        next(State.PICK_UP_WOBBLE_2);
+                    }
+                    break;
+                case PICK_UP_WOBBLE_2:
+                    if (!drive.isBusy()) {
+                        next(State.ACTION_PICK_UP_WOBBLE_GOAL);
                     }
                     break;
                 case ACTION_PICK_UP_WOBBLE_GOAL:
-                    if (!drive.isBusy()) {
+                    if (elapsed < 0.5) {
                         wobble.grip();
+                    } else if (elapsed < 1) {
                         wobble.armUp();
-                        currentState = State.IDLE; //change back later
+                    } else {
+                        next(State.IDLE);
                     }
                     break;
                 case GO_BACK_LAUNCH_LINE:
