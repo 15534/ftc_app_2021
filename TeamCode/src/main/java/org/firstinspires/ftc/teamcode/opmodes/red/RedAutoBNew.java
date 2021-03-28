@@ -94,7 +94,7 @@ public class RedAutoBNew extends LinearOpMode {
         while (opModeIsActive()) {
             switch (currentState) {
                 case ACTION_SHOOT_ONE_RING:
-                    if (runtime.seconds() - time > 3) {
+                    if (!drive.isBusy()) {
                         //shoot the rings
                         currentState = State.GO_TO_WOBBLE_GOAL;
                     }
@@ -107,7 +107,7 @@ public class RedAutoBNew extends LinearOpMode {
                     }
                     break;
                 case ACTION_DROP_OFF_WOBBLE_GOAL:
-                    if (runtime.seconds() - time > 3) {
+                    if (!drive.isBusy()) {
                         //drop off the wobble goal
                         currentState = State.GO_TO_ONE_RING;
                         wobble.armDown();
@@ -123,7 +123,7 @@ public class RedAutoBNew extends LinearOpMode {
                     }
                     break;
                 case ACTION_PICK_UP_ONE_RING:
-                    if (runtime.seconds() - time > 3) {
+                    if (!drive.isBusy()) {
                         currentState = State.GO_TO_LAUNCH_POSITION;
                     }
                     break;
@@ -136,7 +136,7 @@ public class RedAutoBNew extends LinearOpMode {
                     }
                     break;
                 case ACTION_SHOOT_ONE_MORE_RING:
-                    if (runtime.seconds() - time > 3) {
+                    if (!drive.isBusy()) {
                         //shoot the rings
                         currentState = State.PICK_UP_RING_AND_WOBBLE_GOAL;
                     }
@@ -149,7 +149,7 @@ public class RedAutoBNew extends LinearOpMode {
                     }
                     break;
                 case ACTION_PICK_UP_WOBBLE_GOAL:
-                    if (runtime.seconds() - time < 0.5){
+                    if (!drive.isBusy()){
                         wobble.grip();
                         wobble.armUp();
                         currentState = State.DROP_OFF_SECOND_WOBBLE_GOAL; //change back later
@@ -163,7 +163,7 @@ public class RedAutoBNew extends LinearOpMode {
                     }
                     break;
                 case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
-                    if (runtime.seconds() - time > 3) {
+                    if (!drive.isBusy()) {
                         currentState = State.PARK_OVER_LAUNCH_LINE;
                         wobble.armDown();
                         wobble.release();

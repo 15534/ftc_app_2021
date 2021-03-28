@@ -118,23 +118,21 @@ public class RedAutoA extends LinearOpMode {
                     // Once `isBusy() == false`, the trajectory follower signals that it is finished
                     // We move on to the next state
                     // Make sure we use the async follow function
-                    if (runtime.seconds() - endTime > 0.2) {
+                    if (!drive.isBusy()) {
                         //wobble.armDown();
                     }
                     if (!drive.isBusy()) {
-                        endTime = runtime.seconds();
                         currentState = State.ACTION_WOBBLE_GOAL_1;
                     }
                     break;
 
                 case ACTION_WOBBLE_GOAL_1:
-                    if (runtime.seconds() - endTime < 0.3) {
+                    if (!drive.isBusy()) {
                         // release the wobble gripper in first 0.3s
                         //endTime = time of the end of last traj.
                         //wobble.release();
                     } else {
                         // then move on to the next trajectory
-                        endTime = runtime.seconds();
                         currentState = State.DROP_OFF_WOBBLE_GOAL_2;
                         drive.followTrajectoryAsync(dropOffWobbleGoal2);
                     }
