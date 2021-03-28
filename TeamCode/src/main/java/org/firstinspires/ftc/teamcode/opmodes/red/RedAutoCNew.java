@@ -69,7 +69,7 @@ public class RedAutoCNew extends LinearOpMode {
 
         //Go back to pick up three more rings from stack
         Trajectory pickUp3Rings = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(48,-43), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(48,-35), Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-15, -36), Math.toRadians(0))
                 .build();
