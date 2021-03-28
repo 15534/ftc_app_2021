@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Shooter;
 import org.firstinspires.ftc.teamcode.Wobble;
+import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @TeleOp(name="Tele-op")
@@ -64,7 +65,6 @@ public class MainTeleOp extends LinearOpMode {
         ButtonReader powershotButtonReader = new ButtonReader(gp2, GamepadKeys.Button.Y);
         ButtonReader pushButtonReader = new ButtonReader(gp2, GamepadKeys.Button.X);
         ButtonReader reverseAll = new ButtonReader(gp2, GamepadKeys.Button.B);
-        ButtonReader goToShootPosition = new ButtonReader(gp1, GamepadKeys.Button.A);
 
         double lastPushTime = -1;
         boolean intakeActive = false;
@@ -76,16 +76,19 @@ public class MainTeleOp extends LinearOpMode {
 //        ModernRoboticsI2cRangeSensor rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_1");
         Wobble wobble = new Wobble(hardwareMap);
         wobble.armUp();
-
         Shooter shooter = new Shooter(hardwareMap);
         shooter.deactivate();
-
         flap.setPosition(FLAP_POSITION);
+
+        drive.setPoseEstimate(PoseStorage.currentPose);
+        Pose2d shootingPosition = new Pose2d(-9.28, -40.35, 0);
+        Pose2d powershotPosition = new Pose2d(-9.28, -16.35, 0);
 
         waitForStart();
         while (!isStopRequested()) {
             drive.update();
             Pose2d poseEstimate = drive.getPoseEstimate();
+            PoseStorage.currentPose = poseEstimate;
 
             telemetry.addData("mode", currentMode);
             telemetry.addData("x", poseEstimate.getX());
@@ -96,7 +99,6 @@ public class MainTeleOp extends LinearOpMode {
             powershotButtonReader.readValue();
             reverseAll.readValue();
             toggleShooter.readValue();
-            goToShootPosition.readValue();
 
             Vector2d translation = new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
             double rotation = -ROTATION_MULTIPLIER*gamepad1.right_stick_x;
@@ -123,11 +125,18 @@ public class MainTeleOp extends LinearOpMode {
                 case DRIVER_CONTROL:
                     drive.setWeightedDrivePower(new Pose2d(translation, rotation));
 
-                    if (gamepad1.a) {
-                        Trajectory goToShoot = drive.trajectoryBuilder(drive.getPoseEstimate())
-                                .splineToLinearHeading(new Pose2d(0,0,0), 0)
+                    if (gamepad1.a && (!poseEstimate.equals(shootingPosition))) {
+                        Trajectory goToShoot = drive.trajectoryBuilder(poseEstimate)
+                                .splineToLinearHeading(shootingPosition, 0)
                                 .build();
                         drive.followTrajectoryAsync(goToShoot);
+                        currentMode = Mode.AUTOMATIC_CONTROL;
+                    }
+                    if (gamepad1.b && (!poseEstimate.equals(powershotPosition))) {
+                        Trajectory goToPowershot = drive.trajectoryBuilder(poseEstimate)
+                                .splineToLinearHeading(powershotPosition, 0)
+                                .build();
+                        drive.followTrajectoryAsync(goToPowershot);
                         currentMode = Mode.AUTOMATIC_CONTROL;
                     }
                     break;
@@ -144,7 +153,7 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             if (gamepad1.x) {
-                drive.setPoseEstimate(new Pose2d(0, 0, 0));
+                drive.setPoseEstimate(shootingPosition);
             }
 
             if (pushButtonReader.wasJustPressed()) {

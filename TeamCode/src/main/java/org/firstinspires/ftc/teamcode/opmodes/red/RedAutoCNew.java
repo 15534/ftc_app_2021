@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Wobble;
+import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Autonomous(name = "RedAutoCNew")
@@ -113,6 +114,7 @@ public class RedAutoCNew extends LinearOpMode {
         telemetry.addData("READY", "");
         telemetry.update();
 
+        PoseStorage.currentPose = startingPosition;
         waitForStart();
         runtime.reset();
 
@@ -227,6 +229,7 @@ public class RedAutoCNew extends LinearOpMode {
 
             // Read pose
             Pose2d poseEstimate = drive.getPoseEstimate();
+            PoseStorage.currentPose = poseEstimate;
             drive.update();
 
             // Print pose to telemetry

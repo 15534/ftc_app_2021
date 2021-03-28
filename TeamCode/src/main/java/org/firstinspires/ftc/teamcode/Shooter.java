@@ -18,7 +18,7 @@ public class Shooter {
     public static double SHOOTER_SPEED = 1075;
     public static double ACTIVATION_SPEED = 800;
     public static double IDEAL_SHOOT_SPEED = 1050;
-    public static double PUSHED_POSITION = 0.5;
+    public static double PUSHED_POSITION = 0.56;
     public static double RELEASED_POSITION = 0.81;
 
     public Shooter (HardwareMap hardwareMap) {
