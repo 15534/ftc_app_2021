@@ -21,7 +21,7 @@ public class RedAuto extends LinearOpMode {
             auton.runOpMode();
         } else if (ringCount == 4) {
             //c-tile first
-            RedAutoC auton = new RedAutoC();
+            RedAutoCNew auton = new RedAutoCNew();
             auton.runOpMode();
         }
     }

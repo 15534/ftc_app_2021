@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.gamepad.TriggerReader;
-import com.arcrobotics.ftclib.hardware.ServoEx;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -20,19 +16,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Shooter;
 import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
-import static org.firstinspires.ftc.teamcode.Wobble.GRIPPER_RELEASE;
 
 @TeleOp(name="Tele-op")
 @Config
 public class MainTeleOp extends LinearOpMode {
     public static double INDEXER_POWER = 1;
-    public static double PUSHED_POSITION = 0.75;
-    public static double RELEASED_POSITION = 0.96;
     public static double DPAD_SPEED = 0.35;
     public static double BUMPER_ROTATION_SPEED = 0.35;
     public static double ROTATION_MULTIPLIER = 2.05;
@@ -63,7 +54,6 @@ public class MainTeleOp extends LinearOpMode {
         indexer.setDirection(DcMotorSimple.Direction.REVERSE);
         transfer.setDirection(DcMotorSimple.Direction.REVERSE);
         Servo flap = hardwareMap.get(Servo.class, "flap");
-        Servo pusher = hardwareMap.get(Servo.class, "push");
         // 0.96 - resting position
         // 0.75 - pushed position
 
@@ -159,16 +149,16 @@ public class MainTeleOp extends LinearOpMode {
 
             if (pushButtonReader.wasJustPressed()) {
                 flap.setPosition(0.1845); // shooting to top goal
-                pusher.setPosition(PUSHED_POSITION);
+                shooter.push();
                 lastPushTime = runtime.seconds();
             } else if (powershotButtonReader.wasJustPressed()) {
                 flap.setPosition(0.205); // shooting powershot (lowered flap due to height decrease)
-                pusher.setPosition(PUSHED_POSITION);
+                shooter.push();
                 lastPushTime = runtime.seconds();
             }
 
             if (runtime.seconds() - lastPushTime > 0.2) {
-                pusher.setPosition(RELEASED_POSITION);
+                shooter.release();
                 lastPushTime = 0;
             }
 
@@ -189,13 +179,13 @@ public class MainTeleOp extends LinearOpMode {
                 intakePower = 0;
             }
 
-            if (intakeActive || (shooterActive && shooter.ready())) {
+            if (intakeActive || (shooterActive && shooter.readyForTransfer())) {
                 indexerPower = INDEXER_POWER;
             } else {
                 indexerPower = 0;
             }
 
-            if (shooterActive && shooter.ready()) {
+            if (shooterActive && shooter.readyForTransfer()) {
                 transferPower = 1;
             } else {
                 transferPower = 0;
