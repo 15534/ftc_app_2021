@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 public class Shooter {
-    DcMotorEx leftShoot, rightShoot;
+    public DcMotorEx leftShoot, rightShoot;
     Servo pusher;
 
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(500, 0, 0, 0);
