@@ -5,8 +5,13 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Shooter;
 import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -47,6 +52,13 @@ public class RedAutoCNew extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         //constants
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Shooter shooter = new Shooter(hardwareMap);
+        DcMotorEx indexer = hardwareMap.get(DcMotorEx.class, "indexer");
+        Servo flap = hardwareMap.get(Servo.class, "flap");
+        CRServo transfer = hardwareMap.get(CRServo.class, "transfer");
+        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+        indexer.setDirection(DcMotorSimple.Direction.REVERSE);
+        flap.setPosition(0.1845);
         Wobble wobble = new Wobble(hardwareMap);
 
         telemetry.addData("BUILDING TRAJECTORIES", "");
@@ -58,6 +70,11 @@ public class RedAutoCNew extends LinearOpMode {
 
         //Go forward to intermediate point
         Trajectory launchPosition = drive.trajectoryBuilder(startingPosition)
+                .addTemporalMarker(0.6, () -> {
+                    shooter.activate();
+                    indexer.setPower(1);
+                })
+                .addTemporalMarker(1, shooter::push)
                 .splineToConstantHeading(new Vector2d(-18, -57), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(0, -36), Math.toRadians(0))
                 .build();
@@ -72,7 +89,7 @@ public class RedAutoCNew extends LinearOpMode {
 
         //Go back to pick up three more rings from stack
         Trajectory pickUp3Rings = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(48,-35), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(42,-36), Math.toRadians(180))
                 //.splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(-15, -36, Math.toRadians(-180)), Math.toRadians(0))
                 .build();
@@ -108,8 +125,8 @@ public class RedAutoCNew extends LinearOpMode {
                 .build();
 
         Trajectory goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(36,57), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(12, -57), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(41,-39), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(12, -39), Math.toRadians(-90))
                 .build();
 
         //wobble.armUp();
@@ -129,7 +146,7 @@ public class RedAutoCNew extends LinearOpMode {
         drive.followTrajectoryAsync(launchPosition);
 
         wobble.armDown();
-
+        transfer.setPower(1);
 
         //loop
         while (opModeIsActive()) {
@@ -141,9 +158,22 @@ public class RedAutoCNew extends LinearOpMode {
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
-                    if (elapsed < 2) {
-                        // shoot the rings
+                    if (elapsed < 0.2) {
+                        shooter.push();
+                    } else if (elapsed < 0.4) {
+                        shooter.release();
+                    } else if (elapsed < 0.6) {
+                        shooter.push();
+                    } else if (elapsed < 0.8) {
+                        shooter.release();
+                    } else if (elapsed < 1) {
+                        shooter.push();
+                    } else if (elapsed < 1.2) {
+                        shooter.release();
                     } else {
+                        shooter.deactivate();
+                        transfer.setPower(0);
+                        indexer.setPower(0);
                         next(State.GO_TO_WOBBLE_GOAL);
                         drive.followTrajectoryAsync(dropOffWobbleGoal);
                     }
