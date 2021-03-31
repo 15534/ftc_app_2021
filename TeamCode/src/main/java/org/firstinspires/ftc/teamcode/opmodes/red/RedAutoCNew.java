@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Wobble;
-import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Autonomous(name = "RedAutoCNew")
@@ -63,21 +62,27 @@ public class RedAutoCNew extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(0, -36), Math.toRadians(0))
                 .build();
 
+        telemetry.addData("BUILDING 1/4 ", "");
+        telemetry.update();
+
         //Drop off the wobble goal
         Trajectory dropOffWobbleGoal = drive.trajectoryBuilder(launchPosition.end())
-                .splineToSplineHeading(new Pose2d(48, -59, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(48, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         //Go back to pick up three more rings from stack
         Trajectory pickUp3Rings = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .splineToConstantHeading(new Vector2d(48,-35), Math.toRadians(-90))
-                .splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-15, -36), Math.toRadians(0))
+                //.splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(-15, -36, Math.toRadians(-180)), Math.toRadians(0))
                 .build();
+
+        telemetry.addData("BUILDING 1/2 ", "");
+        telemetry.update();
 
         //getting into a position to drop off second wobble goal
         Trajectory goBackToLaunchPosition = drive.trajectoryBuilder(pickUp3Rings.end())
-                .splineToSplineHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
                 .build();
 
         //getting into a position to drop off second wobble goal
@@ -95,13 +100,16 @@ public class RedAutoCNew extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
                 .build();
 
+        telemetry.addData("BUILDING 3/4 ", "");
+        telemetry.update();
+
         Trajectory dropOffSecondWobbleGoal = drive.trajectoryBuilder(goBackToLaunchPosition2.end())
-                .splineToSplineHeading(new Pose2d(39, -57, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(41, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         Trajectory goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(39, -45), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(12, -45), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(36,57), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(12, -57), Math.toRadians(-90))
                 .build();
 
         //wobble.armUp();
@@ -114,7 +122,6 @@ public class RedAutoCNew extends LinearOpMode {
         telemetry.addData("READY", "");
         telemetry.update();
 
-        PoseStorage.currentPose = startingPosition;
         waitForStart();
         runtime.reset();
 
@@ -122,6 +129,7 @@ public class RedAutoCNew extends LinearOpMode {
         drive.followTrajectoryAsync(launchPosition);
 
         wobble.armDown();
+
 
         //loop
         while (opModeIsActive()) {
@@ -229,7 +237,6 @@ public class RedAutoCNew extends LinearOpMode {
 
             // Read pose
             Pose2d poseEstimate = drive.getPoseEstimate();
-            PoseStorage.currentPose = poseEstimate;
             drive.update();
 
             // Print pose to telemetry
