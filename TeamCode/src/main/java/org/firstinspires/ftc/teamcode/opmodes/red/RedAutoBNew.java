@@ -5,13 +5,21 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Shooter;
 import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Autonomous(name = "RedAutoBNew")
 public class RedAutoBNew extends LinearOpMode {
+    double time = 0.0;
+    ElapsedTime runtime = new ElapsedTime();
+    RedAutoBNew.State currentState = RedAutoBNew.State.IDLE;
 
     enum State {
         ACTION_SHOOT_ONE_RING,
@@ -28,12 +36,21 @@ public class RedAutoBNew extends LinearOpMode {
         PARK_OVER_LAUNCH_LINE,
         IDLE
     }
-
+    void next(State s) {
+        time = runtime.seconds();
+        currentState = s;
+    }
     @Override
     public void runOpMode() throws InterruptedException {
         //constants
-        State currentState = State.IDLE;
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Shooter shooter = new Shooter(hardwareMap);
+        DcMotorEx indexer = hardwareMap.get(DcMotorEx.class, "indexer");
+        Servo flap = hardwareMap.get(Servo.class, "flap");
+        CRServo transfer = hardwareMap.get(CRServo.class, "transfer");
+        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+        indexer.setDirection(DcMotorSimple.Direction.REVERSE);
+        flap.setPosition(0.1845);
         Wobble wobble = new Wobble(hardwareMap);
 
         //starting position for robot - halfway across first tile
