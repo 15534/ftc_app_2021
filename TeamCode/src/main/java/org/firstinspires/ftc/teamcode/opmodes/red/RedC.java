@@ -15,13 +15,13 @@ import org.firstinspires.ftc.teamcode.Shooter;
 import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.tests.RedAuto;
 
 public class RedC extends RedAuto {
 
     double time = 0.0;
     ElapsedTime runtime = new ElapsedTime();
     State currentState = State.IDLE;
+    LinearOpMode op;
 
     Trajectory launchPosition, dropOffWobbleGoal, pickUp3Rings, goBackToLaunchPosition,
             pickUpRingAndWobbleGoal, pickUpSecondGoal, goBackToLaunchPosition2,
@@ -53,12 +53,14 @@ public class RedC extends RedAuto {
     }
 
     public RedC(RedAuto op) {
+        this.op = op;
         indexer = op.indexer;
         flap = op.flap;
         transfer = op.transfer;
         drive = op.drive;
         shooter = op.shooter;
         wobble = op.wobble;
+        telemetry = op.telemetry;
     }
 
     public void buildTrajectories() {
@@ -124,7 +126,7 @@ public class RedC extends RedAuto {
         transfer.setPower(1);
 
         //loop
-        while (opModeIsActive()) {
+        while (op.opModeIsActive()) {
             double elapsed = runtime.seconds() - time;
             switch (currentState) {
                 case GO_TO_SHOOTING_POSITION:

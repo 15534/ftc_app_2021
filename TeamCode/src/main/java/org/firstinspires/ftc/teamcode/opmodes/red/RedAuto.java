@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tests;
+package org.firstinspires.ftc.teamcode.opmodes.red;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -81,50 +81,49 @@ public class RedAuto extends LinearOpMode {
 
         PoseStorage.currentPose = startingPosition;
 
-        if (opModeIsActive()) {
-            wobble.armUp();
-            sleep(500);
-            wobble.grip();
-        }
+        wobble.armUp();
+        sleep(500);
+        wobble.grip();
 
-        if (opModeIsActive()) {
-            telemetry.addData("BUILDING TRAJECTORIES (A)", "");
-            telemetry.update();
-            a = new RedA(this);
-            a.buildTrajectories();
+        telemetry.addData("BUILDING TRAJECTORIES (A)", "");
+        telemetry.update();
+        a = new RedA(this);
+        a.buildTrajectories();
 
-            telemetry.addData("BUILDING TRAJECTORIES (B)", "");
-            telemetry.update();
-            b = new RedB(this);
-            b.buildTrajectories();
+        telemetry.addData("BUILDING TRAJECTORIES (B)", "");
+        telemetry.update();
+        b = new RedB(this);
+        b.buildTrajectories();
 
-            telemetry.addData("BUILDING TRAJECTORIES (C)", "");
-            telemetry.update();
-            c = new RedC(this);
-            c.buildTrajectories();
-        }
+        telemetry.addData("BUILDING TRAJECTORIES (C)", "");
+        telemetry.update();
+        c = new RedC(this);
+        c.buildTrajectories();
 
-        while (opModeIsActive() && !isStarted()) {
+        while (!opModeIsActive() && !isStopRequested()) {
             drive.setPoseEstimate(startingPosition);
             telemetry.addData("READY", "");
             stack = pipeline.getStack();
-            telemetry.addData("stack", pipeline.getStack());
+            telemetry.addData("stack", stack);
             telemetry.update();
             sleep(50);
         }
 
-        // wait for start
-        switch (stack) {
-            case 0:
-                a.run();
-                break;
-            case 1:
-                b.run();
-                break;
-            case 4:
-                c.run();
-                break;
+        if (opModeIsActive()) {
+            // wait for start
+            switch (stack) {
+                case 0:
+                    a.run();
+                    break;
+                case 1:
+                    b.run();
+                    break;
+                case 4:
+                    c.run();
+                    break;
+            }
         }
+
     }
 
     public static class RingPipeline extends OpenCvPipeline {

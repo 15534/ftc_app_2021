@@ -3,16 +3,17 @@ package org.firstinspires.ftc.teamcode.opmodes.red;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.PoseStorage;
-import org.firstinspires.ftc.teamcode.tests.RedAuto;
 
 public class RedB extends RedAuto {
 
     double time = 0.0;
     ElapsedTime runtime = new ElapsedTime();
     State currentState = State.IDLE;
+    LinearOpMode op;
 
     Trajectory launchPosition, dropOffWobbleGoal, pickUp1Ring, goBackToLaunchPosition,
             pickUpRingAndWobbleGoal, pickUpSecondGoal, goBackToLaunchPosition2,
@@ -43,12 +44,14 @@ public class RedB extends RedAuto {
     }
 
     public RedB(RedAuto op) {
+        this.op = op;
         indexer = op.indexer;
         flap = op.flap;
         transfer = op.transfer;
         drive = op.drive;
         shooter = op.shooter;
         wobble = op.wobble;
+        telemetry = op.telemetry;
     }
 
     public void buildTrajectories() {
@@ -110,7 +113,7 @@ public class RedB extends RedAuto {
         wobble.armDown();
         transfer.setPower(1);
         //loop
-        while (opModeIsActive()) {
+        while (op.opModeIsActive()) {
             double elapsed = runtime.seconds() - time;
             switch (currentState) {
                 case GO_TO_SHOOTING_POSITION:
