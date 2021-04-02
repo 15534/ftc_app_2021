@@ -3,25 +3,20 @@ package org.firstinspires.ftc.teamcode.opmodes.red;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Shooter;
-import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.PoseStorage;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.tests.RedAuto;
 
-@Autonomous(name = "RedAutoANew")
-public class RedAutoANew extends LinearOpMode{
+public class RedA extends RedAuto {
 
     double time = 0.0;
     ElapsedTime runtime = new ElapsedTime();
     State currentState = State.IDLE;
+
+    Trajectory launchPosition, dropOffWobbleGoal, pickUpSecondWobbleGoal, pickUpSecondWobbleGoal2,
+            dropOffSecondWobbleGoal, parkOverLaunchLine;
+
 
     enum State {
         GO_TO_SHOOTING_POSITION,
@@ -41,29 +36,18 @@ public class RedAutoANew extends LinearOpMode{
         currentState = s;
     }
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        //constants
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Shooter shooter = new Shooter(hardwareMap);
+    public RedA(RedAuto op) {
+        indexer = op.indexer;
+        flap = op.flap;
+        transfer = op.transfer;
+        drive = op.drive;
+        shooter = op.shooter;
+        wobble = op.wobble;
+    }
 
-        DcMotorEx indexer = hardwareMap.get(DcMotorEx.class, "indexer");
-        Servo flap = hardwareMap.get(Servo.class, "flap");
-        CRServo transfer = hardwareMap.get(CRServo.class, "transfer");
-        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
-        indexer.setDirection(DcMotorSimple.Direction.REVERSE);
-        flap.setPosition(0.1845);
-        Wobble wobble = new Wobble(hardwareMap);
-
-        telemetry.addData("BUILDING TRAJECTORIES", "");
-        telemetry.update();
-
-        //starting position for robot - halfway across first tile
-        Pose2d startingPosition = new Pose2d(-63, -57, Math.toRadians(0)); //maximum starting position
-        drive.setPoseEstimate(startingPosition);
-
+    public void buildTrajectories() {
         //Go forward to intermediate point
-        Trajectory launchPosition = drive.trajectoryBuilder(startingPosition)
+        launchPosition = drive.trajectoryBuilder(startingPosition)
                 .addTemporalMarker(0.6, () -> {
                     shooter.activate();
                     indexer.setPower(1);
@@ -73,36 +57,31 @@ public class RedAutoANew extends LinearOpMode{
                 .splineToConstantHeading(new Vector2d(0, -36), Math.toRadians(0))
                 .build();
 
-        Trajectory dropOffWobbleGoal = drive.trajectoryBuilder(launchPosition.end())
+        dropOffWobbleGoal = drive.trajectoryBuilder(launchPosition.end())
                 .splineToSplineHeading(new Pose2d(12,-60, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
-        Trajectory pickUpSecondWobbleGoal = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+        pickUpSecondWobbleGoal = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .splineToConstantHeading(new Vector2d(12, -55), Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(-48, -48, Math.toRadians(90)), Math.toRadians(0))
                 .build();
 
-        Trajectory pickUpSecondWobbleGoal2 = drive.trajectoryBuilderSlow(pickUpSecondWobbleGoal.end())
+        pickUpSecondWobbleGoal2 = drive.trajectoryBuilderSlow(pickUpSecondWobbleGoal.end())
                 .splineToConstantHeading(new Vector2d(-48, -36), Math.toRadians(90))
                 .build();
 
-        Trajectory dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondWobbleGoal2.end())
+        dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondWobbleGoal2.end())
                 .splineToSplineHeading(new Pose2d(6,-48, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
-        Trajectory parkOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
+        parkOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
                 .splineToConstantHeading(new Vector2d(6,-42), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(12,-42), Math.toRadians(-90))
                 .build();
 
-        wobble.armUp();
-        wobble.grip();
+    }
 
-        telemetry.addData("READY", "");
-        telemetry.update();
-
-        PoseStorage.currentPose = startingPosition;
-        waitForStart();
+    public void run() throws InterruptedException {
         runtime.reset();
 
         next(State.GO_TO_SHOOTING_POSITION);
@@ -196,6 +175,5 @@ public class RedAutoANew extends LinearOpMode{
             telemetry.update();
 
         }
-
     }
 }
