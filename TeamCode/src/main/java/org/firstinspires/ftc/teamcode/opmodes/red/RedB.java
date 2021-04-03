@@ -72,6 +72,7 @@ public class RedB extends RedAuto {
                 .build();
 
         pickUp1Ring = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+                .splineToConstantHeading(new Vector2d(31, -52), Math.toRadians(0))
                 .splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-15, -36), Math.toRadians(-180))
                 .build();
