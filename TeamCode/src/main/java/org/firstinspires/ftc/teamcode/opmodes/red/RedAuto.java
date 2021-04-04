@@ -35,7 +35,7 @@ public class RedAuto extends LinearOpMode {
     public static int REG1_CUTOFF = 120;
     public static int REG2_CUTOFF = 120;
     RingPipeline pipeline;
-    public DcMotorEx indexer;
+    public DcMotorEx indexer, intake;
     public Servo flap;
     public CRServo transfer;
     public SampleMecanumDrive drive;
@@ -52,6 +52,7 @@ public class RedAuto extends LinearOpMode {
         indexer = hardwareMap.get(DcMotorEx.class, "indexer");
         flap = hardwareMap.get(Servo.class, "flap");
         transfer = hardwareMap.get(CRServo.class, "transfer");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
         drive = new SampleMecanumDrive(hardwareMap);
         shooter = new Shooter(hardwareMap);
         wobble = new Wobble(hardwareMap);

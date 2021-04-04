@@ -23,7 +23,7 @@ public class RedC extends RedAuto {
     State currentState = State.IDLE;
     LinearOpMode op;
 
-    Trajectory launchPosition, dropOffWobbleGoal, pickUp3Rings, goBackToLaunchPosition,
+    Trajectory launchPosition, dropOffWobbleGoal, pickUp3RingsIntermediatePoint, pickUp3Rings, goBackToLaunchPosition,
             pickUpRingAndWobbleGoal, pickUpSecondGoal, goBackToLaunchPosition2,
             dropOffSecondWobbleGoal, goOverLaunchLine;
 
@@ -55,6 +55,7 @@ public class RedC extends RedAuto {
     public RedC(RedAuto op) {
         this.op = op;
         indexer = op.indexer;
+        intake = op.intake;
         flap = op.flap;
         transfer = op.transfer;
         drive = op.drive;
@@ -81,9 +82,12 @@ public class RedC extends RedAuto {
                 .build();
 
         //Go back to pick up three more rings from stack
-        pickUp3Rings = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+        pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .splineToConstantHeading(new Vector2d(42,-36), Math.toRadians(180))
                 //.splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(-90))
+                .build();
+
+        pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
                 .splineToSplineHeading(new Pose2d(-15, -36, Math.toRadians(-180)), Math.toRadians(0))
                 .build();
 
@@ -99,7 +103,7 @@ public class RedC extends RedAuto {
                 .build();
 
         pickUpSecondGoal = drive.trajectoryBuilderSlow(pickUpRingAndWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(-32, -26), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-32, -25), Math.toRadians(-90))
                 .build();
 
         goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpSecondGoal.end())
@@ -122,7 +126,7 @@ public class RedC extends RedAuto {
         next(State.GO_TO_SHOOTING_POSITION);
         drive.followTrajectoryAsync(launchPosition);
 
-        wobble.armDown();
+        //wobble.armDown();
         transfer.setPower(1);
 
         //loop
@@ -162,14 +166,21 @@ public class RedC extends RedAuto {
                     break;
                 case ACTION_DROP_OFF_WOBBLE_GOAL:
                     if (elapsed < 0.5) {
+                        wobble.armDown();
+                        //if (runtime.seconds() - time >= 0.5) {
                         wobble.release();
+                        //}
                     } else {
-                        drive.followTrajectoryAsync(pickUp3Rings);
+                        //intake.setPower(1);
+                        indexer.setPower(1);
+                        drive.followTrajectoryAsync(pickUp3RingsIntermediatePoint);
                         next(State.GO_TO_3_RINGS);
                     }
                     break;
                 case GO_TO_3_RINGS:
                     if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(pickUp3Rings);
+                        intake.setPower(1);
                         next(State.ACTION_PICK_UP_3_RINGS);
                     }
                     break;
@@ -185,7 +196,6 @@ public class RedC extends RedAuto {
                     if (!drive.isBusy()) {
                         currentState = State.ACTION_SHOOT_THREE_MORE_RINGS;
                         drive.followTrajectoryAsync(goBackToLaunchPosition);
-                        wobble.armDown();
                     }
                     break;
                 case ACTION_SHOOT_THREE_MORE_RINGS:
@@ -198,6 +208,7 @@ public class RedC extends RedAuto {
                     break;
                 case PICK_UP_RING_AND_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
+                        wobble.armDown();
                         drive.followTrajectoryAsync(pickUpSecondGoal);
                         next(State.PICK_UP_WOBBLE_2);
                     }
@@ -230,6 +241,8 @@ public class RedC extends RedAuto {
                     break;
                 case DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (!drive.isBusy()){
+                        intake.setPower(0);
+                        indexer.setPower(0);
                         next(State.ACTION_DROP_OFF_SECOND_WOBBLE_GOAL);
                     }
                     break;
@@ -241,7 +254,6 @@ public class RedC extends RedAuto {
                         next(State.PARK_OVER_LAUNCH_LINE);
                     }
             }
-
             // Read pose
             Pose2d poseEstimate = drive.getPoseEstimate();
             PoseStorage.currentPose = poseEstimate;

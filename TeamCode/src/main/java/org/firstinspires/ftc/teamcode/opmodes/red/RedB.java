@@ -3,11 +3,14 @@ package org.firstinspires.ftc.teamcode.opmodes.red;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 
+
+@Autonomous(name="RedAutoB")
 public class RedB extends RedAuto {
 
     double time = 0.0;
@@ -18,7 +21,6 @@ public class RedB extends RedAuto {
     Trajectory launchPosition, dropOffWobbleGoal, pickUp1Ring, goBackToLaunchPosition,
             pickUpRingAndWobbleGoal, pickUpSecondGoal, goBackToLaunchPosition2,
             dropOffSecondWobbleGoal, goOverLaunchLine;
-
 
     enum State {
         ACTION_SHOOT_THREE_RINGS,
@@ -47,6 +49,7 @@ public class RedB extends RedAuto {
         this.op = op;
         indexer = op.indexer;
         flap = op.flap;
+        intake = op.intake;
         transfer = op.transfer;
         drive = op.drive;
         shooter = op.shooter;
@@ -57,11 +60,11 @@ public class RedB extends RedAuto {
     public void buildTrajectories() {
         //Go forward to intermediate point
         launchPosition = drive.trajectoryBuilder(startingPosition)
-                .addTemporalMarker(0.6, () -> {
-                    shooter.activate();
-                    indexer.setPower(1);
-                })
-                .addTemporalMarker(1, shooter::push)
+//                .addTemporalMarker(0.6, () -> {
+//                    shooter.activate();
+//                    indexer.setPower(1);
+//                })
+//                .addTemporalMarker(1, shooter::push)
                 .splineToConstantHeading(new Vector2d(-18, -57), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(0, -36), Math.toRadians(0))
                 .build();
@@ -96,7 +99,7 @@ public class RedB extends RedAuto {
                 .build();
 
         dropOffSecondWobbleGoal = drive.trajectoryBuilder(goBackToLaunchPosition.end())
-                .splineToSplineHeading(new Pose2d(36, -57, Math.toRadians(0)), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(32, -50), Math.toRadians(0))
                 .build();
 
         goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
@@ -112,7 +115,7 @@ public class RedB extends RedAuto {
         drive.followTrajectoryAsync(launchPosition);
 
         wobble.armDown();
-        transfer.setPower(1);
+//        transfer.setPower(1);
         //loop
         while (op.opModeIsActive()) {
             double elapsed = runtime.seconds() - time;
@@ -123,29 +126,34 @@ public class RedB extends RedAuto {
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
-                    if (elapsed < 0.2) {
-                        shooter.push();
-                    } else if (elapsed < 0.4) {
-                        shooter.release();
-                    } else if (elapsed < 0.6) {
-                        shooter.push();
-                    } else if (elapsed < 0.8) {
-                        shooter.release();
-                    } else if (elapsed < 1) {
-                        shooter.push();
-                    } else if (elapsed < 1.2) {
-                        shooter.release();
-                    } else {
-                        shooter.deactivate();
-                        transfer.setPower(0);
-                        indexer.setPower(0);
-                        next(State.GO_TO_WOBBLE_GOAL);
+//                    if (elapsed < 0.2) {
+//                        shooter.push();
+//                    } else if (elapsed < 0.4) {
+//                        shooter.release();
+//                    } else if (elapsed < 0.6) {
+//                        shooter.push();
+//                    } else if (elapsed < 0.8) {
+//                        shooter.release();
+//                    } else if (elapsed < 1) {
+//                        shooter.push();
+//                    } else if (elapsed < 1.2) {
+//                        shooter.release();
+//                    } else {
+//                        shooter.deactivate();
+//                        transfer.setPower(0);
+//                        indexer.setPower(0);
+//                        next(State.GO_TO_WOBBLE_GOAL);
+//                        drive.followTrajectoryAsync(dropOffWobbleGoal);
+//                    }
+                    if (!drive.isBusy()) {
                         drive.followTrajectoryAsync(dropOffWobbleGoal);
+                        next(State.GO_TO_WOBBLE_GOAL);
                     }
                     break;
                 case GO_TO_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
                         next(State.ACTION_DROP_OFF_WOBBLE_GOAL);
+                        wobble.armDown();
                     }
                     break;
                 case ACTION_DROP_OFF_WOBBLE_GOAL:
@@ -162,27 +170,27 @@ public class RedB extends RedAuto {
                     }
                     break;
                 case ACTION_PICK_UP_1_RING:
-                    if (elapsed < 2) {
-                        // pick up the rings (not programmed yet)
-                    } else {
-                        drive.followTrajectoryAsync(goBackToLaunchPosition);
-                        next(State.GO_TO_LAUNCH_POSITION);
-                    }
+//                    if (elapsed < 2) {
+//                        // pick up the rings (not programmed yet)
+//                    } else {
+                    drive.followTrajectoryAsync(goBackToLaunchPosition);
+                    next(State.GO_TO_LAUNCH_POSITION);
+//                    //}
                     break;
                 case GO_TO_LAUNCH_POSITION:
                     if (!drive.isBusy()) {
                         currentState = State.ACTION_SHOOT_ONE_MORE_RING;
                         drive.followTrajectoryAsync(goBackToLaunchPosition);
-                        wobble.armDown();
+                        //wobble.armDown();
                     }
                     break;
                 case ACTION_SHOOT_ONE_MORE_RING:
-                    if (elapsed < 2) {
-                        // shoot the rings (not programmed yet)
-                    } else {
-                        drive.followTrajectoryAsync(pickUpRingAndWobbleGoal);
-                        next(State.PICK_UP_RING_AND_WOBBLE_GOAL);
-                    }
+//                    if (elapsed < 2) {
+//                        // shoot the rings (not programmed yet)
+//                    } else {
+                    drive.followTrajectoryAsync(pickUpRingAndWobbleGoal);
+                    next(State.PICK_UP_RING_AND_WOBBLE_GOAL);
+                    //}
                     break;
                 case PICK_UP_RING_AND_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
