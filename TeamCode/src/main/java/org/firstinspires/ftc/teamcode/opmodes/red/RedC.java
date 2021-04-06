@@ -126,7 +126,6 @@ public class RedC extends RedAuto {
         next(State.GO_TO_SHOOTING_POSITION);
         drive.followTrajectoryAsync(launchPosition);
 
-        //wobble.armDown();
         transfer.setPower(1);
 
         //loop
@@ -169,8 +168,9 @@ public class RedC extends RedAuto {
                         wobble.armDown();
                         //if (runtime.seconds() - time >= 0.5) {
                         wobble.release();
-                        wobble.armUp();
                         //}
+                    } else if(elapsed < 1){//PLEASE TEST THE 1 second HERE!!!!
+                        wobble.armUp();
                     } else {
                         //intake.setPower(1);
                         indexer.setPower(1);
@@ -203,13 +203,13 @@ public class RedC extends RedAuto {
                     if (elapsed < 2) {
                         // shoot the rings (not programmed yet)
                     } else {
+                        wobble.armDown();
                         drive.followTrajectoryAsync(pickUpRingAndWobbleGoal);
                         next(State.PICK_UP_RING_AND_WOBBLE_GOAL);
                     }
                     break;
                 case PICK_UP_RING_AND_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
-                        wobble.armDown();
                         drive.followTrajectoryAsync(pickUpSecondGoal);
                         next(State.PICK_UP_WOBBLE_2);
                     }
@@ -221,9 +221,7 @@ public class RedC extends RedAuto {
                     break;
                 case ACTION_PICK_UP_WOBBLE_GOAL:
                     if (elapsed < 0.5) {
-                        wobble.armDown();
                         wobble.grip();
-                        wobble.armUp();
                     } else {
                         drive.followTrajectoryAsync(goBackToLaunchPosition2);
                         next(State.GO_BACK_LAUNCH_LINE);
@@ -251,10 +249,11 @@ public class RedC extends RedAuto {
                     break;
                 case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (elapsed < 0.5) {
-                        wobble.armDown();
                         wobble.release();
+                    } else if(elapsed < 1){//PLEASE TEST THE 1 second HERE!!!!
                         wobble.armUp();
-                    } else {
+                    }
+                    else {
                         drive.followTrajectoryAsync(goOverLaunchLine);
                         next(State.PARK_OVER_LAUNCH_LINE);
                     }
