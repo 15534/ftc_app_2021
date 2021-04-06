@@ -169,6 +169,7 @@ public class RedC extends RedAuto {
                         wobble.armDown();
                         //if (runtime.seconds() - time >= 0.5) {
                         wobble.release();
+                        wobble.armUp();
                         //}
                     } else {
                         //intake.setPower(1);
@@ -220,7 +221,9 @@ public class RedC extends RedAuto {
                     break;
                 case ACTION_PICK_UP_WOBBLE_GOAL:
                     if (elapsed < 0.5) {
+                        wobble.armDown();
                         wobble.grip();
+                        wobble.armUp();
                     } else {
                         drive.followTrajectoryAsync(goBackToLaunchPosition2);
                         next(State.GO_BACK_LAUNCH_LINE);
@@ -248,7 +251,9 @@ public class RedC extends RedAuto {
                     break;
                 case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (elapsed < 0.5) {
+                        wobble.armDown();
                         wobble.release();
+                        wobble.armUp();
                     } else {
                         drive.followTrajectoryAsync(goOverLaunchLine);
                         next(State.PARK_OVER_LAUNCH_LINE);
