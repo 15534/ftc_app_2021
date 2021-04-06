@@ -49,11 +49,11 @@ public class MainTeleOp extends LinearOpMode {
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         DcMotorEx indexer = hardwareMap.get(DcMotorEx.class, "indexer");
         DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intake");
-        CRServo transfer = hardwareMap.get(CRServo.class, "transfer");
+//        CRServo transfer = hardwareMap.get(CRServo.class, "transfer");
 
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         indexer.setDirection(DcMotorSimple.Direction.REVERSE);
-        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+//        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
         Servo flap = hardwareMap.get(Servo.class, "flap");
         // 0.96 - resting position
         // 0.75 - pushed position
@@ -71,7 +71,8 @@ public class MainTeleOp extends LinearOpMode {
         boolean shooterActive = false;
         double indexerPower = 0;
         double intakePower = 0;
-        double transferPower = 0;
+        boolean toggleGripActive = false;
+//        double transferPower = 0;
 
 //        ModernRoboticsI2cRangeSensor rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_1");
         Wobble wobble = new Wobble(hardwareMap);
@@ -182,33 +183,33 @@ public class MainTeleOp extends LinearOpMode {
 
             intakeActive = gamepad2.right_trigger > 0.05;
 
-            if (intakeActive) {
+            if (intakeActive || (shooterActive && shooter.readyForTransfer())) {
+                indexerPower = INDEXER_POWER;
                 intakePower = 1;
             } else {
+                indexerPower = 0;
                 intakePower = 0;
             }
 
-            if (intakeActive || (shooterActive && shooter.readyForTransfer())) {
-                indexerPower = INDEXER_POWER;
-            } else {
-                indexerPower = 0;
-            }
-
-            if (shooterActive && shooter.readyForTransfer()) {
-                transferPower = 1;
-            } else {
-                transferPower = 0;
-            }
+//            if (shooterActive && shooter.readyForTransfer()) {
+//                transferPower = 1;
+//            } else {
+//                transferPower = 0;
+//            }
 
             if (reverseAll.isDown()) {
                 shooter.deactivate();
+                shooter.allow();
                 intake.setPower(-0.25);
                 indexer.setPower(-0.65);
-                transfer.setPower(-0.5);
             } else {
                 indexer.setPower(indexerPower);
                 intake.setPower(intakePower);
-                transfer.setPower(transferPower);
+                if (shooterActive) {
+                    shooter.allow();
+                } else {
+                    shooter.block();
+                }
             }
 
             if (gamepad2.dpad_down) {
@@ -219,10 +220,13 @@ public class MainTeleOp extends LinearOpMode {
             }
             if (gamepad2.dpad_left) {
                 wobble.release();
+                wobble.armMiddle();
             }
-            if (gamepad2.dpad_right) {
-                wobble.grip();
+            if (gamepad2.dpad_right && !toggleGripActive) {
+                wobble.toggleGrip();
             }
+
+            toggleGripActive = gamepad2.dpad_right;
 
             if (gamepad2.left_bumper) {
                 drive.turn(Math.toRadians(5));

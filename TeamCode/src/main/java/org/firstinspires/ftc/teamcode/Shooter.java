@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Shooter {
     public DcMotorEx leftShoot, rightShoot;
     Servo pusher;
+    Servo stopper;
 
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(500, 0, 0, 0);
     public static double SHOOTER_SPEED = 1075;
@@ -20,10 +21,13 @@ public class Shooter {
     public static double IDEAL_SHOOT_SPEED = 1050;
     public static double PUSHED_POSITION = 0.56;
     public static double RELEASED_POSITION = 0.81;
+    public static double STOPPER_BLOCK = 0.625;
+    public static double STOPPER_ALLOW = 0.285;
 
     public Shooter (HardwareMap hardwareMap) {
         leftShoot = hardwareMap.get(DcMotorEx.class, "left");
         rightShoot = hardwareMap.get(DcMotorEx.class, "right");
+        stopper = hardwareMap.get(Servo.class, "stopper");
         leftShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
@@ -60,4 +64,7 @@ public class Shooter {
     public void release() {
         pusher.setPosition(RELEASED_POSITION);
     }
+
+    public void block() { stopper.setPosition(STOPPER_BLOCK); }
+    public void allow() { stopper.setPosition(STOPPER_ALLOW); }
 }

@@ -58,7 +58,6 @@ public class RedC extends RedAuto {
         indexer = op.indexer;
         intake = op.intake;
         flap = op.flap;
-        transfer = op.transfer;
         drive = op.drive;
         shooter = op.shooter;
         wobble = op.wobble;
@@ -127,7 +126,6 @@ public class RedC extends RedAuto {
         next(State.GO_TO_SHOOTING_POSITION);
         drive.followTrajectoryAsync(launchPosition);
 
-//        transfer.setPower(1);
 //        intake.setPower(1);
 
         //loop
@@ -154,7 +152,7 @@ public class RedC extends RedAuto {
 //                        shooter.release();
 //                    } else {
 //                        shooter.deactivate();
-//                        transfer.setPower(0);
+//                        shooter.block();
 //                        indexer.setPower(0);
 //                        intake.setPower(0);
                         next(State.GO_TO_WOBBLE_GOAL);

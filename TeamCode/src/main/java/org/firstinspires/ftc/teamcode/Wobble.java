@@ -11,8 +11,9 @@ public class Wobble {
     public PwmControl wobbleGripperPwm;
     public static double GRIPPER_RELEASE = 0.4;
     public static double GRIPPER_GRIPPED = 0;
-    public static double ARM_UP = 0.14;
+    public static double ARM_UP = 0;
     public static double ARM_DOWN = 0.96;
+    public static double ARM_MIDDLE = 0.3;
 
     public boolean armUp = true;
     public boolean gripped = false;
@@ -39,6 +40,11 @@ public class Wobble {
         armUp = false;
     }
 
+    public void armMiddle() {
+        wobbleArm.setPosition(ARM_MIDDLE);
+        armUp = true;
+    }
+
     public void grip() {
         wobbleGripper.setPosition(GRIPPER_GRIPPED);
         gripped = true;
@@ -47,6 +53,11 @@ public class Wobble {
     public void release() {
         wobbleGripper.setPosition(GRIPPER_RELEASE);
         gripped = false;
+    }
+
+    public void toggleGrip() {
+        if (gripped) release();
+        else grip();
     }
 
     public void setGripper(double position) {

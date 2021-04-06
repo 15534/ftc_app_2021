@@ -41,7 +41,6 @@ public class RedA extends RedAuto {
         this.op = op;
         indexer = op.indexer;
         flap = op.flap;
-        transfer = op.transfer;
         drive = op.drive;
         shooter = op.shooter;
         wobble = op.wobble;
@@ -91,7 +90,6 @@ public class RedA extends RedAuto {
         drive.followTrajectoryAsync(launchPosition);
 
         wobble.armDown();
-        transfer.setPower(1);
 
         //loop
         while (op.opModeIsActive()) {
@@ -117,7 +115,7 @@ public class RedA extends RedAuto {
                         shooter.release();
                     } else {
                         shooter.deactivate();
-                        transfer.setPower(0);
+                        shooter.block();
                         indexer.setPower(0);
                         next(State.GO_TO_WOBBLE_GOAL);
                         drive.followTrajectoryAsync(dropOffWobbleGoal);

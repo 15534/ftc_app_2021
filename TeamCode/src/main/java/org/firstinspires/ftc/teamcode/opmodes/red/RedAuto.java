@@ -37,7 +37,6 @@ public class RedAuto extends LinearOpMode {
     RingPipeline pipeline;
     public DcMotorEx indexer, intake;
     public Servo flap;
-    public CRServo transfer;
     public SampleMecanumDrive drive;
     public Shooter shooter;
     public Pose2d startingPosition = new Pose2d(-63, -57, Math.toRadians(0));
@@ -51,12 +50,10 @@ public class RedAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         indexer = hardwareMap.get(DcMotorEx.class, "indexer");
         flap = hardwareMap.get(Servo.class, "flap");
-        transfer = hardwareMap.get(CRServo.class, "transfer");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         drive = new SampleMecanumDrive(hardwareMap);
         shooter = new Shooter(hardwareMap);
         wobble = new Wobble(hardwareMap);
-        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
         indexer.setDirection(DcMotorSimple.Direction.REVERSE);
         flap.setPosition(0.1845);
 
@@ -82,6 +79,7 @@ public class RedAuto extends LinearOpMode {
 
         PoseStorage.currentPose = startingPosition;
 
+        shooter.allow();
         wobble.armUp();
         sleep(500);
         wobble.grip();
@@ -100,6 +98,7 @@ public class RedAuto extends LinearOpMode {
         telemetry.update();
         c = new RedC(this);
         c.buildTrajectories();
+
 
         while (!opModeIsActive() && !isStopRequested()) {
             drive.setPoseEstimate(startingPosition);
