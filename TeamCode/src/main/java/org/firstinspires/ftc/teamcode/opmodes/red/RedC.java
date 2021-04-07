@@ -167,9 +167,8 @@ public class RedC extends RedAuto {
                 case ACTION_DROP_OFF_WOBBLE_GOAL:
                     if (elapsed < 0.5) {
                         wobble.armDown();
-                        //if (runtime.seconds() - time >= 0.5) {
+                    }else if(elapsed < 2) {
                         wobble.release();
-                        //}
                         next(State.INTERMEIDATE_POINT);
                     }
                     break;
@@ -253,7 +252,7 @@ public class RedC extends RedAuto {
                 case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (elapsed < 0.5) {
                         wobble.release();
-                    } else if(elapsed < 1){//PLEASE TEST THE 1 second HERE!!!!
+                    } else if(elapsed < 2){//PLEASE TEST THE 1 second HERE!!!!
                         wobble.armUp();
                     } else {
                         drive.followTrajectoryAsync(goOverLaunchLine);
