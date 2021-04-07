@@ -33,6 +33,7 @@ public class RedC extends RedAuto {
         ACTION_DROP_OFF_WOBBLE_GOAL,
         INTERMEIDATE_POINT,
         GO_TO_3_RINGS,
+        PICK_UP_THREE_RINGS,
         ACTION_PICK_UP_3_RINGS,
         GO_TO_LAUNCH_POSITION,
         ACTION_SHOOT_THREE_MORE_RINGS,
@@ -83,12 +84,12 @@ public class RedC extends RedAuto {
 
         //Go back to pick up three more rings from stack
         pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(42,-36), Math.toRadians(180))
-                //.splineToSplineHeading(new Pose2d(5, -36, Math.toRadians(-180)), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(48,-36), Math.toRadians(-180))
+                .splineToSplineHeading(new Pose2d(0, -29, Math.toRadians(-180)), Math.toRadians(-180))
                 .build();
 
         pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
-                .splineToSplineHeading(new Pose2d(-15, -36, Math.toRadians(-180)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-38, -36, Math.toRadians(-180)), Math.toRadians(0))
                 .build();
 
         //getting into a position to drop off second wobble goal
@@ -126,7 +127,12 @@ public class RedC extends RedAuto {
         next(State.GO_TO_SHOOTING_POSITION);
         drive.followTrajectoryAsync(launchPosition);
 
-//        intake.setPower(1);
+        if (useShooter) {
+            shooter.activate();
+            shooter.allow();
+            indexer.setPower(1);
+            intake.setPower(1);
+        }
 
         //loop
         while (op.opModeIsActive()) {
@@ -138,25 +144,38 @@ public class RedC extends RedAuto {
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
-//                    if (elapsed < 0.2) {
-//                        shooter.push();
-//                    } else if (elapsed < 0.4) {
-//                        shooter.release();
-//                    } else if (elapsed < 0.6) {
-//                        shooter.push();
-//                    } else if (elapsed < 0.8) {
-//                        shooter.release();
-//                    } else if (elapsed < 1) {
-//                        shooter.push();
-//                    } else if (elapsed < 1.2) {
-//                        shooter.release();
-//                    } else {
-//                        shooter.deactivate();
-//                        shooter.block();
-//                        indexer.setPower(0);
-//                        intake.setPower(0);
-                        next(State.GO_TO_WOBBLE_GOAL);
-                        drive.followTrajectoryAsync(dropOffWobbleGoal);
+                    double shootTime = 0;
+                    if (useShooter) {
+                        if (elapsed < shootTime + 0.2) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 0.6) {
+                            shooter.release();
+                        } else if (elapsed < shootTime + 0.8) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 1) {
+                            shooter.release();
+                        } else if (elapsed < shootTime + 1.2) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 1.4) {
+                            shooter.release();
+                        } else if (elapsed < shootTime + 1.6) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 1.8) {
+                            shooter.release();
+                        } else if (elapsed < shootTime + 2) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 3) {
+                            shooter.release();
+                            next(State.GO_TO_WOBBLE_GOAL);
+                            drive.followTrajectoryAsync(dropOffWobbleGoal);
+                        }
+                    } else {
+                        if (elapsed > 1) {
+                            next(State.GO_TO_WOBBLE_GOAL);
+                            drive.followTrajectoryAsync(dropOffWobbleGoal);
+                        }
+                    }
+
                     //}
                     break;
                 case GO_TO_WOBBLE_GOAL:
@@ -167,26 +186,37 @@ public class RedC extends RedAuto {
                 case ACTION_DROP_OFF_WOBBLE_GOAL:
                     if (elapsed < 0.5) {
                         wobble.armDown();
-                    }else if(elapsed < 2) {
+                    } else if(elapsed < 1) {
                         wobble.release();
-                        next(State.INTERMEIDATE_POINT);
-                    }
-                    break;
-                case INTERMEIDATE_POINT:
-                    if (!drive.isBusy()) {
-                        //indexer.setPower(1);
+                    } else {
                         drive.followTrajectoryAsync(pickUp3RingsIntermediatePoint);
-                        wobble.armUp();
                         next(State.GO_TO_3_RINGS);
+//                        next(State.IDLE);
                     }
                     break;
                 case GO_TO_3_RINGS:
                     if (!drive.isBusy()) {
+                        shooter.block();
+                        intake.setPower(1);
+                        indexer.setPower(1);
                         drive.followTrajectoryAsync(pickUp3Rings);
                         //intake.setPower(1);
-                        next(State.ACTION_PICK_UP_3_RINGS);
+                        next(State.PICK_UP_THREE_RINGS);
                     }
                     break;
+                case PICK_UP_THREE_RINGS:
+                    if (!drive.isBusy()) {
+                        intake.setPower(0);
+                        indexer.setPower(0);
+                        next(State.IDLE);
+
+                        //
+                    }
+                    break;
+
+                    // TODO the rest isn't really programmed, but we should pick up the wobble goal
+                    //  from here instead of shooting
+
                 case ACTION_PICK_UP_3_RINGS:
                     if (elapsed < 2) {
                         // pick up the rings (not programmed yet)

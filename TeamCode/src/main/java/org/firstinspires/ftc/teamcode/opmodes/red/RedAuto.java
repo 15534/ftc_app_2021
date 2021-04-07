@@ -45,6 +45,7 @@ public class RedAuto extends LinearOpMode {
     private RedB b;
     private RedC c;
     int stack = 0;
+    public static boolean useShooter = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -55,6 +56,7 @@ public class RedAuto extends LinearOpMode {
         shooter = new Shooter(hardwareMap);
         wobble = new Wobble(hardwareMap);
         indexer.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         flap.setPosition(0.1845);
 
         telemetry.addData("OPENING CAMERA", "");
