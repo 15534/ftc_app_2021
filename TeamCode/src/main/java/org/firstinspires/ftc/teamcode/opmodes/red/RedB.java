@@ -9,10 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 
-
-@Autonomous(name="RedAutoB")
 public class RedB extends RedAuto {
-
     double time = 0.0;
     ElapsedTime runtime = new ElapsedTime();
     State currentState = State.IDLE;
