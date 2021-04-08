@@ -81,7 +81,6 @@ public class RedB extends RedAuto {
                 .build();
 
         pickUpRingAndWobbleGoal = drive.trajectoryBuilder(goBackToLaunchPosition.end())
-                .splineToSplineHeading(new Pose2d(-20, -36, Math.toRadians(180)), Math.toRadians(0))
                 .splineToSplineHeading(new Pose2d(-33, -36, Math.toRadians(90)), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-32, -35), Math.toRadians(0))
                 .build();

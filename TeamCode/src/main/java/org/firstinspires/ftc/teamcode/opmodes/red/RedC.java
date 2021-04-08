@@ -79,7 +79,6 @@ public class RedC extends RedAuto {
 
         //Drop off the wobble goal
         dropOffWobbleGoal = drive.trajectoryBuilder(launchPosition.end())
-                .addTemporalMarker(0, wobble::armDown)
                 .splineToSplineHeading(new Pose2d(48, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
@@ -111,7 +110,7 @@ public class RedC extends RedAuto {
 //                .build();
 
         pickUpSecondGoal = drive.trajectoryBuilderSlow(pickUp3Rings.end())
-                .splineToConstantHeading(new Vector2d(-33, -24), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-33.5, -26.5), Math.toRadians(90))
                 .build();
 
 //        goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpSecondGoal.end())
@@ -119,7 +118,7 @@ public class RedC extends RedAuto {
 //                .build();
 
         dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end())
-                .splineToSplineHeading(new Pose2d(41, -57, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(44, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
@@ -180,6 +179,8 @@ public class RedC extends RedAuto {
                     } else {
                         if (elapsed > 1) {
                             next(State.GO_TO_WOBBLE_GOAL);
+                            wobble.armDown();
+                            wobble.loosen();
                             drive.followTrajectoryAsync(dropOffWobbleGoal);
                         }
                     }
