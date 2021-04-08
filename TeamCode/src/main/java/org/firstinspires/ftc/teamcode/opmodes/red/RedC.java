@@ -118,7 +118,7 @@ public class RedC extends RedAuto {
 //                .build();
 
         dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end())
-                .splineToLinearHeading(new Pose2d(44, -57, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(44, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
