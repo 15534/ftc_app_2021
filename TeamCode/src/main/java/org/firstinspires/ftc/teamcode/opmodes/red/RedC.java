@@ -91,7 +91,12 @@ public class RedC extends RedAuto {
                 .build();
 
         pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
-                .splineToSplineHeading(new Pose2d(-34, -40  , Math.toRadians(-180)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-34, -42, Math.toRadians(-180)), Math.toRadians(0))
+                .addSpatialMarker(new Vector2d(-34, -42), () -> {
+                    wobble.armDown();
+                    intake.setPower(0);
+                })
+                .splineToSplineHeading(new Pose2d(-32, -32, Math.toRadians(90)), Math.toRadians(90))
                 .build();
 
         //getting into a position to drop off second wobble goal
@@ -106,19 +111,19 @@ public class RedC extends RedAuto {
 //                .build();
 
         pickUpSecondGoal = drive.trajectoryBuilderSlow(pickUp3Rings.end())
-                .addTemporalMarker(0, wobble::armDown)
-                .splineToSplineHeading(new Pose2d(-32, -25, Math.toRadians(90)), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-33, -24), Math.toRadians(90))
                 .build();
 
-        goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpSecondGoal.end())
-                .splineToSplineHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
-                .build();
+//        goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpSecondGoal.end())
+//                .splineToSplineHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
+//                .build();
 
-        dropOffSecondWobbleGoal = drive.trajectoryBuilder(goBackToLaunchPosition2.end())
+        dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end())
                 .splineToSplineHeading(new Pose2d(41, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
+                .addTemporalMarker(1, wobble::armMiddle)
                 .splineToConstantHeading(new Vector2d(41,-39), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(12, -39), Math.toRadians(-90))
                 .build();
@@ -255,36 +260,31 @@ public class RedC extends RedAuto {
                     if (elapsed < 0.3) {
                         wobble.grip();
                     } else {
-                        next(State.IDLE);
-//                        drive.followTrajectoryAsync(goBackToLaunchPosition2);
-//                        next(State.GO_BACK_LAUNCH_LINE);
-                    }
-                    break;
-                case GO_BACK_LAUNCH_LINE:
-                    if (!drive.isBusy()) {
-                        next(State.ACTION_SHOOT_1_RING);
-                    }
-                    break;
-                case ACTION_SHOOT_1_RING:
-                    if (elapsed < 2) {
-                        // shoot the rings (not programmed yet)
-                    } else {
                         drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
                         next(State.DROP_OFF_SECOND_WOBBLE_GOAL);
                     }
                     break;
+//                case GO_BACK_LAUNCH_LINE:
+//                    if (!drive.isBusy()) {
+//                        next(State.ACTION_SHOOT_1_RING);
+//                    }
+//                    break;
+//                case ACTION_SHOOT_1_RING:
+//                    if (elapsed < 2) {
+//                        // shoot the rings (not programmed yet)
+//                    } else {
+//                        drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
+//                        next(State.DROP_OFF_SECOND_WOBBLE_GOAL);
+//                    }
+//                    break;
                 case DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
-//                        intake.setPower(0);
-//                        indexer.setPower(0);
                         next(State.ACTION_DROP_OFF_SECOND_WOBBLE_GOAL);
                     }
                     break;
                 case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
-                    if (elapsed < 0.5) {
+                    if (elapsed < 0.3) {
                         wobble.release();
-                    } else if(elapsed < 2){//PLEASE TEST THE 1 second HERE!!!!
-                        wobble.armMiddle();
                     } else {
                         drive.followTrajectoryAsync(goOverLaunchLine);
                         next(State.PARK_OVER_LAUNCH_LINE);
