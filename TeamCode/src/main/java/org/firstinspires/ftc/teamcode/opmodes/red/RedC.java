@@ -178,8 +178,6 @@ public class RedC extends RedAuto {
                             drive.followTrajectoryAsync(dropOffWobbleGoal);
                         }
                     }
-
-                    //}
                     break;
                 case GO_TO_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
@@ -192,7 +190,6 @@ public class RedC extends RedAuto {
                     } else {
                         drive.followTrajectoryAsync(pickUp3RingsIntermediatePoint);
                         next(State.GO_TO_3_RINGS);
-//                        next(State.IDLE);
                     }
                     break;
                 case GO_TO_3_RINGS:
@@ -201,7 +198,6 @@ public class RedC extends RedAuto {
                         intake.setPower(1);
                         indexer.setPower(1);
                         drive.followTrajectoryAsync(pickUp3Rings);
-                        //intake.setPower(1);
                         next(State.PICK_UP_THREE_RINGS);
                     }
                     break;
