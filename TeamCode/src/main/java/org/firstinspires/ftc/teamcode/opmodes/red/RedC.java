@@ -85,7 +85,7 @@ public class RedC extends RedAuto {
 
         //Go back to pick up three more rings from stack
         pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .addTemporalMarker(1, wobble::armUp)
+                .addTemporalMarker(1, wobble::armMiddle)
                 .splineToConstantHeading(new Vector2d(48,-36), Math.toRadians(-180))
                 .splineToSplineHeading(new Pose2d(0, -29, Math.toRadians(-180)), Math.toRadians(-180))
                 .build();
@@ -284,7 +284,7 @@ public class RedC extends RedAuto {
                     if (elapsed < 0.5) {
                         wobble.release();
                     } else if(elapsed < 2){//PLEASE TEST THE 1 second HERE!!!!
-                        wobble.armUp();
+                        wobble.armMiddle();
                     } else {
                         drive.followTrajectoryAsync(goOverLaunchLine);
                         next(State.PARK_OVER_LAUNCH_LINE);

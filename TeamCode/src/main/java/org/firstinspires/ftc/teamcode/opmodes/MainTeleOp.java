@@ -76,7 +76,7 @@ public class MainTeleOp extends LinearOpMode {
 
 //        ModernRoboticsI2cRangeSensor rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_1");
         Wobble wobble = new Wobble(hardwareMap);
-        wobble.armUp();
+        wobble.armMiddle();
         Shooter shooter = new Shooter(hardwareMap);
         shooter.deactivate();
         flap.setPosition(FLAP_POSITION);
