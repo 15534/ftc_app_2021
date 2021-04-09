@@ -149,6 +149,7 @@ public class RedC extends RedAuto {
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
                     double shootTime = 0;
+                    shooter.allow();
                     if (useShooter) {
                         if (elapsed < shootTime + 0.2) {
                             shooter.push();
