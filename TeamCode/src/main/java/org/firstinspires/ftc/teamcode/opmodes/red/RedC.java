@@ -68,14 +68,13 @@ public class RedC extends RedAuto {
     public void buildTrajectories() {
         //Go forward to intermediate point
         launchPosition = drive.trajectoryBuilder(startingPosition)
-                .addTemporalMarker(0.0, () -> {
-                    if (useShooter) {
-                        shooter.activate();
-                        indexer.setPower(1);
-                        intake.setPower(1);
-                        shooter.block();
-                    }
+                .addTemporalMarker(0.4, shooter::activate)
+                .addTemporalMarker(0, () -> {
+                    indexer.setPower(1);
+                    intake.setPower(1);
+                    shooter.block();
                 })
+                .addTemporalMarker(1.6, shooter::allow)
                 //.addTemporalMarker(1, shooter::push)
                 .splineToConstantHeading(new Vector2d(-18, -57), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(0, -36), Math.toRadians(0))
@@ -149,11 +148,12 @@ public class RedC extends RedAuto {
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
-                    double shootTime = 0.3;
+                    double shootTime = -0.1;
                     if (useShooter) {
-                        if (elapsed < shootTime + 0.1) {
-                            shooter.allow();
-                        } else if (elapsed < shootTime + 0.3) {
+//                        if (elapsed < shootTime + 0.1) {
+//                            shooter.allow();
+//                        } else
+                            if (elapsed < shootTime + 0.3) {
                             shooter.push();
                         } else if (elapsed < shootTime + 0.7) {
                             shooter.release();
