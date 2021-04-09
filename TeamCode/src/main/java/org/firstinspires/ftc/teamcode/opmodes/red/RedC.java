@@ -68,12 +68,12 @@ public class RedC extends RedAuto {
     public void buildTrajectories() {
         //Go forward to intermediate point
         launchPosition = drive.trajectoryBuilder(startingPosition)
-                .addTemporalMarker(0.6, () -> {
+                .addTemporalMarker(1.6, () -> {
                     if (useShooter) {
                         shooter.activate();
                         indexer.setPower(1);
                         intake.setPower(1);
-                        shooter.allow();
+                        shooter.block();
                     }
                 })
                 //.addTemporalMarker(1, shooter::push)
@@ -171,6 +171,9 @@ public class RedC extends RedAuto {
                         } else if (elapsed < shootTime + 3) {
                             shooter.release();
                             shooter.block();
+                            shooter.deactivate();
+                            intake.setPower(0);
+                            indexer.setPower(0);
                             wobble.armDown();
                             wobble.loosen();
                             next(State.GO_TO_WOBBLE_GOAL);
