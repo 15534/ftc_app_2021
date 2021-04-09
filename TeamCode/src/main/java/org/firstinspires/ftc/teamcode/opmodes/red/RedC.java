@@ -68,7 +68,7 @@ public class RedC extends RedAuto {
     public void buildTrajectories() {
         //Go forward to intermediate point
         launchPosition = drive.trajectoryBuilder(startingPosition)
-                .addTemporalMarker(1.6, () -> {
+                .addTemporalMarker(0.0, () -> {
                     if (useShooter) {
                         shooter.activate();
                         indexer.setPower(1);
@@ -122,7 +122,8 @@ public class RedC extends RedAuto {
 //                .build();
 
         dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end())
-                .splineToSplineHeading(new Pose2d(44, -57, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(44, -30, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(44, -57), Math.toRadians(-90))
                 .build();
 
         goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
@@ -148,7 +149,7 @@ public class RedC extends RedAuto {
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
-                    double shootTime = 0;
+                    double shootTime = 0.3;
                     if (useShooter) {
                         if (elapsed < shootTime + 0.1) {
                             shooter.allow();
@@ -172,7 +173,6 @@ public class RedC extends RedAuto {
                             shooter.push();
                         } else if (elapsed < shootTime + 3.1) {
                             shooter.release();
-                            shooter.block();
                             shooter.deactivate();
                             intake.setPower(0);
                             indexer.setPower(0);
@@ -282,6 +282,7 @@ public class RedC extends RedAuto {
                 case DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
                         next(State.ACTION_DROP_OFF_SECOND_WOBBLE_GOAL);
+                        wobble.loosen();
                     }
                     break;
                 case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
