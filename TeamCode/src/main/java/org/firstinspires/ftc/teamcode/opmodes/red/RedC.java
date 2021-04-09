@@ -149,27 +149,28 @@ public class RedC extends RedAuto {
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
                     double shootTime = 0;
-                    shooter.allow();
                     if (useShooter) {
-                        if (elapsed < shootTime + 0.2) {
+                        if (elapsed < shootTime + 0.1) {
+                            shooter.allow();
+                        } else if (elapsed < shootTime + 0.3) {
                             shooter.push();
-                        } else if (elapsed < shootTime + 0.6) {
+                        } else if (elapsed < shootTime + 0.7) {
                             shooter.release();
-                        } else if (elapsed < shootTime + 0.8) {
+                        } else if (elapsed < shootTime + 0.9) {
                             shooter.push();
-                        } else if (elapsed < shootTime + 1) {
+                        } else if (elapsed < shootTime + 1.1) {
                             shooter.release();
-                        } else if (elapsed < shootTime + 1.2) {
+                        } else if (elapsed < shootTime + 1.3) {
                             shooter.push();
-                        } else if (elapsed < shootTime + 1.4) {
+                        } else if (elapsed < shootTime + 1.5) {
                             shooter.release();
-                        } else if (elapsed < shootTime + 1.6) {
+                        } else if (elapsed < shootTime + 1.7) {
                             shooter.push();
-                        } else if (elapsed < shootTime + 1.8) {
+                        } else if (elapsed < shootTime + 1.9) {
                             shooter.release();
-                        } else if (elapsed < shootTime + 2) {
+                        } else if (elapsed < shootTime + 2.1) {
                             shooter.push();
-                        } else if (elapsed < shootTime + 3) {
+                        } else if (elapsed < shootTime + 3.1) {
                             shooter.release();
                             shooter.block();
                             shooter.deactivate();
