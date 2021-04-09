@@ -172,7 +172,6 @@ public class RedC extends RedAuto {
                             shooter.push();
                         } else if (elapsed < shootTime + 3.1) {
                             shooter.release();
-                            shooter.block();
                             shooter.deactivate();
                             intake.setPower(0);
                             indexer.setPower(0);
