@@ -82,7 +82,7 @@ public class RedAuto extends LinearOpMode {
         PoseStorage.currentPose = startingPosition;
 
         shooter.allow();
-        wobble.armUp();
+        wobble.armMiddle();
         sleep(500);
         wobble.grip();
 
