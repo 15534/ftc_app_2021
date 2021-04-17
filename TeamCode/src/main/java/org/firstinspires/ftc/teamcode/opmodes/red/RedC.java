@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
+@Autonomous(name="RedC")
 public class RedC extends RedAuto {
 
     double time = 0.0;
@@ -77,7 +78,7 @@ public class RedC extends RedAuto {
                 .addTemporalMarker(1.6, shooter::allow)
                 //.addTemporalMarker(1, shooter::push)
                 .splineToConstantHeading(new Vector2d(-18, -57), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(0, -36), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(0, -18), Math.toRadians(0))
                 .build();
 
         //Drop off the wobble goal
@@ -121,13 +122,13 @@ public class RedC extends RedAuto {
 //                .build();
 
         dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end())
-                .splineToSplineHeading(new Pose2d(44, -30, Math.toRadians(-90)), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(44, -57), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(44, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
                 .addTemporalMarker(1, wobble::armMiddle)
-                .splineToConstantHeading(new Vector2d(41,-39), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(44, -39), Math.toRadians(-90))
+                //.splineToConstantHeading(new Vector2d(41,-39), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(12, -39), Math.toRadians(-90))
                 .build();
     }
@@ -145,15 +146,15 @@ public class RedC extends RedAuto {
                 case GO_TO_SHOOTING_POSITION:
                     if (!drive.isBusy()) {
                         next(State.ACTION_SHOOT_THREE_RINGS);
+                        flap.setPosition(0.205);
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
                     double shootTime = -0.1;
                     if (useShooter) {
-//                        if (elapsed < shootTime + 0.1) {
-//                            shooter.allow();
-//                        } else
-                            if (elapsed < shootTime + 0.3) {
+                        if (elapsed < shootTime + 0.1) {
+                            shooter.allow();
+                        } else if (elapsed < shootTime + 0.3) {
                             shooter.push();
                         } else if (elapsed < shootTime + 0.7) {
                             shooter.release();
