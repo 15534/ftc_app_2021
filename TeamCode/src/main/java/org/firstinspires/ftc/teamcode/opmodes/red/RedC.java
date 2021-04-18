@@ -77,7 +77,7 @@ public class RedC extends RedAuto {
                 })
                 .addTemporalMarker(1.6, shooter::allow)
                 //.addTemporalMarker(1, shooter::push)
-                .splineToConstantHeading(new Vector2d(-18, -57), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(-24, -57), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(0, -18), Math.toRadians(0))
                 .build();
 
@@ -94,14 +94,13 @@ public class RedC extends RedAuto {
                 .build();
 
         pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
-                .splineToConstantHeading(new Vector2d(-33.5, -34), Math.toRadians(0))
-                .addSpatialMarker(new Vector2d(-33.5, -36), () -> {
+                .splineToSplineHeading(new Pose2d(-34, -44, Math.toRadians(-180)), Math.toRadians(0))
+                .addSpatialMarker(new Vector2d(-34, -44), () -> {
                     wobble.armDown();
                     intake.setPower(0);
                 })
-                .splineToSplineHeading(new Pose2d(-33.5, -40, Math.toRadians(90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-32, -32, Math.toRadians(90)), Math.toRadians(90))
                 .build();
-
         //getting into a position to drop off second wobble goal
 //        goBackToLaunchPosition = drive.trajectoryBuilder(pickUp3Rings.end())
 //                .splineToLinearHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
@@ -122,12 +121,13 @@ public class RedC extends RedAuto {
 //                .build();
 
         dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end())
-                .splineToSplineHeading(new Pose2d(48, -63, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(44, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
                 .addTemporalMarker(1, wobble::armMiddle)
-                .splineToConstantHeading(new Vector2d(48, -39), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(44, -39), Math.toRadians(-90))
+                //.splineToConstantHeading(new Vector2d(41,-39), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(12, -39), Math.toRadians(-90))
                 .build();
     }
@@ -171,6 +171,10 @@ public class RedC extends RedAuto {
                             shooter.release();
                         } else if (elapsed < shootTime + 2.1) {
                             shooter.push();
+                        } else if (elapsed < shootTime + 2.3) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 2.5) {
+                            shooter.release();
                         } else if (elapsed < shootTime + 3.1) {
                             shooter.release();
                             shooter.deactivate();
@@ -205,10 +209,10 @@ public class RedC extends RedAuto {
                     break;
                 case GO_TO_3_RINGS:
                     if (!drive.isBusy()) {
-                        shooter.block();
 //                        intake.setPower(1);
 //                        indexer.setPower(1);
                         drive.followTrajectoryAsync(pickUp3Rings);
+                        shooter.block();
                         next(State.PICK_UP_THREE_RINGS);
                     }
                     break;
@@ -221,8 +225,8 @@ public class RedC extends RedAuto {
                     }
                     break;
 
-                    // TODO the rest isn't really programmed, but we should pick up the wobble goal
-                    //  from here instead of shooting
+                // TODO the rest isn't really programmed, but we should pick up the wobble goal
+                //  from here instead of shooting
 //
 //                case ACTION_PICK_UP_3_RINGS:
 //                    if (elapsed < 2) {
