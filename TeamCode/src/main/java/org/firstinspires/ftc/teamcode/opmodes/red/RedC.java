@@ -25,7 +25,7 @@ public class RedC extends RedAuto {
     LinearOpMode op;
 
     Trajectory launchPosition, dropOffWobbleGoal, pickUp3RingsIntermediatePoint, pickUp3Rings, goBackToLaunchPosition,
-            pickUpRingAndWobbleGoal, pickUpSecondGoal, goBackToLaunchPosition2,
+            pickUpRingAndWobbleGoal, pickUpSecondGoal, shootHighGoal, goBackToLaunchPosition2,
             dropOffSecondWobbleGoal, goOverLaunchLine;
 
     enum State {
@@ -77,7 +77,7 @@ public class RedC extends RedAuto {
                 })
                 .addTemporalMarker(1.6, shooter::allow)
                 //.addTemporalMarker(1, shooter::push)
-                .splineToConstantHeading(new Vector2d(-24, -57), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(-15, -57), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(0, -18), Math.toRadians(0))
                 .build();
 
@@ -90,10 +90,10 @@ public class RedC extends RedAuto {
         pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .addTemporalMarker(1, wobble::armMiddle)
                 .splineToConstantHeading(new Vector2d(48,-34), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(-5, -34, Math.toRadians(-180)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-5, -29, Math.toRadians(-180)), Math.toRadians(0))
                 .build();
 
-        pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
+        pickUp3Rings = drive.trajectoryBuilder(pickUp3RingsIntermediatePoint.end())
                 .splineToSplineHeading(new Pose2d(-34, -44, Math.toRadians(-180)), Math.toRadians(0))
                 .addSpatialMarker(new Vector2d(-34, -44), () -> {
                     wobble.armDown();
@@ -209,8 +209,8 @@ public class RedC extends RedAuto {
                     break;
                 case GO_TO_3_RINGS:
                     if (!drive.isBusy()) {
-//                        intake.setPower(1);
-//                        indexer.setPower(1);
+                        intake.setPower(1);
+                        indexer.setPower(1);
                         drive.followTrajectoryAsync(pickUp3Rings);
                         shooter.block();
                         next(State.PICK_UP_THREE_RINGS);
