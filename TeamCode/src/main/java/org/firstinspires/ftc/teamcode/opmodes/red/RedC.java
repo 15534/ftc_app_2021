@@ -89,17 +89,17 @@ public class RedC extends RedAuto {
         //Go back to pick up three more rings from stack
         pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .addTemporalMarker(1, wobble::armMiddle)
-                .splineToConstantHeading(new Vector2d(48,-36), Math.toRadians(-180))
-                .splineToSplineHeading(new Pose2d(0, -29, Math.toRadians(-180)), Math.toRadians(-180))
+                .splineToConstantHeading(new Vector2d(48,-34), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-5, -34, Math.toRadians(-180)), Math.toRadians(0))
                 .build();
 
         pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
-                .splineToSplineHeading(new Pose2d(-34, -44, Math.toRadians(-180)), Math.toRadians(0))
-                .addSpatialMarker(new Vector2d(-34, -44), () -> {
+                .splineToConstantHeading(new Vector2d(-33.5, -34), Math.toRadians(0))
+                .addSpatialMarker(new Vector2d(-33.5, -36), () -> {
                     wobble.armDown();
                     intake.setPower(0);
                 })
-                .splineToSplineHeading(new Pose2d(-32, -32, Math.toRadians(90)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(-33.5, -40, Math.toRadians(90)), Math.toRadians(0))
                 .build();
 
         //getting into a position to drop off second wobble goal
@@ -122,13 +122,12 @@ public class RedC extends RedAuto {
 //                .build();
 
         dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end())
-                .splineToSplineHeading(new Pose2d(44, -57, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(48, -63, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
                 .addTemporalMarker(1, wobble::armMiddle)
-                .splineToConstantHeading(new Vector2d(44, -39), Math.toRadians(-90))
-                //.splineToConstantHeading(new Vector2d(41,-39), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(48, -39), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(12, -39), Math.toRadians(-90))
                 .build();
     }
