@@ -13,7 +13,7 @@ waypoints:
   interpolationType: "CONSTANT"
 - position:
     x: 0.0
-    y: -18.0
+    y: -36.0
   heading: 0.0
   tangent: 0.0
   interpolationType: "CONSTANT"
@@ -21,61 +21,31 @@ waypoints:
     x: 48.0
     y: -57.0
   heading: -1.5707963267948966
-  tangent: 0.0
+  tangent: -1.5707963267948966
   interpolationType: "SPLINE"
 - position:
     x: 48.0
-    y: -34.0
+    y: -36.0
   heading: 0.0
-  tangent: 0.0
+  tangent: -1.5707963267948966
   interpolationType: "CONSTANT"
 - position:
-    x: -5.0
-    y: -34.0
+    x: 0.0
+    y: -29.0
   heading: -3.141592653589793
-  tangent: 0.0
+  tangent: -3.141592653589793
+  interpolationType: "LINEAR"
+- position:
+    x: -34.0
+    y: -44.0
+  heading: 0.0
+  tangent: -3.141592653589793
   interpolationType: "SPLINE"
 - position:
-    x: -33.5
-    y: -34.0
-  heading: 0.0
-  tangent: 0.0
-  interpolationType: "CONSTANT"
-- position:
-    x: -33.5
-    y: -40.0
+    x: -32.0
+    y: -32.0
   heading: 1.5707963267948966
-  tangent: 0.0
+  tangent: 1.5707963267948966
   interpolationType: "SPLINE"
-- position:
-    x: -33.5
-    y: -26.5
-  heading: 0.0
-  tangent: 0.0
-  interpolationType: "CONSTANT"
-- position:
-    x: 12.0
-    y: -39.0
-  heading: 0.0
-  tangent: 0.0
-  interpolationType: "SPLINE"
-- position:
-    x: 48.0
-    y: -63.0
-  heading: -1.5707963267948966
-  tangent: 0.0
-  interpolationType: "SPLINE"
-- position:
-    x: 48.0
-    y: -39.0
-  heading: 0.0
-  tangent: 0.0
-  interpolationType: "CONSTANT"
-- position:
-    x: 12.0
-    y: -39.0
-  heading: 0.0
-  tangent: 0.0
-  interpolationType: "CONSTANT"
 resolution: 0.25
 version: 1

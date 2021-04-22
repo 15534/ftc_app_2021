@@ -42,7 +42,7 @@ public class RedA extends RedAuto {
         indexer = op.indexer;
         flap = op.flap;
         drive = op.drive;
-        shooter = op.shooter;
+        //shooter = op.shooter;
         wobble = op.wobble;
         telemetry = op.telemetry;
     }
@@ -51,10 +51,10 @@ public class RedA extends RedAuto {
         //Go forward to intermediate point
         launchPosition = drive.trajectoryBuilder(startingPosition)
                 .addTemporalMarker(0.6, () -> {
-                    shooter.activate();
+                    //shooter.activate();
                     indexer.setPower(1);
                 })
-                .addTemporalMarker(1, shooter::push)
+                //.addTemporalMarker(1, shooter::push)
                 .splineToConstantHeading(new Vector2d(-18, -57), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(0, -36), Math.toRadians(0))
                 .build();
@@ -93,8 +93,8 @@ public class RedA extends RedAuto {
         drive.followTrajectoryAsync(launchPosition);
 
         if (useShooter) {
-            shooter.activate();
-            shooter.allow();
+            //shooter.activate();
+            //shooter.allow();
             indexer.setPower(1);
             intake.setPower(1);
         }
@@ -109,37 +109,37 @@ public class RedA extends RedAuto {
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
-                    double shootTime = 0;
-                    if (useShooter) {
-                        if (elapsed < shootTime + 0.2) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 0.6) {
-                            shooter.release();
-                        } else if (elapsed < shootTime + 0.8) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 1) {
-                            shooter.release();
-                        } else if (elapsed < shootTime + 1.2) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 1.4) {
-                            shooter.release();
-                        } else if (elapsed < shootTime + 1.6) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 1.8) {
-                            shooter.release();
-                        } else if (elapsed < shootTime + 2) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 3) {
-                            shooter.release();
+//                    double shootTime = 0;
+//                    if (useShooter) {
+//                        if (elapsed < shootTime + 0.2) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 0.6) {
+//                            shooter.release();
+//                        } else if (elapsed < shootTime + 0.8) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 1) {
+//                            shooter.release();
+//                        } else if (elapsed < shootTime + 1.2) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 1.4) {
+//                            shooter.release();
+//                        } else if (elapsed < shootTime + 1.6) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 1.8) {
+//                            shooter.release();
+//                        } else if (elapsed < shootTime + 2) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 3) {
+                            //shooter.release();
                             next(RedA.State.GO_TO_WOBBLE_GOAL);
                             drive.followTrajectoryAsync(dropOffWobbleGoal);
-                        }
-                    } else {
-                        if (elapsed > 1) {
-                            next(RedA.State.GO_TO_WOBBLE_GOAL);
-                            drive.followTrajectoryAsync(dropOffWobbleGoal);
-                        }
-                    }
+                        //}
+//                    } else {
+//                        if (elapsed > 1) {
+//                            next(RedA.State.GO_TO_WOBBLE_GOAL);
+//                            drive.followTrajectoryAsync(dropOffWobbleGoal);
+//                        }
+//                    }
                     break;
                 case GO_TO_WOBBLE_GOAL:
                     if (!drive.isBusy()) {

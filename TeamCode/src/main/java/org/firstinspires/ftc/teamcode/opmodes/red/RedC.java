@@ -61,21 +61,22 @@ public class RedC extends RedAuto {
         intake = op.intake;
         flap = op.flap;
         drive = op.drive;
-        shooter = op.shooter;
+        // shooter = op.shooter;
         wobble = op.wobble;
         telemetry = op.telemetry;
     }
 
     public void buildTrajectories() {
         //Go forward to intermediate point
+        //startingpos = (-63,-57)
         launchPosition = drive.trajectoryBuilder(startingPosition)
-                .addTemporalMarker(0.4, shooter::activate)
+                //.addTemporalMarker(0.4, shooter::activate)
                 .addTemporalMarker(0, () -> {
-                    indexer.setPower(1);
-                    intake.setPower(1);
-                    shooter.block();
+                    //indexer.setPower(1);
+                    //intake.setPower(1);
+                    //shooter.block();
                 })
-                .addTemporalMarker(1.6, shooter::allow)
+                //.addTemporalMarker(1.6, shooter::allow)
                 //.addTemporalMarker(1, shooter::push)
                 .splineToConstantHeading(new Vector2d(-15, -57), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(0, -18), Math.toRadians(0))
@@ -90,17 +91,18 @@ public class RedC extends RedAuto {
         pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .addTemporalMarker(1, wobble::armMiddle)
                 .splineToConstantHeading(new Vector2d(48,-34), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(-5, -29, Math.toRadians(-180)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-10, -54, Math.toRadians(120)), Math.toRadians(0))
                 .build();
 
         pickUp3Rings = drive.trajectoryBuilder(pickUp3RingsIntermediatePoint.end())
-                .splineToSplineHeading(new Pose2d(-34, -44, Math.toRadians(-180)), Math.toRadians(0))
-                .addSpatialMarker(new Vector2d(-34, -44), () -> {
+                .splineToSplineHeading(new Pose2d(-30, -26, Math.toRadians(-120)), Math.toRadians(0))
+                .addSpatialMarker(new Vector2d(-30, -26), () -> {
                     wobble.armDown();
                     intake.setPower(0);
                 })
-                .splineToSplineHeading(new Pose2d(-32, -32, Math.toRadians(90)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(-34, -36.5, Math.toRadians(90)), Math.toRadians(90))
                 .build();
+
         //getting into a position to drop off second wobble goal
 //        goBackToLaunchPosition = drive.trajectoryBuilder(pickUp3Rings.end())
 //                .splineToLinearHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
@@ -113,7 +115,7 @@ public class RedC extends RedAuto {
 //                .build();
 
         pickUpSecondGoal = drive.trajectoryBuilderSlow(pickUp3Rings.end())
-                .splineToConstantHeading(new Vector2d(-33.5, -26.5), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-33.5, -25.5), Math.toRadians(90))
                 .build();
 
 //        goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpSecondGoal.end())
@@ -121,12 +123,12 @@ public class RedC extends RedAuto {
 //                .build();
 
         dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end())
-                .splineToSplineHeading(new Pose2d(44, -57, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(42, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
                 .addTemporalMarker(1, wobble::armMiddle)
-                .splineToConstantHeading(new Vector2d(44, -39), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(42, -39), Math.toRadians(-90))
                 //.splineToConstantHeading(new Vector2d(41,-39), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(12, -39), Math.toRadians(-90))
                 .build();
@@ -149,50 +151,50 @@ public class RedC extends RedAuto {
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
-                    double shootTime = -0.1;
-                    if (useShooter) {
-                        if (elapsed < shootTime + 0.1) {
-                            shooter.allow();
-                        } else if (elapsed < shootTime + 0.3) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 0.7) {
-                            shooter.release();
-                        } else if (elapsed < shootTime + 0.9) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 1.1) {
-                            shooter.release();
-                        } else if (elapsed < shootTime + 1.3) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 1.5) {
-                            shooter.release();
-                        } else if (elapsed < shootTime + 1.7) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 1.9) {
-                            shooter.release();
-                        } else if (elapsed < shootTime + 2.1) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 2.3) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 2.5) {
-                            shooter.release();
-                        } else if (elapsed < shootTime + 3.1) {
-                            shooter.release();
-                            shooter.deactivate();
+//                    double shootTime = -0.1;
+//                    if (useShooter) {
+//                        if (elapsed < shootTime + 0.1) {
+//                            shooter.allow();
+//                        } else if (elapsed < shootTime + 0.3) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 0.7) {
+//                            shooter.release();
+//                        } else if (elapsed < shootTime + 0.9) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 1.1) {
+//                            shooter.release();
+//                        } else if (elapsed < shootTime + 1.3) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 1.5) {
+//                            shooter.release();
+//                        } else if (elapsed < shootTime + 1.7) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 1.9) {
+//                            shooter.release();
+//                        } else if (elapsed < shootTime + 2.1) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 2.3) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 2.5) {
+//                            shooter.release();
+//                        } else if (elapsed < shootTime + 3.1) {
+                            //shooter.release();
+                            //shooter.deactivate();
                             intake.setPower(0);
                             indexer.setPower(0);
                             wobble.armDown();
                             wobble.loosen();
                             next(State.GO_TO_WOBBLE_GOAL);
                             drive.followTrajectoryAsync(dropOffWobbleGoal);
-                        }
-                    } else {
-                        if (elapsed > 1) {
-                            next(State.GO_TO_WOBBLE_GOAL);
-                            wobble.armDown();
-                            wobble.loosen();
-                            drive.followTrajectoryAsync(dropOffWobbleGoal);
-                        }
-                    }
+                        //}
+//                    } else {
+//                        if (elapsed > 1) {
+//                            next(State.GO_TO_WOBBLE_GOAL);
+//                            wobble.armDown();
+//                            wobble.loosen();
+//                            drive.followTrajectoryAsync(dropOffWobbleGoal);
+//                        }
+//                    }
                     break;
                 case GO_TO_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
@@ -212,7 +214,7 @@ public class RedC extends RedAuto {
                         intake.setPower(1);
                         indexer.setPower(1);
                         drive.followTrajectoryAsync(pickUp3Rings);
-                        shooter.block();
+                        //shooter.block();
                         next(State.PICK_UP_THREE_RINGS);
                     }
                     break;

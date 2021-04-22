@@ -48,7 +48,7 @@ public class RedB extends RedAuto {
         flap = op.flap;
         intake = op.intake;
         drive = op.drive;
-        shooter = op.shooter;
+        //shooter = op.shooter;
         wobble = op.wobble;
         telemetry = op.telemetry;
     }
