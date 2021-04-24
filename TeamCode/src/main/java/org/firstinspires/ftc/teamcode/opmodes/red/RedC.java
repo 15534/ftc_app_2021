@@ -84,23 +84,29 @@ public class RedC extends RedAuto {
 
         //Drop off the wobble goal
         dropOffWobbleGoal = drive.trajectoryBuilder(launchPosition.end())
-                .splineToSplineHeading(new Pose2d(48, -57, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(48, -56, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         //Go back to pick up three more rings from stack
         pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .addTemporalMarker(1, wobble::armMiddle)
                 .splineToConstantHeading(new Vector2d(48,-34), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(-10, -54, Math.toRadians(120)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-6.33, -49.67, Math.toRadians(125)), Math.toRadians(0))
                 .build();
 
         pickUp3Rings = drive.trajectoryBuilder(pickUp3RingsIntermediatePoint.end())
-                .splineToSplineHeading(new Pose2d(-30, -26, Math.toRadians(-120)), Math.toRadians(0))
-                .addSpatialMarker(new Vector2d(-30, -26), () -> {
+                .lineTo(new Vector2d(-25,-26))
+                .addSpatialMarker(new Vector2d(-25, -26), () -> {
                     wobble.armDown();
-                    intake.setPower(0);
+                    intake.setPower(1);
+                    indexer.setPower(1);
                 })
-                .splineToSplineHeading(new Pose2d(-34, -36.5, Math.toRadians(90)), Math.toRadians(90))
+//                .splineToSplineHeading(new Pose2d(-30, -26, Math.toRadians(-120)), Math.toRadians(0))
+//                .addSpatialMarker(new Vector2d(-30, -26), () -> {
+//                    wobble.armDown();
+//                    intake.setPower(0);
+//                })
+//                .splineToSplineHeading(new Pose2d(-34, -36.5, Math.toRadians(90)), Math.toRadians(90))
                 .build();
 
         //getting into a position to drop off second wobble goal

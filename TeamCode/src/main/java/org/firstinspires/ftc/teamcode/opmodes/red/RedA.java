@@ -41,6 +41,7 @@ public class RedA extends RedAuto {
         this.op = op;
         indexer = op.indexer;
         flap = op.flap;
+        intake = op.intake;
         drive = op.drive;
         //shooter = op.shooter;
         wobble = op.wobble;
