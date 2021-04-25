@@ -61,7 +61,7 @@ public class RedC extends RedAuto {
         intake = op.intake;
         flap = op.flap;
         drive = op.drive;
-        // shooter = op.shooter;
+        shooter = op.shooter;
         wobble = op.wobble;
         telemetry = op.telemetry;
     }
@@ -101,11 +101,16 @@ public class RedC extends RedAuto {
                     intake.setPower(1);
                     indexer.setPower(1);
                 })
+                .splineToSplineHeading(new Pose2d(-33, -39.1, Math.toRadians(90)), Math.toRadians(90))
 //                .splineToSplineHeading(new Pose2d(-30, -26, Math.toRadians(-120)), Math.toRadians(0))
 //                .addSpatialMarker(new Vector2d(-30, -26), () -> {
 //                    wobble.armDown();
 //                    intake.setPower(0);
 //                })
+                .addSpatialMarker(new Vector2d(-33,-39.1), () -> {
+                    intake.setPower(0);
+                    indexer.setPower(0);
+                })
 //                .splineToSplineHeading(new Pose2d(-34, -36.5, Math.toRadians(90)), Math.toRadians(90))
                 .build();
 
@@ -220,7 +225,7 @@ public class RedC extends RedAuto {
                         intake.setPower(1);
                         indexer.setPower(1);
                         drive.followTrajectoryAsync(pickUp3Rings);
-                        //shooter.block();
+                        shooter.block();
                         next(State.PICK_UP_THREE_RINGS);
                     }
                     break;

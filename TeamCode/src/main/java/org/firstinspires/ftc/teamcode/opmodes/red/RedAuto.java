@@ -38,7 +38,7 @@ public class RedAuto extends LinearOpMode {
     public DcMotorEx indexer, intake;
     public Servo flap;
     public SampleMecanumDrive drive;
-    //public Shooter shooter;
+    public Shooter shooter;
     public Pose2d startingPosition = new Pose2d(-63, -57, Math.toRadians(0));
     public Wobble wobble;
     private RedA a;
@@ -53,7 +53,7 @@ public class RedAuto extends LinearOpMode {
         flap = hardwareMap.get(Servo.class, "flap");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         drive = new SampleMecanumDrive(hardwareMap);
-        // shooter = new Shooter(hardwareMap);
+        shooter = new Shooter(hardwareMap);
         wobble = new Wobble(hardwareMap);
         indexer.setDirection(DcMotorSimple.Direction.REVERSE);
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -81,7 +81,7 @@ public class RedAuto extends LinearOpMode {
 
         PoseStorage.currentPose = startingPosition;
 
-        //shooter.block();
+        shooter.block();
         wobble.armMiddle();
         sleep(500);
         wobble.grip();
