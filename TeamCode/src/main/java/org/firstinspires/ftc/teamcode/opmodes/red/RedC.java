@@ -94,9 +94,9 @@ public class RedC extends RedAuto {
                 .splineToSplineHeading(new Pose2d(-6.33, -49.67, Math.toRadians(125)), Math.toRadians(0))
                 .build();
 
-        pickUp3Rings = drive.trajectoryBuilder(pickUp3RingsIntermediatePoint.end())
-                .lineTo(new Vector2d(-25,-26))
-                .addSpatialMarker(new Vector2d(-25, -26), () -> {
+        pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
+                .lineTo(new Vector2d(-31.1,-10.3))
+                .addSpatialMarker(new Vector2d(-27.39, -18.75), () -> {
                     wobble.armDown();
                     intake.setPower(1);
                     indexer.setPower(1);
