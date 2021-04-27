@@ -71,10 +71,16 @@ public class RedC extends RedAuto {
         //startingpos = (-63,-57)
         launchPosition = drive.trajectoryBuilder(startingPosition)
                 //.addTemporalMarker(0.4, shooter::activate)
-                .addTemporalMarker(0, () -> {
-                    //indexer.setPower(1);
-                    //intake.setPower(1);
-                    //shooter.block();
+                .addTemporalMarker(0.5, () -> {
+                    if (useShooter) {
+                        shooter.activate();
+                    }
+                })
+                .addTemporalMarker(1, () -> {
+                    if (useShooter) {
+                        indexer.setPower(1);
+                        intake.setPower(1);
+                    }
                 })
                 //.addTemporalMarker(1.6, shooter::allow)
                 //.addTemporalMarker(1, shooter::push)
@@ -162,50 +168,53 @@ public class RedC extends RedAuto {
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
-//                    double shootTime = -0.1;
-//                    if (useShooter) {
-//                        if (elapsed < shootTime + 0.1) {
-//                            shooter.allow();
-//                        } else if (elapsed < shootTime + 0.3) {
+                    double shootTime = 0;
+                    if (useShooter) {
+                        if (elapsed < shootTime + 0.1) {
+                            shooter.allow();
+//                            intake.setPower(1);
+//                            indexer.setPower(1);
+                        } else if (elapsed < shootTime + 0.3) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 0.7) {
+                            shooter.release();
+                        } else if (elapsed < shootTime + 2.3) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 2.7) {
+                            shooter.release();
+                        }
+//                        else if (elapsed < shootTime + 0.8) {
 //                            shooter.push();
-//                        } else if (elapsed < shootTime + 0.7) {
-//                            shooter.release();
-//                        } else if (elapsed < shootTime + 0.9) {
-//                            shooter.push();
-//                        } else if (elapsed < shootTime + 1.1) {
+//                        } else if (elapsed < shootTime + 1.0) {
 //                            shooter.release();
 //                        } else if (elapsed < shootTime + 1.3) {
 //                            shooter.push();
 //                        } else if (elapsed < shootTime + 1.5) {
 //                            shooter.release();
-//                        } else if (elapsed < shootTime + 1.7) {
+//                        } else if (elapsed < shootTime + 1.8) {
 //                            shooter.push();
-//                        } else if (elapsed < shootTime + 1.9) {
+//                        } else if (elapsed < shootTime + 2) {
 //                            shooter.release();
-//                        } else if (elapsed < shootTime + 2.1) {
-//                            shooter.push();
-//                        } else if (elapsed < shootTime + 2.3) {
-//                            shooter.push();
-//                        } else if (elapsed < shootTime + 2.5) {
-//                            shooter.release();
-//                        } else if (elapsed < shootTime + 3.1) {
+//                        }
+                        else if (elapsed < shootTime + 6) {
                             //shooter.release();
-                            //shooter.deactivate();
+                            shooter.deactivate();
                             intake.setPower(0);
                             indexer.setPower(0);
-                            wobble.armDown();
-                            wobble.loosen();
-                            next(State.GO_TO_WOBBLE_GOAL);
-                            drive.followTrajectoryAsync(dropOffWobbleGoal);
-                        //}
-//                    } else {
-//                        if (elapsed > 1) {
-//                            next(State.GO_TO_WOBBLE_GOAL);
 //                            wobble.armDown();
 //                            wobble.loosen();
+                            next(State.IDLE);
+//                            next(State.GO_TO_WOBBLE_GOAL);
 //                            drive.followTrajectoryAsync(dropOffWobbleGoal);
-//                        }
-//                    }
+                        }
+                    } else {
+                        if (elapsed > 1) {
+                            next(State.GO_TO_WOBBLE_GOAL);
+                            wobble.armDown();
+                            wobble.loosen();
+                            drive.followTrajectoryAsync(dropOffWobbleGoal);
+                        }
+                    }
                     break;
                 case GO_TO_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
