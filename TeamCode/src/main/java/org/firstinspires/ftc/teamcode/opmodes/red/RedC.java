@@ -25,7 +25,7 @@ public class RedC extends RedAuto {
     LinearOpMode op;
 
     Trajectory launchPosition, dropOffWobbleGoal, pickUp3RingsIntermediatePoint, pickUp3Rings, goBackToLaunchPosition,
-            pickUpRingAndWobbleGoal, pickUpSecondGoal, shootHighGoal, goBackToLaunchPosition2,
+            pickUpRingAndWobbleGoal, getInPositionForSecondWobbleGoal, pickUpSecondGoal, shootHighGoal, goBackToLaunchPosition2,
             dropOffSecondWobbleGoal, goOverLaunchLine;
 
     enum State {
@@ -39,6 +39,7 @@ public class RedC extends RedAuto {
         GO_TO_LAUNCH_POSITION,
         ACTION_SHOOT_THREE_MORE_RINGS,
         PICK_UP_RING_AND_WOBBLE_GOAL,
+        ALIGN_WOBBLE_GOAL,
         PICK_UP_WOBBLE_2,
         ACTION_PICK_UP_WOBBLE_GOAL,
         GO_TO_SHOOTING_POSITION,
@@ -102,20 +103,9 @@ public class RedC extends RedAuto {
 
         pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
                 .lineTo(new Vector2d(-31.1,-10.3))
-                .addSpatialMarker(new Vector2d(-27.39, -18.75), () -> {
-                    wobble.armDown();
+                .addSpatialMarker(new Vector2d(-31.1, -10.3), () -> {
                     intake.setPower(1);
                     indexer.setPower(1);
-                })
-                .splineToSplineHeading(new Pose2d(-33, -39.1, Math.toRadians(90)), Math.toRadians(90))
-//                .splineToSplineHeading(new Pose2d(-30, -26, Math.toRadians(-120)), Math.toRadians(0))
-//                .addSpatialMarker(new Vector2d(-30, -26), () -> {
-//                    wobble.armDown();
-//                    intake.setPower(0);
-//                })
-                .addSpatialMarker(new Vector2d(-33,-39.1), () -> {
-                    intake.setPower(0);
-                    indexer.setPower(0);
                 })
 //                .splineToSplineHeading(new Pose2d(-34, -36.5, Math.toRadians(90)), Math.toRadians(90))
                 .build();
@@ -131,15 +121,26 @@ public class RedC extends RedAuto {
 //                .splineToConstantHeading(new Vector2d(-32, -35), Math.toRadians(0)) //test this again
 //                .build();
 
-        pickUpSecondGoal = drive.trajectoryBuilderSlow(pickUp3Rings.end())
-                .splineToConstantHeading(new Vector2d(-33.5, -25.5), Math.toRadians(90))
+        getInPositionForSecondWobbleGoal = drive.trajectoryBuilder(pickUp3Rings.end(), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-25.1, -10.3), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(-25.1,-36, Math.toRadians(90)), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-33.5,-36), Math.toRadians(90))
+                .addSpatialMarker(new Vector2d(-33.5,-36), () -> {
+                    wobble.armDown();
+                    intake.setPower(0);
+                    indexer.setPower(0);
+                })
+                .build();
+
+        pickUpSecondGoal = drive.trajectoryBuilderSlow(getInPositionForSecondWobbleGoal.end())
+                .splineToConstantHeading(new Vector2d(-33.5, -24.25), Math.toRadians(90))
                 .build();
 
 //        goBackToLaunchPosition2 = drive.trajectoryBuilder(pickUpSecondGoal.end())
 //                .splineToSplineHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
 //                .build();
 
-        dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end())
+        dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end(), Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(42, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
@@ -242,11 +243,16 @@ public class RedC extends RedAuto {
                     if (!drive.isBusy()) {
                         intake.setPower(0);
                         indexer.setPower(0);
+                        drive.followTrajectoryAsync(getInPositionForSecondWobbleGoal);
+                        next(State.ALIGN_WOBBLE_GOAL);
+                    }
+                    break;
+                case ALIGN_WOBBLE_GOAL:
+                    if (!drive.isBusy()) {
                         drive.followTrajectoryAsync(pickUpSecondGoal);
                         next(State.PICK_UP_WOBBLE_2);
                     }
                     break;
-
                 // TODO the rest isn't really programmed, but we should pick up the wobble goal
                 //  from here instead of shooting
 //
