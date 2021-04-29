@@ -196,6 +196,21 @@ public class SampleMecanumDrive extends MecanumDrive {
         mode = Mode.TURN;
     }
 
+    public void turnAsyncSlow(double angle) {
+        double heading = getPoseEstimate().getHeading();
+
+        lastPoseOnTurn = getPoseEstimate();
+
+        turnProfile = MotionProfileGenerator.generateSimpleMotionProfile(
+                new MotionState(heading, 0, 0, 0),
+                new MotionState(heading + angle, 0, 0, 0),
+                0.2, 1, 0
+        );
+
+        turnStart = clock.seconds();
+        mode = Mode.TURN;
+    }
+
     public void turn(double angle) {
         turnAsync(angle);
         waitForIdle();
