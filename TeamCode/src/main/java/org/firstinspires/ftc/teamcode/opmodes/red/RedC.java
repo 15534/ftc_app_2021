@@ -25,7 +25,7 @@ public class RedC extends RedAuto {
     LinearOpMode op;
 
     Trajectory launchPosition, dropOffWobbleGoal, pickUp3RingsIntermediatePoint, pickUp3Rings, goBackToLaunchPosition,
-            pickUpRingAndWobbleGoal, getInPositionForSecondWobbleGoal, pickUpSecondGoal, shootHighGoal, goBackToLaunchPosition2,
+            pickUpRingAndWobbleGoal, getInPositionForSecondWobbleGoal, pickUpSecondGoal, goToShooter, shootHighGoal, goBackToLaunchPosition2,
             dropOffSecondWobbleGoal, goOverLaunchLine;
 
     enum State {
@@ -47,6 +47,7 @@ public class RedC extends RedAuto {
         ACTION_SHOOT_1_RING,
         DROP_OFF_SECOND_WOBBLE_GOAL,
         ACTION_DROP_OFF_SECOND_WOBBLE_GOAL,
+        GO_TO_SHOOTING_POSITION_2,
         PARK_OVER_LAUNCH_LINE,
         IDLE
     }
@@ -98,12 +99,18 @@ public class RedC extends RedAuto {
         pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .addTemporalMarker(1, wobble::armMiddle)
                 .splineToConstantHeading(new Vector2d(48,-34), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(-6.33, -49.67, Math.toRadians(125)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-6, -48.75, Math.toRadians(125)), Math.toRadians(0))
+                //.splineToSplineHeading(new Pose2d(-10.71, -54.34, Math.toRadians(120)), Math.toRadians(0))
                 .build();
 
         pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
-                .lineTo(new Vector2d(-31.1,-10.3))
-                .addSpatialMarker(new Vector2d(-31.1, -10.3), () -> {
+//                .lineTo(new Vector2d(-31.1,-10.3))
+//                .addSpatialMarker(new Vector2d(-31.1, -10.3), () -> {
+//                    intake.setPower(1);
+//                    indexer.setPower(1);
+//                })
+                .lineTo(new Vector2d(-32.66,-16.67))
+                .addSpatialMarker(new Vector2d(-32.66, -16.67), () -> {
                     intake.setPower(1);
                     indexer.setPower(1);
                 })
@@ -132,7 +139,7 @@ public class RedC extends RedAuto {
                 })
                 .build();
 
-        pickUpSecondGoal = drive.trajectoryBuilderSlow(getInPositionForSecondWobbleGoal.end())
+        pickUpSecondGoal = drive.trajectoryBuilder(getInPositionForSecondWobbleGoal.end())
                 .splineToConstantHeading(new Vector2d(-33.5, -24.25), Math.toRadians(90))
                 .build();
 
@@ -140,7 +147,12 @@ public class RedC extends RedAuto {
 //                .splineToSplineHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
 //                .build();
 
+        goToShooter = drive.trajectoryBuilder(pickUpSecondGoal.end())
+                .splineToSplineHeading(new Pose2d(0,-36,Math.toRadians(0)), Math.toRadians(0))
+                .build();
+
         dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end(), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(-6.5, -56, Math.toRadians(15)), Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(42, -57, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
@@ -308,6 +320,12 @@ public class RedC extends RedAuto {
 //                        // shoot the rings (not programmed yet)
 //                    } else {
 //                        drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
+//                        next(State.DROP_OFF_SECOND_WOBBLE_GOAL);
+//                    }
+//                    break;
+//                case GO_TO_SHOOTING_POSITION_2:
+//                    if(!drive.isBusy()) {
+//                        drive.followTrajectoryAsync(goToShooter);
 //                        next(State.DROP_OFF_SECOND_WOBBLE_GOAL);
 //                    }
 //                    break;
