@@ -70,7 +70,7 @@ public class RedC extends RedAuto {
         //Go forward to intermediate point
         //startingpos = (-63,-57)
         launchPosition = drive.trajectoryBuilder(startingPosition)
-                .splineToSplineHeading(new Pose2d(0, -57, Math.toRadians(18)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(0, -57, Math.toRadians(13)), Math.toRadians(0))
                 .build();
 
         //Drop off the wobble goal
@@ -150,26 +150,24 @@ public class RedC extends RedAuto {
             switch (currentState) {
                 case GO_TO_SHOOTING_POSITION:
                     if (useShooter) {
-                        double shootTime = 0.3;
-                        if (elapsed > shootTime) {
-                            shooter.activate();
-                            shooter.allow();
-                        }
-                        if (elapsed > shootTime + 0.2) {
+                        double shootTime = 0.5;
+                        if (elapsed < shootTime + 0.6) {}
+                         else if (elapsed < shootTime + 0.7) {
                             indexer.setPower(1);
                             intake.setPower(1);
-                        }
-                        if (elapsed > shootTime + 0.5 && elapsed < shootTime + 0.7) {
+                            shooter.activate();
+                            shooter.allow();
+                        } else if (elapsed < shootTime + 0.9) {
                             shooter.push();
-                        }
-                        if (elapsed > shootTime + 0.7 && elapsed < shootTime + 0.8) {
-                            shooter.release();
+                        } else {
+                             shooter.release();
                         }
                     }
-                    if (!drive.isBusy() && elapsed > 1.5) {
-                        drive.turnAsync(Math.toRadians(20));
-                        flap.setPosition(0.205);
-                        next(State.ACTION_SHOOT_THREE_RINGS);
+                    if (!drive.isBusy() && elapsed > 2.5) {
+                        next(State.IDLE);
+//                        drive.turnAsync(Math.toRadians(20));
+//                        flap.setPosition(0.205);
+//                        next(State.ACTION_SHOOT_THREE_RINGS);
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
@@ -178,15 +176,15 @@ public class RedC extends RedAuto {
                         if (elapsed < shootTime) {}
                         else if (elapsed < shootTime + 0.2) {
                             shooter.push();
-                        } else if (elapsed < shootTime + 0.4) {
+                        } else if (elapsed < shootTime + 1.4) {
                             shooter.release();
-                        } else if (elapsed < shootTime + 0.6) {
+                        } else if (elapsed < shootTime + 1.6) {
                             shooter.push();
-                        } else if (elapsed < shootTime + 0.8) {
+                        } else if (elapsed < shootTime + 1.8) {
                             shooter.release();
-                        } else if (elapsed < shootTime + 1) {
+                        } else if (elapsed < shootTime + 2) {
                             shooter.push();
-                        } else if (elapsed < shootTime + 3) {
+                        } else if (elapsed < shootTime + 5) {
                             shooter.release();
                         } else {
                             shooter.deactivate();
