@@ -150,7 +150,7 @@ public class RedC extends RedAuto {
             switch (currentState) {
                 case GO_TO_SHOOTING_POSITION:
                     if (useShooter) {
-                        double shootTime = 0.5;
+                        double shootTime = 0.3;
                         if (elapsed < shootTime + 0.6) {}
                          else if (elapsed < shootTime + 0.7) {
                             indexer.setPower(1);
@@ -163,11 +163,11 @@ public class RedC extends RedAuto {
                              shooter.release();
                         }
                     }
-                    if (!drive.isBusy() && elapsed > 2.5) {
+                    if (!drive.isBusy() && elapsed > 0.3 + 0.9 + 2) {
                         next(State.IDLE);
-//                        drive.turnAsync(Math.toRadians(20));
-//                        flap.setPosition(0.205);
-//                        next(State.ACTION_SHOOT_THREE_RINGS);
+                        drive.turnAsync(Math.toRadians(20));
+                        flap.setPosition(0.205);
+                        next(State.ACTION_SHOOT_THREE_RINGS);
                     }
                     break;
                 case ACTION_SHOOT_THREE_RINGS:
@@ -184,7 +184,7 @@ public class RedC extends RedAuto {
                             shooter.release();
                         } else if (elapsed < shootTime + 2) {
                             shooter.push();
-                        } else if (elapsed < shootTime + 5) {
+                        } else if (elapsed < shootTime + 3) {
                             shooter.release();
                         } else {
                             shooter.deactivate();
