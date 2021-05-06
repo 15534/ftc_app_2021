@@ -81,6 +81,8 @@ public class MainTeleOp extends LinearOpMode {
         shooter.deactivate();
         flap.setPosition(FLAP_POSITION);
 
+        shooter.stickUp();
+
         drive.setPoseEstimate(PoseStorage.currentPose);
         Pose2d shootingPosition = new Pose2d(-9.28, -40.35, 0);
         Pose2d powershotPosition = new Pose2d(-9.28, -16.35, 0);
@@ -127,8 +129,10 @@ public class MainTeleOp extends LinearOpMode {
                     drive.setWeightedDrivePower(new Pose2d(translation, rotation));
 
                     if (gamepad1.a && (!poseEstimate.equals(shootingPosition))) {
+                        shooter.stickUp();
                         Trajectory goToShoot = drive.trajectoryBuilder(poseEstimate)
                                 .splineToLinearHeading(shootingPosition, 0)
+                                .addSpatialMarker(shootingPosition.vec(), shooter::stickDown)
                                 .build();
                         drive.followTrajectoryAsync(goToShoot);
                         currentMode = Mode.AUTOMATIC_CONTROL;
@@ -214,6 +218,7 @@ public class MainTeleOp extends LinearOpMode {
 
             if (gamepad2.dpad_down) {
                 wobble.armDown();
+                shooter.stickUp();
             }
             if (gamepad2.dpad_up) {
                 wobble.armUp();
@@ -233,6 +238,9 @@ public class MainTeleOp extends LinearOpMode {
             } else if (gamepad2.right_bumper) {
                 drive.turn(Math.toRadians(-5));
             }
+
+            if (gamepad1.left_trigger > 0.15) shooter.stickUp();
+            if (gamepad1.right_trigger > 0.15) shooter.stickDown();
 
 //            shooterWasActive = gamepad1.left_trigger > 0.05;
 
