@@ -144,7 +144,7 @@ public class RedC extends RedAuto {
                 .addTemporalMarker(1, wobble::armMiddle)
                 .splineToConstantHeading(new Vector2d(42, -39), Math.toRadians(-90))
                 //.splineToConstantHeading(new Vector2d(41,-39), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(12, -39), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(7, -39), Math.toRadians(-90))
                 .build();
     }
 
@@ -292,6 +292,7 @@ public class RedC extends RedAuto {
                 case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (elapsed < 0.3) {
                         wobble.release();
+                        shooter.stickDown();
                     } else {
                         drive.followTrajectoryAsync(goOverLaunchLine);
                         next(State.PARK_OVER_LAUNCH_LINE);
