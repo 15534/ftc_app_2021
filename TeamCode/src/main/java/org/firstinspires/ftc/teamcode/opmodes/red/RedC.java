@@ -144,7 +144,7 @@ public class RedC extends RedAuto {
                 .addTemporalMarker(1, wobble::armMiddle)
                 .splineToConstantHeading(new Vector2d(42, -39), Math.toRadians(-90))
                 //.splineToConstantHeading(new Vector2d(41,-39), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(18, -39), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(36, -39), Math.toRadians(-90))
                 .build();
     }
 
