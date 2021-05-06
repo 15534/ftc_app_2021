@@ -201,8 +201,8 @@ public class RedC extends RedAuto {
                             shooter.deactivate();
                             intake.setPower(0);
                             indexer.setPower(0);
-//                            wobble.armDown();
-//                            wobble.loosen();
+                            wobble.armDown();
+                            wobble.loosen();
                             next(State.GO_TO_WOBBLE_GOAL);
                             drive.followTrajectoryAsync(dropOffWobbleGoal);
                         }
