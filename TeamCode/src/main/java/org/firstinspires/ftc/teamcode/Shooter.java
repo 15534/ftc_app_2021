@@ -14,6 +14,7 @@ public class Shooter {
     public DcMotorEx leftShoot, rightShoot;
     Servo pusher;
     Servo stopper;
+    Servo stick;
 
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(500, 0, 0, 0);
     public static double SHOOTER_SPEED = 1075;
@@ -23,6 +24,8 @@ public class Shooter {
     public static double RELEASED_POSITION = 0.81;
     public static double STOPPER_BLOCK = 0.625;
     public static double STOPPER_ALLOW = 0.285;
+    public static double STICK_UP = 0.35;
+    public static double STICK_DOWN = 0.9;
 
     public Shooter (HardwareMap hardwareMap) {
         leftShoot = hardwareMap.get(DcMotorEx.class, "left");
@@ -37,6 +40,7 @@ public class Shooter {
         leftShoot.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         rightShoot.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         pusher = hardwareMap.get(Servo.class, "push");
+        stick = hardwareMap.get(Servo.class, "stick");
     }
 
     public void activate() {
@@ -67,4 +71,7 @@ public class Shooter {
 
     public void block() { stopper.setPosition(STOPPER_BLOCK); }
     public void allow() { stopper.setPosition(STOPPER_ALLOW); }
+
+    public void stickUp() { stick.setPosition(STICK_DOWN); }
+    public void stickDown() { stick.setPosition(STICK_UP); }
 }
