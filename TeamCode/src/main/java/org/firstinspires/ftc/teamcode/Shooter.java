@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -15,6 +17,11 @@ public class Shooter {
     Servo pusher;
     Servo stopper;
     Servo stick;
+
+    public static double k_p = 500;
+    public static double k_i = 0;
+    public static double k_d = 0;
+    public static double k_V = 0;
 
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(500, 0, 0, 0);
     public static double SHOOTER_SPEED = 1075;
@@ -26,6 +33,9 @@ public class Shooter {
     public static double STOPPER_ALLOW = 0.285;
     public static double STICK_UP = 0.35;
     public static double STICK_DOWN = 0.9;
+
+    private PIDFController controller;
+    PIDCoefficients pidCoefficients = new PIDCoefficients(k_p, k_i, k_d);
 
     public Shooter (HardwareMap hardwareMap) {
         leftShoot = hardwareMap.get(DcMotorEx.class, "left");
@@ -41,6 +51,10 @@ public class Shooter {
         rightShoot.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         pusher = hardwareMap.get(Servo.class, "push");
         stick = hardwareMap.get(Servo.class, "stick");
+
+        controller = new PIDFController(pidCoefficients, k_V, 0);
+        controller.setOutputBounds(-1, 1);
+        controller.setTargetPosition(0);
     }
 
     public void activate() {
