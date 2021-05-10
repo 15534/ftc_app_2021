@@ -43,7 +43,7 @@ public class RedAuto extends LinearOpMode {
     public Wobble wobble;
     private RedA a;
     private RedB b;
-    private RedC c;
+    private RedBNew c;
     int stack = 4;
     public static boolean useShooter = true;
 
@@ -101,7 +101,7 @@ public class RedAuto extends LinearOpMode {
 
         telemetry.addData("BUILDING TRAJECTORIES (C)", "");
         telemetry.update();
-        c = new RedC(this);
+        c = new RedBNew(this);
         c.buildTrajectories();
 
 
