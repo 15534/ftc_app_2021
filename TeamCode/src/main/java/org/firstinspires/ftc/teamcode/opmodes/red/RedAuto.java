@@ -43,9 +43,9 @@ public class RedAuto extends LinearOpMode {
     public Wobble wobble;
     private RedA a;
     private RedB b;
-    private RedC c;
+    private RedBNew c;
     int stack = 4;
-    public static boolean useShooter = false;
+    public static boolean useShooter = true;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -81,10 +81,13 @@ public class RedAuto extends LinearOpMode {
 
         PoseStorage.currentPose = startingPosition;
 
-        shooter.block();
+//        shooter.block();
+        shooter.allow();
+        shooter.release();
         wobble.armMiddle();
         sleep(500);
-        wobble.grip();
+        // TODO enable
+//        wobble.grip();
 
 //        telemetry.addData("BUILDING TRAJECTORIES (A)", "");
 //        telemetry.update();
@@ -98,7 +101,7 @@ public class RedAuto extends LinearOpMode {
 
         telemetry.addData("BUILDING TRAJECTORIES (C)", "");
         telemetry.update();
-        c = new RedC(this);
+        c = new RedBNew(this);
         c.buildTrajectories();
 
 

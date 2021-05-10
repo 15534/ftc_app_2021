@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(name="RedC")
-public class RedC extends RedAuto {
+@Autonomous(name="RedBNew")
+public class RedBNew extends RedAuto {
 
     double time = 0.0;
     ElapsedTime runtime = new ElapsedTime();
@@ -57,7 +57,7 @@ public class RedC extends RedAuto {
         currentState = s;
     }
 
-    public RedC(RedAuto op) {
+    public RedBNew(RedAuto op) {
         this.op = op;
         indexer = op.indexer;
         intake = op.intake;
@@ -77,20 +77,19 @@ public class RedC extends RedAuto {
 
         //Drop off the wobble goal
         dropOffWobbleGoal = drive.trajectoryBuilder(launchPosition.end().plus(new Pose2d(0,0, Math.toRadians(20))))
-                .splineToSplineHeading(new Pose2d(44, -52, Math.toRadians(-90)), Math.toRadians(0))
-                .addSpatialMarker(new Vector2d(40, -52), wobble::release)
+                .splineToSplineHeading(new Pose2d(34, -42, Math.toRadians(0)), Math.toRadians(0))
+                .addSpatialMarker(new Vector2d(30, -42), wobble::release)
                 .build();
 
         double intakeAngle = Math.toRadians(110);
-        double intakeDist = 42;
+        double intakeDist = 20;
         double intakeX = intakeDist * Math.cos(intakeAngle);
         double intakeY = intakeDist * Math.sin(intakeAngle);
 
         //Go back to pick up three more rings from stack
-        pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+        pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end(), Math.toRadians(180))
                 .addTemporalMarker(1, wobble::armMiddle)
-                .splineToConstantHeading(new Vector2d(48,-34), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(-14.2, -47.7, Math.toRadians(110)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-14.2, -47.7, Math.toRadians(110)), Math.toRadians(110))
                 .build();
 
         pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
@@ -112,9 +111,8 @@ public class RedC extends RedAuto {
 //                .splineToConstantHeading(new Vector2d(-32, -35), Math.toRadians(0)) //test this again
 //                .build();
 
-        getInPositionForSecondWobbleGoal = drive.trajectoryBuilder(pickUp3Rings.end(), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(-25.1, -10.3), Math.toRadians(-90))
-                .splineToSplineHeading(new Pose2d(-25.1,-36, Math.toRadians(90)), Math.toRadians(-90))
+        getInPositionForSecondWobbleGoal = drive.trajectoryBuilder(pickUp3Rings.end(), Math.toRadians(-110))
+                .splineToSplineHeading(new Pose2d(-25.1,-36, Math.toRadians(90)), Math.toRadians(-110))
                 .splineToConstantHeading(new Vector2d(-33.5,-36), Math.toRadians(90))
                 .addSpatialMarker(new Vector2d(-33.5,-36), () -> {
                     wobble.armDown();
@@ -131,13 +129,8 @@ public class RedC extends RedAuto {
 //                .splineToSplineHeading(new Pose2d(0, -36, Math.toRadians(0)), Math.toRadians(0))
 //                .build();
 
-        goToShooter = drive.trajectoryBuilder(pickUpSecondGoal.end())
-                .splineToSplineHeading(new Pose2d(0,-36,Math.toRadians(0)), Math.toRadians(0))
-                .build();
-
         dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondGoal.end(), Math.toRadians(-90))
-                .splineToSplineHeading(new Pose2d(0, -40, Math.toRadians(0)), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(42, -57, Math.toRadians(-90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(34, -50, Math.toRadians(0)), Math.toRadians(0))
                 .build();
 
         goOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
@@ -164,7 +157,7 @@ public class RedC extends RedAuto {
                     if (useShooter) {
                         double shootTime = 0.3;
                         if (elapsed < shootTime + 0.6) {}
-                         else if (elapsed < shootTime + 0.7) {
+                        else if (elapsed < shootTime + 0.7) {
                             indexer.setPower(1);
                             intake.setPower(1);
                             shooter.activate();
@@ -172,7 +165,7 @@ public class RedC extends RedAuto {
                         } else if (elapsed < shootTime + 0.9) {
                             shooter.push();
                         } else {
-                             shooter.release();
+                            shooter.release();
                         }
                     }
                     if (!drive.isBusy() && elapsed > 0.3 + 0.9 + 2) {
