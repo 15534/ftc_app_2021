@@ -222,8 +222,8 @@ public class RedC extends RedAuto {
 //                    if (elapsed < 0.3) {
 //
 //                    } else {
-                        drive.followTrajectoryAsync(pickUp3RingsIntermediatePoint);
-                        next(State.GO_TO_3_RINGS);
+                    drive.followTrajectoryAsync(pickUp3RingsIntermediatePoint);
+                    next(State.GO_TO_3_RINGS);
                     //}
                     break;
                 case GO_TO_3_RINGS:
