@@ -44,8 +44,8 @@ public class RedAuto extends LinearOpMode {
     private RedA a;
     private RedB b;
     private RedBNew c;
-    int stack = 4;
-    public static boolean useShooter = true;
+    int stack = 0;
+    public static boolean useShooter = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -89,15 +89,15 @@ public class RedAuto extends LinearOpMode {
         // TODO enable
 //        wobble.grip();
 
-//        telemetry.addData("BUILDING TRAJECTORIES (A)", "");
-//        telemetry.update();
-//        a = new RedA(this);
-//        a.buildTrajectories();
-//
-//        telemetry.addData("BUILDING TRAJECTORIES (B)", "");
-//        telemetry.update();
-//        b = new RedB(this);
-//        b.buildTrajectories();
+        telemetry.addData("BUILDING TRAJECTORIES (A)", "");
+        telemetry.update();
+        a = new RedA(this);
+        a.buildTrajectories();
+
+        telemetry.addData("BUILDING TRAJECTORIES (B)", "");
+        telemetry.update();
+        b = new RedB(this);
+        b.buildTrajectories();
 
         telemetry.addData("BUILDING TRAJECTORIES (C)", "");
         telemetry.update();
@@ -108,7 +108,7 @@ public class RedAuto extends LinearOpMode {
         while (!opModeIsActive() && !isStopRequested()) {
             drive.setPoseEstimate(startingPosition);
             telemetry.addData("READY", "");
-//            stack = pipeline.getStack();
+            stack = pipeline.getStack();
             telemetry.addData("stack", stack);
             telemetry.update();
             sleep(50);
@@ -118,12 +118,15 @@ public class RedAuto extends LinearOpMode {
             // wait for start
             switch (stack) {
                 case 0:
+                    telemetry.addData("Running A", "");
                     a.run();
                     break;
                 case 1:
+                    telemetry.addData("Running B", "");
                     b.run();
                     break;
                 case 4:
+                    telemetry.addData("Running C", "");
                     c.run();
                     break;
             }

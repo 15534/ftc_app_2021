@@ -16,7 +16,7 @@ public class RedA extends RedAuto {
     LinearOpMode op;
 
     Trajectory launchPosition, dropOffWobbleGoal, intermediatePoint, getInPositionForSecondWobbleGoal,
-            dropOffSecondWobbleGoal, parkOverLaunchLine;
+            pickUpSecondWobbleGoal, dropOffSecondWobbleGoal, parkOverLaunchLine;
 
 
     enum State {
@@ -27,7 +27,10 @@ public class RedA extends RedAuto {
         INTERMEDIATE_POINT,
         PICK_UP_WOBBLE_2,
         ACTION_PICK_UP_WOBBLE_GOAL,
+        ACTION_DROP_OFF_SECOND_WOBBLE_GOAL,
+        PICK_UP_WOBBLE_GOAL,
         DROP_OFF_SECOND_WOBBLE_GOAL,
+        ALIGN_WOBBLE_GOAL,
         PARK_OVER_LAUNCH_LINE,
         IDLE
     }
@@ -43,7 +46,7 @@ public class RedA extends RedAuto {
         flap = op.flap;
         intake = op.intake;
         drive = op.drive;
-        //shooter = op.shooter;
+        shooter = op.shooter;
         wobble = op.wobble;
         telemetry = op.telemetry;
     }
@@ -60,28 +63,32 @@ public class RedA extends RedAuto {
 
         //Drop off the wobble goal
         dropOffWobbleGoal = drive.trajectoryBuilder(launchPosition.end())
-                .splineToSplineHeading(new Pose2d(12, -57, Math.toRadians(-90)), Math.toRadians(0))
-                .addSpatialMarker(new Vector2d(12,-57), () -> {
+                .splineToSplineHeading(new Pose2d(0, -52, Math.toRadians(-90)), Math.toRadians(0))
+                .addSpatialMarker(new Vector2d(0,-52), () -> {
                     wobble.release();
                 })
                 .build();
 
-        intermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(12, -55), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(-48, -48, Math.toRadians(90)), Math.toRadians(0))
-                .build();
+//        intermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
+//                .splineToConstantHeading(new Vector2d(12, -55), Math.toRadians(0))
+//                .splineToSplineHeading(new Pose2d(-48, -48, Math.toRadians(90)), Math.toRadians(0))
+//                .build();
 
         getInPositionForSecondWobbleGoal =  drive.trajectoryBuilder(dropOffWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(12,-36), Math.toRadians(-90))
-                .splineToSplineHeading(new Pose2d(-36, -32, Math.toRadians(90)), Math.toRadians(90))
-                .addSpatialMarker(new Vector2d(-36,-32), () -> {
-                    wobble.grip();
-                    wobble.loosen();
-                })
+                .splineToConstantHeading(new Vector2d(0,-36), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(-33.5, -36, Math.toRadians(90)), Math.toRadians(90))
+//                .addSpatialMarker(new Vector2d(-36,-32), () -> {
+//                    wobble.grip();
+//                    //wobble.loosen();
+//                })
                 .build();
 
-        dropOffSecondWobbleGoal = drive.trajectoryBuilder(getInPositionForSecondWobbleGoal.end())
-                .splineToSplineHeading(new Pose2d(12,-48, Math.toRadians(-90)), Math.toRadians(0))
+        pickUpSecondWobbleGoal = drive.trajectoryBuilderSlow(getInPositionForSecondWobbleGoal.end())
+                .splineToConstantHeading(new Vector2d(-33.5, -24.25), Math.toRadians(90))
+                .build();
+
+        dropOffSecondWobbleGoal = drive.trajectoryBuilder(pickUpSecondWobbleGoal.end())
+                .splineToSplineHeading(new Pose2d(0,-48, Math.toRadians(-90)), Math.toRadians(0))
                 .build();
 
         parkOverLaunchLine = drive.trajectoryBuilder(dropOffSecondWobbleGoal.end())
@@ -97,8 +104,8 @@ public class RedA extends RedAuto {
         drive.followTrajectoryAsync(launchPosition);
 
         if (useShooter) {
-            //shooter.activate();
-            //shooter.allow();
+            shooter.activate();
+            shooter.allow();
             indexer.setPower(1);
             intake.setPower(1);
         }
@@ -164,12 +171,33 @@ public class RedA extends RedAuto {
                     break;
                 case GO_TO_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
-                        next(State.ACTION_DROP_OFF_WOBBLE_GOAL);
+                        next(State.PICK_UP_WOBBLE_GOAL);
                     }
                     break;
-                case ACTION_DROP_OFF_WOBBLE_GOAL:
-                    drive.followTrajectoryAsync(getInPositionForSecondWobbleGoal);
-                    next(State.DROP_OFF_SECOND_WOBBLE_GOAL);
+                case PICK_UP_WOBBLE_GOAL:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(getInPositionForSecondWobbleGoal);
+                        next(State.ACTION_PICK_UP_WOBBLE_GOAL);
+                    }
+                    break;
+                case ALIGN_WOBBLE_GOAL:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectoryAsync(pickUpSecondWobbleGoal);
+                        next(State.PICK_UP_WOBBLE_2);
+                    }
+                    break;
+                case PICK_UP_WOBBLE_2:
+                    if (!drive.isBusy()) {
+                        next(State.ACTION_PICK_UP_WOBBLE_GOAL);
+                    }
+                    break;
+                case ACTION_PICK_UP_WOBBLE_GOAL:
+                    if (elapsed < 0.3) {
+                        wobble.grip();
+                    } else {
+                        drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
+                        next(State.DROP_OFF_SECOND_WOBBLE_GOAL);
+                    }
                     break;
 //                case INTERMEDIATE_POINT:
 //                    if (!drive.isBusy()) {
@@ -191,12 +219,19 @@ public class RedA extends RedAuto {
 //                    }
 //                    break;
                 case DROP_OFF_SECOND_WOBBLE_GOAL:
+                    if (!drive.isBusy()) {
+                        next(State.ACTION_DROP_OFF_SECOND_WOBBLE_GOAL);
+                        wobble.loosen();
+                    }
+                    break;
+                case ACTION_DROP_OFF_WOBBLE_GOAL:
                     if (elapsed < 0.3) {
                         wobble.release();
                     } else {
                         drive.followTrajectoryAsync(parkOverLaunchLine);
                         next(State.PARK_OVER_LAUNCH_LINE);
                     }
+
             }
 
             // Read pose
