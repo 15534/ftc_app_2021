@@ -22,15 +22,18 @@ public class RedA extends RedAuto {
     enum State {
         GO_TO_SHOOTING_POSITION,
         ACTION_SHOOT_THREE_RINGS,
-        GO_TO_WOBBLE_GOAL,
+        GO_TO_SECOND_WOBBLE_GOAL,
         ACTION_DROP_OFF_WOBBLE_GOAL,
-        INTERMEDIATE_POINT,
+        DROP_OFF_WOBBLE_GOAL,
+        GO_TO_WOBBLE_GOAL,
         PICK_UP_WOBBLE_2,
         ACTION_PICK_UP_WOBBLE_GOAL,
         ACTION_DROP_OFF_SECOND_WOBBLE_GOAL,
         PICK_UP_WOBBLE_GOAL,
+        ACTION_PICK_UP_SECOND_WOBBLE_GOAL,
         DROP_OFF_SECOND_WOBBLE_GOAL,
         ALIGN_WOBBLE_GOAL,
+        ACTION_DROP_OFF_WOBBLE_GOAL_2,
         PARK_OVER_LAUNCH_LINE,
         IDLE
     }
@@ -157,41 +160,38 @@ public class RedA extends RedAuto {
                             indexer.setPower(0);
                             wobble.armDown();
                             wobble.loosen();
-                            next(State.GO_TO_WOBBLE_GOAL);
+                            next(State.DROP_OFF_WOBBLE_GOAL);
                             drive.followTrajectoryAsync(dropOffWobbleGoal);
                         }
                     } else {
                         if (elapsed > 1) {
-                            next(State.GO_TO_WOBBLE_GOAL);
+                            next(State.DROP_OFF_WOBBLE_GOAL);
                             wobble.armDown();
                             wobble.loosen();
                             drive.followTrajectoryAsync(dropOffWobbleGoal);
                         }
                     }
                     break;
-                case GO_TO_WOBBLE_GOAL:
+                case DROP_OFF_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
-                        next(State.PICK_UP_WOBBLE_GOAL);
+                        next(State.ACTION_DROP_OFF_WOBBLE_GOAL);
                     }
                     break;
-                case PICK_UP_WOBBLE_GOAL:
-                    if (!drive.isBusy()) {
+                case ACTION_DROP_OFF_WOBBLE_GOAL:
+                    if (elapsed < 0.3) {
+                        wobble.release();
+                    } else {
                         drive.followTrajectoryAsync(getInPositionForSecondWobbleGoal);
-                        next(State.ACTION_PICK_UP_WOBBLE_GOAL);
+                        next(State.GO_TO_SECOND_WOBBLE_GOAL);
                     }
                     break;
-                case ALIGN_WOBBLE_GOAL:
+                case GO_TO_SECOND_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
                         drive.followTrajectoryAsync(pickUpSecondWobbleGoal);
-                        next(State.PICK_UP_WOBBLE_2);
+                        next(State.ACTION_PICK_UP_SECOND_WOBBLE_GOAL);
                     }
                     break;
-                case PICK_UP_WOBBLE_2:
-                    if (!drive.isBusy()) {
-                        next(State.ACTION_PICK_UP_WOBBLE_GOAL);
-                    }
-                    break;
-                case ACTION_PICK_UP_WOBBLE_GOAL:
+                case ACTION_PICK_UP_SECOND_WOBBLE_GOAL:
                     if (elapsed < 0.3) {
                         wobble.grip();
                     } else {
@@ -224,14 +224,13 @@ public class RedA extends RedAuto {
                         wobble.loosen();
                     }
                     break;
-                case ACTION_DROP_OFF_WOBBLE_GOAL:
+                case ACTION_DROP_OFF_SECOND_WOBBLE_GOAL:
                     if (elapsed < 0.3) {
                         wobble.release();
                     } else {
                         drive.followTrajectoryAsync(parkOverLaunchLine);
                         next(State.PARK_OVER_LAUNCH_LINE);
                     }
-
             }
 
             // Read pose

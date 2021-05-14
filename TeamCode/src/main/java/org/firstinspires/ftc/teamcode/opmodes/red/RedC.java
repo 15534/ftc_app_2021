@@ -91,7 +91,7 @@ public class RedC extends RedAuto {
         pickUp3RingsIntermediatePoint = drive.trajectoryBuilder(dropOffWobbleGoal.end())
                 .addTemporalMarker(1, wobble::armMiddle)
                 .splineToConstantHeading(new Vector2d(48,-34), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(-14.2, -47.7, Math.toRadians(110)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-13.5159, -49.479, Math.toRadians(110)), Math.toRadians(0))
                 .build();
 
         pickUp3Rings = drive.trajectoryBuilderSlow(pickUp3RingsIntermediatePoint.end())
@@ -296,6 +296,7 @@ public class RedC extends RedAuto {
                         }
                     }
                     if (!drive.isBusy() && elapsed > 0.3 + 0.9 + 2) {
+                        drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
                         next(State.DROP_OFF_SECOND_WOBBLE_GOAL);
                         shooter.deactivate();
                         intake.setPower(0);

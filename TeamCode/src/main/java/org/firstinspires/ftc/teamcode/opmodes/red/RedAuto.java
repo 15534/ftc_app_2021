@@ -44,7 +44,7 @@ public class RedAuto extends LinearOpMode {
     private RedA a;
     private RedBNew b;
     private RedC c;
-    int stack = 4;
+    int stack = 0;
     public static boolean useShooter = false;
 
     @Override
@@ -108,7 +108,7 @@ public class RedAuto extends LinearOpMode {
         while (!opModeIsActive() && !isStopRequested()) {
             drive.setPoseEstimate(startingPosition);
             telemetry.addData("READY", "");
-//            stack = pipeline.getStack();
+            //stack = pipeline.getStack();
             telemetry.addData("stack", stack);
             telemetry.update();
             sleep(50);

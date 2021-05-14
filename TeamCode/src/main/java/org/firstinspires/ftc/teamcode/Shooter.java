@@ -86,6 +86,6 @@ public class Shooter {
     public void block() { stopper.setPosition(STOPPER_BLOCK); }
     public void allow() { stopper.setPosition(STOPPER_ALLOW); }
 
-    public void stickUp() { stick.setPosition(STICK_DOWN); }
-    public void stickDown() { stick.setPosition(STICK_UP); }
+    public void stickUp() { stick.setPosition(STICK_UP); }
+    public void stickDown() { stick.setPosition(STICK_DOWN); }
 }
