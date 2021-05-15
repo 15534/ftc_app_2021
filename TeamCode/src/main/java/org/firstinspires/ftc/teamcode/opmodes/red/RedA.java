@@ -58,7 +58,7 @@ public class RedA extends RedAuto {
         //Go forward to intermediate point
         launchPosition = drive.trajectoryBuilder(startingPosition)
                 .splineToSplineHeading(new Pose2d(-7,-57,Math.toRadians(13)), Math.toRadians(0))
-                .addSpatialMarker(new Vector2d(-7,-57), () -> {
+                .addSpatialMarker(new Vector2d(-17,-57), () -> {
                     wobble.loosen();
                     wobble.armDown();
                 })
@@ -77,9 +77,9 @@ public class RedA extends RedAuto {
 //                .splineToSplineHeading(new Pose2d(-48, -48, Math.toRadians(90)), Math.toRadians(0))
 //                .build();
 
-        getInPositionForSecondWobbleGoal =  drive.trajectoryBuilder(dropOffWobbleGoal.end())
+        getInPositionForSecondWobbleGoal =  drive.trajectoryBuilder(dropOffWobbleGoal.end(), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(0,-36), Math.toRadians(-90))
-                .splineToSplineHeading(new Pose2d(-33.5, -36, Math.toRadians(90)), Math.toRadians(90))
+                .splineTo(new Vector2d(-33.5, -36), Math.toRadians(90))
 //                .addSpatialMarker(new Vector2d(-36,-32), () -> {
 //                    wobble.grip();
 //                    //wobble.loosen();
