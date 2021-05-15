@@ -44,8 +44,8 @@ public class RedAuto extends LinearOpMode {
     private RedA a;
     private RedBNew b;
     private RedC c;
-    int stack = 0;
-    public static boolean useShooter = false;
+    int stack = 4;
+    public static boolean useShooter = true;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -87,7 +87,7 @@ public class RedAuto extends LinearOpMode {
         wobble.armMiddle();
         sleep(500);
         // TODO enable
-//        wobble.grip();
+        wobble.grip();
 
         telemetry.addData("BUILDING TRAJECTORIES (A)", "");
         telemetry.update();
