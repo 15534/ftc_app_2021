@@ -78,8 +78,8 @@ public class RedC extends RedAuto {
 
         //Drop off the wobble goal
         dropOffWobbleGoal = drive.trajectoryBuilder(launchPosition.end().plus(new Pose2d(0,0, Math.toRadians(20))))
-                .splineToSplineHeading(new Pose2d(44, -52, Math.toRadians(-90)), Math.toRadians(0))
-                .addSpatialMarker(new Vector2d(40, -52), wobble::release)
+                .splineToSplineHeading(new Pose2d(44, -55, Math.toRadians(-90)), Math.toRadians(0))
+                .addSpatialMarker(new Vector2d(40, -55), wobble::release)
                 .build();
 
         double intakeAngle = Math.toRadians(110);
@@ -116,8 +116,8 @@ public class RedC extends RedAuto {
         getInPositionForSecondWobbleGoal = drive.trajectoryBuilder(pickUp3Rings.end(), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(-25.1, -10.3), Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(-25.1,-36, Math.toRadians(90)), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(-33.5,-36), Math.toRadians(90))
-                .addSpatialMarker(new Vector2d(-33.5,-36), () -> {
+                .splineToConstantHeading(new Vector2d(-31,-36), Math.toRadians(90))
+                .addSpatialMarker(new Vector2d(-31,-36), () -> {
                     wobble.armDown();
                     intake.setPower(0);
                     indexer.setPower(0);
@@ -125,7 +125,7 @@ public class RedC extends RedAuto {
                 .build();
 
         pickUpSecondGoal = drive.trajectoryBuilder(getInPositionForSecondWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(-33.5, -24.25), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-31, -24), Math.toRadians(90))
                 .build();
 
         shoot2MoreRings = drive.trajectoryBuilder(pickUpSecondGoal.end(), Math.toRadians(-90))
@@ -167,8 +167,12 @@ public class RedC extends RedAuto {
                             shooter.allow();
                         } else if (elapsed < shootTime + 0.9) {
                             shooter.push();
-                        } else {
+                        } else if (elapsed < shootTime + 1.9) {
                              shooter.release();
+                        } else if (elapsed < shootTime + 2.1) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 3.1) {
+                            shooter.release();
                         }
                     }
                     if (!drive.isBusy() && elapsed > 0.3 + 0.9 + 2) {
@@ -193,7 +197,13 @@ public class RedC extends RedAuto {
                             shooter.push();
                         } else if (elapsed < shootTime + 3) {
                             shooter.release();
-                        } else {
+                        }
+//                        } else if (elapsed < shootTime + 3.2) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 4.2) {
+//                            shooter.release();
+//                        }
+                        else {
                             shooter.deactivate();
                             intake.setPower(0);
                             indexer.setPower(0);
@@ -281,26 +291,22 @@ public class RedC extends RedAuto {
 //                    break;
                 case GO_TO_SHOOTING_POSITION_2:
                     if (useShooter) {
-                        flap.setPosition(0.1845);
                         double shootTime = 0.3;
-                        if (elapsed < shootTime + 0.6) {}
-                        else if (elapsed < shootTime + 0.7) {
+                        if (elapsed < shootTime + 0.6) {
+                        } else if (elapsed < shootTime + 0.7) {
                             indexer.setPower(1);
                             intake.setPower(1);
                             shooter.activate();
                             shooter.allow();
                         } else if (elapsed < shootTime + 0.9) {
                             shooter.push();
-                        } else {
+                        } else if (elapsed < shootTime + 1.9) {
+                            shooter.release();
+                        } else if (elapsed < shootTime + 2.1) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 3.1) {
                             shooter.release();
                         }
-                    }
-                    if (!drive.isBusy() && elapsed > 0.3 + 0.9 + 2) {
-                        drive.followTrajectoryAsync(dropOffSecondWobbleGoal);
-                        next(State.DROP_OFF_SECOND_WOBBLE_GOAL);
-                        shooter.deactivate();
-                        intake.setPower(0);
-                        indexer.setPower(0);
                     }
                     break;
                 case DROP_OFF_SECOND_WOBBLE_GOAL:

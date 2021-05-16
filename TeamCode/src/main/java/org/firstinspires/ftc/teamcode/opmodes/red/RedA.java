@@ -166,8 +166,8 @@ public class RedA extends RedAuto {
                     } else {
                         if (elapsed > 1) {
                             next(State.DROP_OFF_WOBBLE_GOAL);
-                            wobble.armDown();
                             wobble.loosen();
+                            wobble.armDown();
                             drive.followTrajectoryAsync(dropOffWobbleGoal);
                         }
                     }
