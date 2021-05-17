@@ -72,6 +72,7 @@ public class MainTeleOp extends LinearOpMode {
         double indexerPower = 0;
         double intakePower = 0;
         boolean toggleGripActive = false;
+        boolean rightTriggerActive = false;
 //        double transferPower = 0;
 
 //        ModernRoboticsI2cRangeSensor rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range_1");
@@ -239,8 +240,15 @@ public class MainTeleOp extends LinearOpMode {
                 drive.turn(Math.toRadians(-5));
             }
 
-            if (gamepad1.left_trigger > 0.15) shooter.stickUp();
-            if (gamepad1.right_trigger > 0.15) shooter.stickDown();
+            if (gamepad1.right_trigger > 0.15 && !rightTriggerActive) {
+                if (shooter.stickIsUp) {
+                    shooter.stickDown();
+                } else {
+                    shooter.stickUp();
+                }
+            }
+
+            rightTriggerActive = gamepad1.right_trigger > 0.15;
 
 //            shooterWasActive = gamepad1.left_trigger > 0.05;
 

@@ -31,8 +31,10 @@ public class Shooter {
     public static double RELEASED_POSITION = 0.81;
     public static double STOPPER_BLOCK = 0.625;
     public static double STOPPER_ALLOW = 0.285;
-    public static double STICK_UP = 0.35;
-    public static double STICK_DOWN = 0.9;
+    public static double STICK_UP = 0.9;
+    public static double STICK_DOWN = 0.12;
+
+    public boolean stickIsUp = true;
 
     private PIDFController controller;
     PIDCoefficients pidCoefficients = new PIDCoefficients(k_p, k_i, k_d);
@@ -86,6 +88,6 @@ public class Shooter {
     public void block() { stopper.setPosition(STOPPER_BLOCK); }
     public void allow() { stopper.setPosition(STOPPER_ALLOW); }
 
-    public void stickUp() { stick.setPosition(STICK_UP); }
-    public void stickDown() { stick.setPosition(STICK_DOWN); }
+    public void stickUp() { stick.setPosition(STICK_UP); stickIsUp = true; }
+    public void stickDown() { stick.setPosition(STICK_DOWN); stickIsUp = false; }
 }
