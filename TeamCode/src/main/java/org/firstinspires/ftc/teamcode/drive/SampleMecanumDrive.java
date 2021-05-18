@@ -54,8 +54,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(5, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -109,7 +109,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         constraints = new MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH);
         slowConstraints = new MecanumConstraints(SLOW_CONSTRAINTS, TRACK_WIDTH);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+                new Pose2d(0.2, 0.2, Math.toRadians(1.0)), 0.5);
 
         poseHistory = new LinkedList<>();
 
@@ -168,6 +168,11 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public TrajectoryBuilder trajectoryBuilderSlow(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, slowConstraints);
+    }
+
+
+    public TrajectoryBuilder trajectoryBuilderSlow(Pose2d startPose, double startHeading) {
+        return new TrajectoryBuilder(startPose, startHeading, slowConstraints);
     }
 
 

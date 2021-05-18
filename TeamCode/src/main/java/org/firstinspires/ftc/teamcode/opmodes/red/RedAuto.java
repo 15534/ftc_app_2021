@@ -84,10 +84,11 @@ public class RedAuto extends LinearOpMode {
 //        shooter.block();
         shooter.allow();
         shooter.release();
-        wobble.armUp();
+        wobble.grip();
         sleep(500);
         // TODO enable
-        wobble.grip();
+        wobble.armUp();
+
 
         telemetry.addData("BUILDING TRAJECTORIES (A)", "");
         telemetry.update();
