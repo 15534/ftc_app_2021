@@ -45,7 +45,7 @@ public class RedAuto extends LinearOpMode {
     private RedBNew b;
     private RedC c;
     int stack = 4;
-    public static boolean useShooter = true;
+    public static boolean useShooter = false;
 
     @Override
     public void runOpMode() throws InterruptedException {

@@ -102,27 +102,27 @@ public class RedC extends RedAuto {
                 .lineTo(pickUp3RingsIntermediatePoint.end().vec().plus(new Vector2d(intakeX, intakeY)))
                 .build();
 
-        getInPositionForSecondWobbleGoal = drive.trajectoryBuilderSlow(pickUp3Rings.end(), Math.toRadians(-70))
-                .splineToConstantHeading(new Vector2d(-37, -25), Math.toRadians(110))
-                .build();
-
-
-//        getInPositionForSecondWobbleGoal = drive.trajectoryBuilder(pickUp3Rings.end(), Math.toRadians(-90))
-////                .splineToConstantHeading(new Vector2d(-25.1, -10.3), Math.toRadians(-90))
-//                .splineToSplineHeading(new Pose2d(pickUp3Rings.end().getX(),-36, Math.toRadians(87)), Math.toRadians(-90))
-//                .splineToConstantHeading(new Vector2d(-33.5,-36), Math.toRadians(90))
-//                .addSpatialMarker(new Vector2d(-33.5,-36), () -> {
-//                    wobble.armDown();
-//                    intake.setPower(0);
-//                    indexer.setPower(0);
-//                })
+//        getInPositionForSecondWobbleGoal = drive.trajectoryBuilderSlow(pickUp3Rings.end(), Math.toRadians(-70))
+//                .splineToConstantHeading(new Vector2d(-31.75, -21.4), Math.toRadians(110))
 //                .build();
+
+
+        getInPositionForSecondWobbleGoal = drive.trajectoryBuilder(pickUp3Rings.end(), Math.toRadians(-90))
+//                .splineToConstantHeading(new Vector2d(-25.1, -10.3), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(pickUp3Rings.end().getX(),-36, Math.toRadians(87)), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-33.5,-36), Math.toRadians(90))
+                .addSpatialMarker(new Vector2d(-33.5,-36), () -> {
+                    wobble.armDown();
+                    intake.setPower(0);
+                    indexer.setPower(0);
+                })
+                .build();
 
         pickUpSecondGoal = drive.trajectoryBuilderSlow(getInPositionForSecondWobbleGoal.end())
                 .splineToConstantHeading(new Vector2d(-33.5, -23), Math.toRadians(90))
                 .build();
 
-        shoot2MoreRings = drive.trajectoryBuilder(pickUpSecondGoal.end(), Math.toRadians(-90))
+        shoot2MoreRings = drive.trajectoryBuilder(getInPositionForSecondWobbleGoal.end(), Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(-5, -40, Math.toRadians(0)), Math.toRadians(0))
                 .build();
 
@@ -256,11 +256,11 @@ public class RedC extends RedAuto {
                     break;
                 case ALIGN_WOBBLE_GOAL:
                     if (!drive.isBusy()) {
-                        next(State.IDLE);
-//                        drive.followTrajectoryAsync(pickUpSecondGoal);
-//                        next(State.PICK_UP_WOBBLE_2);
+                        //next(State.PICK_UP_WOBBLE_2);
+                        drive.followTrajectoryAsync(pickUpSecondGoal);
+                        next(State.PICK_UP_WOBBLE_2);
                     }
-                    break;
+                   break;
                 case PICK_UP_WOBBLE_2:
                     if (!drive.isBusy()) {
                         next(State.ACTION_PICK_UP_WOBBLE_GOAL);

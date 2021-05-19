@@ -31,8 +31,8 @@ public class Shooter {
     public static double RELEASED_POSITION = 0.81;
     public static double STOPPER_BLOCK = 0.625;
     public static double STOPPER_ALLOW = 0.285;
-    public static double STICK_UP = 0.9;
-    public static double STICK_DOWN = 0.12;
+    public static double STICK_UP = 1;
+    public static double STICK_DOWN = 0;
 
     public boolean stickIsUp = true;
 
