@@ -83,7 +83,7 @@ public class RedC extends RedAuto {
                 .build();
 
         double intakeAngle = Math.toRadians(110);
-        double intakeDist = 36;
+        double intakeDist = 45;
         double intakeX = intakeDist * Math.cos(intakeAngle);
         double intakeY = intakeDist * Math.sin(intakeAngle);
 
@@ -106,7 +106,6 @@ public class RedC extends RedAuto {
 //                .splineToConstantHeading(new Vector2d(-31.75, -21.4), Math.toRadians(110))
 //                .build();
 
-
         getInPositionForSecondWobbleGoal = drive.trajectoryBuilder(pickUp3Rings.end(), Math.toRadians(-90))
 //                .splineToConstantHeading(new Vector2d(-25.1, -10.3), Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(pickUp3Rings.end().getX(),-36, Math.toRadians(87)), Math.toRadians(-90))
@@ -114,12 +113,14 @@ public class RedC extends RedAuto {
                 .addSpatialMarker(new Vector2d(-33.5,-36), () -> {
                     wobble.armDown();
                     intake.setPower(0);
-                    indexer.setPower(0);
                 })
                 .build();
 
-        pickUpSecondGoal = drive.trajectoryBuilderSlow(getInPositionForSecondWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(-33.5, -23), Math.toRadians(90))
+        pickUpSecondGoal = drive.trajectoryBuilder(getInPositionForSecondWobbleGoal.end())
+                .splineToConstantHeading(new Vector2d(-33.5, -21), Math.toRadians(90))
+                .addSpatialMarker(new Vector2d(-33.5, -21), () -> {
+                    indexer.setPower(0);
+                })
                 .build();
 
         shoot2MoreRings = drive.trajectoryBuilder(pickUpSecondGoal.end(), Math.toRadians(90))
@@ -173,11 +174,12 @@ public class RedC extends RedAuto {
                             shooter.push();
                         } else if (elapsed < shootTime + 3.1) {
                             shooter.release();
-                        } else if (elapsed < shootTime + 3.3) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 4.3) {
-                            shooter.release();
                         }
+//                         else if (elapsed < shootTime + 3.3) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 4.3) {
+//                            shooter.release();
+//                        }
                     }
                     if (!drive.isBusy() && elapsed > 0.3 + 0.9 + 2) {
                         drive.turnAsync(Math.toRadians(20));
@@ -197,12 +199,13 @@ public class RedC extends RedAuto {
                             shooter.push();
                         } else if (elapsed < shootTime + 1.8) {
                             shooter.release();
-                        } else if (elapsed < shootTime + 2) {
-                            shooter.push();
-                        } else if (elapsed < shootTime + 3) {
-                            shooter.release();
                         }
-//                        } else if (elapsed < shootTime + 3.2) {
+//                        } else if (elapsed < shootTime + 2) {
+//                            shooter.push();
+//                        } else if (elapsed < shootTime + 3) {
+//                            shooter.release();
+//                        }
+//                         else if (elapsed < shootTime + 3.2) {
 //                            shooter.push();
 //                        } else if (elapsed < shootTime + 4.2) {
 //                            shooter.release();
@@ -297,6 +300,10 @@ public class RedC extends RedAuto {
                         } else if (elapsed < shootTime + 2.1) {
                             shooter.push();
                         } else if (elapsed < shootTime + 3.1) {
+                            shooter.release();
+                        } else if (elapsed < shootTime + 3.3) {
+                            shooter.push();
+                        } else if (elapsed < shootTime + 4.3) {
                             shooter.release();
                         } else {
                             shooter.deactivate();

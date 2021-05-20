@@ -84,6 +84,7 @@ public class RedAuto extends LinearOpMode {
 //        shooter.block();
         shooter.allow();
         shooter.release();
+        shooter.stickUp();
         wobble.grip();
         sleep(500);
         // TODO enable
