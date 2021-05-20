@@ -98,6 +98,10 @@ public class DriveConstants {
             Math.toRadians(90), Math.toRadians(90), 0.0
     );
 
+    public static DriveConstraints VERY_SLOW_CONSTRAINTS = new DriveConstraints(
+            10, 5, 0.0,
+            Math.toRadians(90), Math.toRadians(90), 0.0
+    );
 
 
     public static double encoderTicksToInches(double ticks) {

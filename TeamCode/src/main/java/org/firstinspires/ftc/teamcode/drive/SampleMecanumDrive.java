@@ -41,6 +41,7 @@ import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.BASE_CONSTRAINTS;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.SLOW_CONSTRAINTS;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.VERY_SLOW_CONSTRAINTS;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
@@ -80,7 +81,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private MotionProfile turnProfile;
     private double turnStart;
 
-    private DriveConstraints constraints, slowConstraints;
+    private DriveConstraints constraints, slowConstraints, verySlowConstraints;
     private TrajectoryFollower follower;
 
     private LinkedList<Pose2d> poseHistory;
@@ -108,6 +109,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         constraints = new MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH);
         slowConstraints = new MecanumConstraints(SLOW_CONSTRAINTS, TRACK_WIDTH);
+        verySlowConstraints = new MecanumConstraints(VERY_SLOW_CONSTRAINTS, TRACK_WIDTH);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.2, 0.2, Math.toRadians(1.0)), 0.5);
 
@@ -168,6 +170,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public TrajectoryBuilder trajectoryBuilderSlow(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, slowConstraints);
+    }
+
+    public TrajectoryBuilder trajectoryBuilderVerySlow(Pose2d startPose) {
+        return new TrajectoryBuilder(startPose, verySlowConstraints);
     }
 
 

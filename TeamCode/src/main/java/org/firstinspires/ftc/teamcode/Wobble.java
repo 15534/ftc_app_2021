@@ -13,7 +13,8 @@ public class Wobble {
     public static double GRIPPER_GRIPPED = 0;
     public static double GRIPPER_LOOSEN = 0.18;
     public static double ARM_UP = 0;
-    public static double ARM_DOWN = 0.96;
+    public static double ARM_DOWN = 0.92;  // old: 0.96
+    public static double ARM_LOW = 0.8;
     public static double ARM_MIDDLE = 0.3;
 
     public boolean armUp = true;
@@ -44,6 +45,11 @@ public class Wobble {
     public void armMiddle() {
         wobbleArm.setPosition(ARM_MIDDLE);
         armUp = true;
+    }
+
+    public void armLow() {
+        wobbleArm.setPosition(ARM_LOW);
+        armUp = false;
     }
 
     public void grip() {
