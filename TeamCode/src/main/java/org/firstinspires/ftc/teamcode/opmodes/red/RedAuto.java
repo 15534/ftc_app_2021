@@ -44,7 +44,7 @@ public class RedAuto extends LinearOpMode {
     private RedA a;
     private RedBNew b;
     private RedC c;
-    int stack = 4;
+    int stack = 0;
     public static boolean useShooter = true;
 
     @Override
