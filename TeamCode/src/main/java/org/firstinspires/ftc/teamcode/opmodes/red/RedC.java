@@ -117,8 +117,8 @@ public class RedC extends RedAuto {
                 .build();
 
         pickUpSecondGoal = drive.trajectoryBuilder(getInPositionForSecondWobbleGoal.end())
-                .splineToConstantHeading(new Vector2d(-33.5, -21), Math.toRadians(90))
-                .addSpatialMarker(new Vector2d(-33.5, -21), () -> {
+                .splineToConstantHeading(new Vector2d(-33.5, -20), Math.toRadians(90))
+                .addSpatialMarker(new Vector2d(-33.5, -20), () -> {
                     indexer.setPower(0);
                 })
                 .build();
