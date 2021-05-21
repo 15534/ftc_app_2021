@@ -42,9 +42,9 @@ public class RedAuto extends LinearOpMode {
     public Pose2d startingPosition = new Pose2d(-63, -57, Math.toRadians(0));
     public Wobble wobble;
     private RedA a;
-    private RedBNew b;
+    private RedB b;
     private RedC c;
-    int stack = 0;
+    int stack = 1;
     public static boolean useShooter = true;
 
     @Override
@@ -98,7 +98,7 @@ public class RedAuto extends LinearOpMode {
 
         telemetry.addData("BUILDING TRAJECTORIES (B)", "");
         telemetry.update();
-        b = new RedBNew(this);
+        b = new RedB(this);
         b.buildTrajectories();
 
         telemetry.addData("BUILDING TRAJECTORIES (C)", "");
