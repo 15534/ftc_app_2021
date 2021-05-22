@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Wobble;
 import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-//@Autonomous(name="RedC")
+@Autonomous(name="RedA")
 public class RedA extends RedAuto {
 
     double time = 0.0;
